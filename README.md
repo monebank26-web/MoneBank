@@ -8,13 +8,13 @@ Sistema de billetera digital con enfoque formativo orientado a la gestión y com
 
 MoneBank es una billetera digital diseñada para jóvenes y personas sin experiencia financiera que necesitan aprender a gestionar su dinero. Muchas personas comienzan a manejar ingresos sin comprender el impacto real de sus decisiones, lo que genera hábitos financieros inadecuados.
 
-El sistema permite simular la administración del dinero en un entorno controlado. Los usuarios pueden registrar ingresos, gastos y transferencias, además de analizar el impacto de sus decisiones antes de ejecutarlas. Esto lo convierte en una herramienta de aprendizaje, no solo de gestión.
+El sistema permite simular la administración del dinero en un entorno controlado. Los usuarios pueden registrar ingresos, gastos y movimientos financieros, además de analizar el impacto de sus decisiones antes de ejecutarlos. Esto lo convierte en una herramienta de aprendizaje, no solo de gestión.
 
 ---
 
 ## 2️⃣ Usuarios Principales
 
-1. **Usuario**: Registra ingresos y gastos, realiza transferencias, consulta su historial y analiza el impacto de sus decisiones financieras  
+1. **Usuario**: Registra ingresos y gastos, consulta su historial y analiza el impacto de sus decisiones financieras  
 2. **Parental**: Supervisa y controla los movimientos financieros de usuarios menores a su cargo  
 3. **Menor**: Cuenta dependiente cuyos movimientos son gestionados o supervisados por un usuario parental  
 4. **Independiente**: Usuario que gestiona su cuenta de forma autónoma sin supervisión  
@@ -26,7 +26,7 @@ El sistema permite simular la administración del dinero en un entorno controlad
 
 - [ ] Registro e inicio de sesión de usuarios  
 - [ ] Gestión de saldo (cuenta interna)  
-- [ ] Registro de ingresos y gastos (incluye transferencias entre usuarios)  
+- [ ] Registro de ingresos y gastos  
 - [ ] Historial de transacciones  
 - [ ] Evaluación previa de gastos (impacto financiero)  
 - [ ] Control del estado de transacciones  
@@ -60,7 +60,8 @@ El sistema permite simular la administración del dinero en un entorno controlad
 
 ---
 
-**Autor**: Brayan Reyes  
+**Autor**: María Fernanda Calderon Lozano, David Santiago Camacho Cardenas, Brayan Samuel Reyes Grimaldos, Tania Alejandra Suarez Ariza, Laura Andrea Velandia Farfan
+
 **Fecha**: Abril 2026  
 **Bootcamp**: Arquitectura de Software - SENA  
 
