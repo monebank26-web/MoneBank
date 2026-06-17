@@ -1,0 +1,139 @@
+/* features/transacciones/pages/TransaccionesPage.css */
+
+.pagina-movimientos {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.encabezado-pagina-movimientos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filtros-movimientos {
+  display: flex;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+
+.boton-filtro {
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.boton-filtro--activo {
+  background: var(--color-accent);
+  color: white;
+}
+
+.movimientos-sin-contenido {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.lista-movimientos-completa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.elemento-movimiento-completo {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: background 0.15s;
+}
+
+.elemento-movimiento-completo:hover {
+  background: var(--color-surface-2);
+}
+
+.icono-elemento-movimiento {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.informacion-elemento-movimiento {
+  flex: 1;
+}
+
+.descripcion-elemento-movimiento {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.nota-elemento-movimiento {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-top: 3px;
+}
+
+.fecha-movimiento {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.columna-derecha-movimiento {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.monto-movimiento {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.monto-movimiento--deposito { color: var(--color-success); }
+.monto-movimiento--transferencia { color: var(--color-text); }
+
+.etiqueta-tipo-movimiento {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.etiqueta-tipo--transferencia {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.etiqueta-tipo--deposito {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}

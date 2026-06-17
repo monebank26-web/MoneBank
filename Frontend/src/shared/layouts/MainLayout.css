@@ -1,0 +1,222 @@
+/* shared/layouts/MainLayout.css */
+
+.raiz-estructura {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ── BARRA LATERAL ── */
+.barra-lateral {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  height: 100%;
+}
+
+.marca-barra-lateral {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.logo-barra-lateral {
+  width: 36px;
+  height: 36px;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+}
+
+.nombre-barra-lateral {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.navegacion-barra-lateral {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 12px;
+}
+
+.elemento-navegacion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.elemento-navegacion:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.elemento-navegacion--activo {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.icono-navegacion {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+}
+
+.pie-barra-lateral {
+  padding: 0 12px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 16px;
+}
+
+.usuario-barra-lateral {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.avatar-usuario {
+  width: 34px;
+  height: 34px;
+  background: var(--color-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.nombre-usuario {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.correo-usuario {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.boton-cerrar-sesion {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.boton-cerrar-sesion:hover {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* ── CONTENIDO PRINCIPAL ── */
+.contenido-principal {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.area-contenido {
+  flex: 1;
+  padding: 32px;
+}
+
+/* ── ENCABEZADO MOVIL ── */
+.encabezado-movil {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.boton-menu-hamburguesa {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.marca-encabezado-movil {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.capa-fondo-movil {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99;
+}
+
+/* ── DISEÑO ADAPTABLE ── */
+@media (max-width: 768px) {
+  .barra-lateral {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+
+  .barra-lateral--abierta {
+    transform: translateX(0);
+  }
+
+  .contenido-principal {
+    margin-left: 0;
+  }
+
+  .encabezado-movil {
+    display: flex;
+  }
+
+  .area-contenido {
+    padding: 20px;
+  }
+}

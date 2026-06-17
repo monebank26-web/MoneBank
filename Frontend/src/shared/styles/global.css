@@ -1,0 +1,72 @@
+/* ===== MONEBANK - ESTILOS GLOBALES ===== */
+/* ===== MONEBANK - ESTILOS GLOBALES ===== */
+:root {
+  /* Colores de fondo */
+  --color-bg: #080808;
+  --color-surface: #111111;
+  --color-surface-2: #1a1a1a;
+  --color-border: #2a2418;
+
+  /* Dorado - color de acento principal */
+  --color-accent: #c9a84c;
+  --color-accent-hover: #e0bc6a;
+  --color-accent-soft: rgba(201, 168, 76, 0.12);
+  --color-accent-glow: rgba(201, 168, 76, 0.08);
+
+  /* Verde - exito y valores positivos */
+  --color-success: #4ade80;
+  --color-success-soft: rgba(74, 222, 128, 0.10);
+
+  /* Rojo - peligro y errores */
+  --color-danger: #ef4444;
+  --color-danger-soft: rgba(239, 68, 68, 0.12);
+
+  /* Amarillo - advertencia */
+  --color-warning: #c9a84c;
+
+  /* Colores de texto */
+  --color-text: #f5f0e8;
+  --color-text-muted: #6b6045;
+  --color-text-soft: #a89060;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+}
+
+input {
+  font-family: var(--font-body);
+  outline: none;
+}

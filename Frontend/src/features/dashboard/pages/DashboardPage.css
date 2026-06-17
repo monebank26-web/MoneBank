@@ -1,0 +1,284 @@
+/* features/pagina-inicio/pages/DashboardPage.css */
+
+.pagina-inicio {
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.encabezado-inicio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.saludo-inicio {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.nombre-inicio {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ── TARJETA DE SALDO ── */
+.tarjeta-saldo {
+  background: linear-gradient(135deg, #1a1200 0%, #2d2000 40%, #3d2e00 100%);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  padding: 32px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-saldo::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.etiqueta-saldo {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.valor-saldo {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtexto-saldo {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.acciones-saldo {
+  margin-top: 20px;
+}
+
+.boton-saldo {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  transition: background 0.2s;
+}
+
+.boton-saldo:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── SECCIONES ── */
+.seccion-inicio {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.encabezado-seccion-inicio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.encabezado-seccion-inicio h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.enlace-ver-todos {
+  font-size: 13px;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.enlace-ver-todos:hover {
+  text-decoration: underline;
+}
+
+.cargando-inicio {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.seccion-vacia-inicio {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.seccion-vacia-inicio p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.boton-llamada-accion {
+  display: inline-block;
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.seccion-vacia-inicio-text {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ── CUADRICULA DE BOLSILLOS ── */
+.cuadricula-bolsillos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.bolsillo-miniatura {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.punto-bolsillo-miniaturaatura {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color);
+  flex-shrink: 0;
+}
+
+.nombre-bolsillo-miniaturaatura {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.saldo-bolsillo-miniaturaatura {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ── MOVIMIENTOS ── */
+.lista-movimientos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.elemento-movimiento {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.elemento-movimiento:hover {
+  background: var(--color-surface-2);
+}
+
+.icono-movimiento {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.icono-movimiento--transferencia {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.icono-movimiento--deposito {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.informacion-movimiento {
+  flex: 1;
+}
+
+.descripcion-movimiento {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.fecha-movimiento {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.monto-movimiento {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.monto-movimiento--deposito {
+  color: var(--color-success);
+}
+
+.monto-movimiento--transferencia {
+  color: var(--color-text-soft);
+}
+
+.tarjeta-saldos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tarjeta-saldo--cuenta-principal {
+  background: linear-gradient(135deg, #1a1200 0%, #2d2000 40%, #3d2e00 100%);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  color: white;
+}
+
+.tarjeta-saldo--bolsillos {
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .tarjeta-saldos-row {
+    grid-template-columns: 1fr;
+  }
+}

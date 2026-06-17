@@ -1,0 +1,374 @@
+/* features/bolsillos/pages/BolsillosPage.css */
+
+.pagina-bolsillos {
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.encabezado-bolsillos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.titulo-pagina {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.subtitulo-pagina {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.subtitulo-pagina strong {
+  color: var(--color-text);
+}
+
+.acciones-bolsillos {
+  display: flex;
+  gap: 10px;
+}
+
+.boton-secundario {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.boton-secundario:hover {
+  background: var(--color-border);
+}
+
+.boton-principal-pequeno {
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.boton-principal-pequeno:hover {
+  background: var(--color-accent-hover);
+}
+
+.cargando-pagina {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ── SIN CONTENIDO ── */
+.bolsillos-sin-contenido {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 60px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.icono-sin-contenido {
+  font-size: 48px;
+  color: var(--color-text-muted);
+}
+
+.bolsillos-sin-contenido h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.bolsillos-sin-contenido p {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  max-width: 280px;
+}
+
+.bolsillos-sin-contenido .boton-principal {
+  margin-top: 8px;
+  padding: 10px 24px;
+}
+
+/* ── LISTA DE BOLSILLOS ── */
+.lista-bolsillos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.tarjeta-bolsillo {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.tarjeta-bolsillo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.parte-superior-tarjeta-bolsillo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.indicador-color-bolsillo {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.informacion-tarjeta-bolsillo {
+  flex: 1;
+}
+
+.nombre-tarjeta-bolsillo {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.descripcion-tarjeta-bolsillo {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+.boton-icono-peligro {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.boton-icono-peligro:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.saldo-tarjeta-bolsillo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.botones-tarjeta-bolsillo {
+  display: flex;
+  gap: 8px;
+}
+
+.boton-tarjeta {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.boton-tarjeta--agregar-dinero {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.boton-tarjeta--agregar-dinero:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.boton-tarjeta--transferir {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.boton-tarjeta--transferir:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* ── VENTANAS MODALES ── */
+.formulario-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error-formulario {
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.selector-color {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.circulo-color {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.circulo-color:hover {
+  transform: scale(1.15);
+}
+
+.circulo-color--activo {
+  border-color: white;
+  transform: scale(1.15);
+}
+
+.campo-seleccion {
+  appearance: none;
+  cursor: pointer;
+}
+
+.flecha-transferencia {
+  text-align: center;
+  font-size: 20px;
+  color: var(--color-accent);
+}
+
+.boton-peligro {
+  background: var(--color-danger);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.boton-peligro:hover {
+  opacity: 0.85;
+}
+
+/* ── MENU DE OPCIONES ── */
+.menu-opciones-bolsillo {
+  position: relative;
+}
+
+.boton-menu-opciones-bolsillo {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.boton-menu-opciones-bolsillo:hover {
+  background: var(--color-surface-2);
+  color: var(--color-accent);
+}
+
+.desplegable-menu-opciones-bolsillo {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 170px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desplegable-menu-opciones-bolsillo button {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.desplegable-menu-opciones-bolsillo button:hover {
+  background: var(--color-surface-2);
+}
+
+.opcion-peligrosa {
+  color: var(--color-danger) !important;
+}
+
+.opcion-peligrosa:hover {
+  background: var(--color-danger-soft) !important;
+}
+
+.separador-menu-opciones-bolsillo {
+  height: 1px;
+  background: var(--color-border);
+  margin: 4px 0;
+}
+
+.etiqueta-saldo-disponible {
+  background: var(--color-accent-soft);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: var(--color-radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--color-text-soft);
+  border-radius: 8px;
+}
+
+.etiqueta-saldo-disponible strong {
+  color: var(--color-accent);
+}
