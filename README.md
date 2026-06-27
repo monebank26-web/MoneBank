@@ -134,6 +134,50 @@ Infraestructura
 └── Repositories
 ```
 
+junto a core y un shared organizado asi:
+```text
+Core
+│
+├── Config
+├── Database
+├── Dependencies
+├── Security
+└── Constants
+
+Shared
+│
+├── Exceptions
+├── Responses
+└── Utils
+```
+
+
+### Organización del Frontend
+
+Cada feature sigue la siguiente estructura:
+
+```text
+Feature
+│
+├── Pages
+├── Components
+├── Hooks
+├── Services
+└── Schemas
+```
+junto a un core:
+
+```text
+Core
+│
+├── API
+├── Routes
+├── Context
+├── Constants
+├── Hooks
+└── Utils
+```
+
 ### Principios de la Arquitectura
 
 - Separación de responsabilidades.
