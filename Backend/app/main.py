@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.modules.usuario.presentation.router import (
+from app.modules.usuario.presentation.router.router import (
     router as usuario_router
 )
-from app.modules.ahorro.presentation.router import router as ahorro_router
-from app.modules.cuenta.presentation.router import (
+from app.modules.ahorro.presentation.router.router import router as ahorro_router
+from app.modules.cuenta.presentation.router.router import (
     router as cuenta_router
 )
 
