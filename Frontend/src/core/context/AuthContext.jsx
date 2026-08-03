@@ -1,4 +1,4 @@
-// core/context/AuthContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { STORAGE_KEYS } from '../constants';
 

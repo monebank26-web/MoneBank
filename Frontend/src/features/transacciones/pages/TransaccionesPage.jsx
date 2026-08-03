@@ -1,4 +1,3 @@
-// features/transacciones/pages/TransaccionesPage.jsx
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { bolsillosService } from '../../bolsillos/services/bolsillosService';
