@@ -1,5 +1,3 @@
-// features/auth/pages/LoginPage.jsx
-// features/auth/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthForm } from '../hooks/useAuthForm';

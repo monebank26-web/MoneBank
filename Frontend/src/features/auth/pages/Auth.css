@@ -1,6 +1,3 @@
-/* features/auth/pages/Auth.css */
-
-/* features/auth/pages/Auth.css */
 #video-fondo-pantalla {
   position: fixed;
   top: 0;
@@ -168,4 +165,76 @@
   margin-bottom: 12px;
   border-radius: 50%;
   border: 2px solid var(--color-accent);
+}
+
+/* Selección de tipo de cuenta en registro */
+.subtexto-tipo-cuenta {
+  font-size: 15px;
+  color: var(--color-text-soft, #aaa);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.opciones-tipo-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.opcion-tipo-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: transparent;
+  border: 0.5px solid var(--color-border, rgba(255,255,255,0.1));
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  width: 100%;
+}
+
+.opcion-tipo-cuenta:hover,
+.opcion-tipo-cuenta--seleccionada {
+  border-color: var(--color-accent, #c9a84c);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.icono-tipo-cuenta {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.nombre-tipo-cuenta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, white);
+  display: block;
+}
+
+.descripcion-tipo-cuenta {
+  font-size: 12px;
+  color: var(--color-text-soft, #aaa);
+  display: block;
+  margin-top: 2px;
+}
+
+.boton-secundario {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 0.5px solid var(--color-border, rgba(255,255,255,0.15));
+  border-radius: 8px;
+  color: var(--color-text-soft, #aaa);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  margin-top: 6px;
+}
+
+.boton-secundario:hover {
+  border-color: var(--color-accent, #c9a84c);
+  color: var(--color-accent, #c9a84c);
 }

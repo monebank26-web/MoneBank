@@ -1,4 +1,3 @@
-// features/bolsillos/hooks/useBolsillos.js
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { bolsillosService } from '../services/bolsillosService';

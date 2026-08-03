@@ -1,5 +1,3 @@
-// core/api/client.js
-// Aquí tu compañero conecta el backend real — por ahora usa localStorage
 
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 

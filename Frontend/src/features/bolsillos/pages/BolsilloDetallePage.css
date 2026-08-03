@@ -1,0 +1,127 @@
+.pagina-detalle-bolsillo {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.enlace-volver-detalle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: color 0.15s;
+  width: fit-content;
+}
+
+.enlace-volver-detalle:hover {
+  color: var(--color-accent);
+}
+
+/* ── CABECERA ── */
+.tarjeta-cabecera-detalle {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.titulo-cabecera-detalle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.punto-color-detalle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color);
+  flex-shrink: 0;
+}
+
+.nombre-detalle-bolsillo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.descripcion-detalle-bolsillo {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.saldo-detalle-bolsillo {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.acciones-detalle-bolsillo {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.acciones-detalle-bolsillo .boton-tarjeta {
+  flex: none;
+  padding: 9px 16px;
+}
+
+.boton-secundario--peligro {
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.boton-secundario--peligro:hover {
+  background: var(--color-danger-soft);
+}
+
+/* ── SECCIÓN DE MOVIMIENTOS ── */
+.seccion-detalle-bolsillo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.titulo-seccion-detalle {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.sin-movimientos-parental {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* ── SIN CONTENIDO ── */
+.detalle-sin-contenido {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 60px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.detalle-sin-contenido h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.detalle-sin-contenido p {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  max-width: 280px;
+}

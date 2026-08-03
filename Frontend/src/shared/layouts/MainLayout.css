@@ -1,5 +1,3 @@
-/* shared/layouts/MainLayout.css */
-
 .raiz-estructura {
   display: flex;
   min-height: 100vh;
@@ -219,4 +217,12 @@
   .area-contenido {
     padding: 20px;
   }
+}
+
+/* Rol de usuario en el sidebar */
+.rol-usuario {
+  font-size: 11px;
+  color: var(--color-accent);
+  margin: 0;
+  font-weight: 500;
 }

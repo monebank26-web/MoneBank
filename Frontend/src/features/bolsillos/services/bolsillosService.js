@@ -1,4 +1,3 @@
-// features/bolsillos/services/bolsillosService.js
 import { STORAGE_KEYS } from '../../../core/constants';
 
 const getBolsillos = () => {
