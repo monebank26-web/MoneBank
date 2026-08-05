@@ -5,15 +5,18 @@ class LoginUsuarioUseCase:
 
     def execute(self, db, correo, contrasena):
 
-        usuario = self.repository.login(
+        usuario = self.repository.buscar_por_correo(
             db,
-            correo,
-            contrasena
+            correo
         )
 
-        print("USUARIO ENCONTRADO:", usuario)
-
         if not usuario:
+            return {
+                "success": False,
+                "message": "Credenciales incorrectas"
+            }
+
+        if usuario["contrasena"] != contrasena:
             return {
                 "success": False,
                 "message": "Credenciales incorrectas"

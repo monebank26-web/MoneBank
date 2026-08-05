@@ -1,7 +1,3 @@
-from app.modules.usuario.infrastucture.repository.sql_usuario_repository import (
-    SqlUsuarioRepository
-)
-
 from app.modules.cuenta.infrastucture.model.cuenta_model import (
     CuentaModel
 )
@@ -9,8 +5,8 @@ from app.modules.cuenta.infrastucture.model.cuenta_model import (
 
 class CrearUsuario:
 
-    def __init__(self):
-        self.repository = SqlUsuarioRepository()
+    def __init__(self, repository):
+        self.repository = repository
 
     def execute(self, db, usuario_data):
 

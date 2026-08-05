@@ -4,8 +4,8 @@ from app.modules.cuenta.infrastucture.repository.sql_cuenta_repository import (
 
 class CrearCuenta:
 
-    def __init__(self):
-        self.repository = SqlCuentaRepository()
+    def __init__(self, repository):
+        self.repository = repository
 
     def execute(
         self,
