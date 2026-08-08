@@ -1,4 +1,4 @@
-from app.modules.ahorro.infrastucture.model.ahorro_model import AhorroModel
+﻿from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 
 
 class SqlAhorroRepository:
@@ -70,7 +70,7 @@ class SqlAhorroRepository:
         )
 
         if not ahorro:
-            return None
+            None
 
         db.delete(ahorro)
         db.commit()

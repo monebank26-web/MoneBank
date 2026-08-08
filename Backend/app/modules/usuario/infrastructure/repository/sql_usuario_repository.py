@@ -1,4 +1,4 @@
-from app.modules.usuario.infrastucture.model.usuario_model import UsuarioModel
+﻿from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
 
 
 class SqlUsuarioRepository:
@@ -74,13 +74,12 @@ class SqlUsuarioRepository:
         return {
             "mensaje": "Usuario eliminado"
         }
-    def login(self, db, correo, contrasena):
+    def login(self, db, correo):
 
         return (
             db.query(UsuarioModel)
             .filter(
-                UsuarioModel.correo == correo,
-                UsuarioModel.contrasena == contrasena
+                UsuarioModel.correo == correo
             )
             .first()
         )

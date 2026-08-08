@@ -1,4 +1,4 @@
-from app.modules.cuenta.infrastucture.model.cuenta_model import CuentaModel
+﻿from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 
 
 class SqlCuentaRepository:

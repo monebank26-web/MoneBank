@@ -1,10 +1,12 @@
-from app.modules.usuario.infrastucture.repository.sql_usuario_repository import (
+﻿from app.modules.usuario.infrastructure.repository.sql_usuario_repository import (
     SqlUsuarioRepository
 )
 
-from app.modules.cuenta.infrastucture.model.cuenta_model import (
+from app.modules.cuenta.infrastructure.model.cuenta_model import (
     CuentaModel
 )
+
+from app.core.security.PasswordHasher import PasswordHasher
 
 
 class CrearUsuario:
@@ -13,6 +15,10 @@ class CrearUsuario:
         self.repository = SqlUsuarioRepository()
 
     def execute(self, db, usuario_data):
+
+        usuario_data["contrasena"] = PasswordHasher.hash(
+            usuario_data["contrasena"]
+        )
 
         usuario = self.repository.create(
             db,
