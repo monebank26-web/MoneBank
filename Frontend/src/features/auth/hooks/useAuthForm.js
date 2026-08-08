@@ -1,4 +1,3 @@
-// features/auth/hooks/useAuthForm.js
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/context/AuthContext';
@@ -17,20 +16,12 @@ export const useAuthForm = (mode = 'login') => {
     try {
       let user;
       if (mode === 'login') {
-        const response = await authService.login(formData);
-
-       if (!response.success) {
-          throw new Error(response.message || 'Credenciales incorrectas');
-       }
-
-        login(response.usuario);
-        navigate(ROUTES.DASHBOARD);
-
+        user = await authService.login(formData);
       } else {
         user = await authService.register(formData);
-        login(user);
-       navigate(ROUTES.DASHBOARD);
       }
+      login(user);
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
       setError(err.message);
     } finally {

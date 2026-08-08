@@ -1,0 +1,347 @@
+.pagina-control-parental {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.encabezado-parental {
+  margin-bottom: 1.5rem;
+}
+
+.titulo-parental {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.25rem;
+}
+
+.subtitulo-parental {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.mensaje-exito-parental {
+  background: #e1f5ee;
+  color: #085041;
+  border: 0.5px solid #5dcaa5;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+.mensaje-error-parental {
+  background: #fcebeb;
+  color: #501313;
+  border: 0.5px solid #f09595;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+/* Tarjeta sin vinculación */
+.tarjeta-vincular {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.icono-vincular {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.titulo-vincular {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.5rem;
+}
+
+.descripcion-vincular {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  margin: 0 0 1.5rem;
+}
+
+.campo-vincular {
+  display: flex;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.campo-entrada-parental {
+  flex: 1;
+  min-width: 200px;
+  background: var(--color-surface-hover);
+  border: 0.5px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.campo-entrada-parental:focus {
+  border-color: var(--color-accent);
+}
+
+.boton-vincular {
+  background: var(--color-accent);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.boton-vincular:hover { opacity: 0.85; }
+
+/* Tarjeta vinculado */
+.tarjeta-vinculado {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-accent);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.encabezado-vinculado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.avatar-vinculado {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.nombre-vinculado {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-text);
+  margin: 0 0 2px;
+}
+
+.correo-vinculado {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin: 0 0 4px;
+}
+
+.etiqueta-vinculado {
+  font-size: 12px;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.boton-desvincular {
+  margin-left: auto;
+  background: transparent;
+  border: 0.5px solid #ef4444;
+  border-radius: 8px;
+  color: #ef4444;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.boton-desvincular:hover { opacity: 0.8; }
+
+.saldo-vinculado {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--color-border);
+}
+
+.etiqueta-saldo-vinculado {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin: 0 0 4px;
+}
+
+.valor-saldo-vinculado {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin: 0;
+}
+
+/* Secciones */
+.seccion-parental {
+  margin-top: 1.5rem;
+}
+
+.titulo-seccion-parental {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 1rem;
+}
+
+/* Bolsillos hijo */
+.cuadricula-bolsillos-parental {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.bolsillo-parental {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.punto-bolsillo-parental {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-bolsillo, var(--color-accent));
+  flex-shrink: 0;
+}
+
+.nombre-bolsillo-parental {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0 0 2px;
+}
+
+.saldo-bolsillo-parental {
+  font-size: 13px;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Movimientos hijo */
+.lista-movimientos-parental {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.movimiento-parental {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icono-movimiento-parental {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.icono-movimiento-parental--transferencia { background: #e0f2fe; color: #0369a1; }
+.icono-movimiento-parental--deposito { background: #e1f5ee; color: #085041; }
+
+.info-movimiento-parental { flex: 1; }
+
+.descripcion-movimiento-parental {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0 0 2px;
+}
+
+.fecha-movimiento-parental {
+  font-size: 12px;
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.monto-movimiento-parental {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.monto-movimiento-parental--deposito { color: #10b981; }
+.monto-movimiento-parental--transferencia { color: var(--color-text); }
+
+.sin-movimientos-parental {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.info-hijo-parental {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  line-height: 1.6;
+}
+
+/* Sin acceso */
+.sin-acceso-parental {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--color-surface);
+  border-radius: 16px;
+  border: 0.5px solid var(--color-border);
+}
+
+.icono-sin-acceso { font-size: 3rem; }
+
+.sin-acceso-parental h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 1rem 0 0.5rem;
+}
+
+.sin-acceso-parental p {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .pagina-control-parental { padding: 1rem; }
+  .campo-vincular { flex-direction: column; }
+  .boton-vincular { width: 100%; }
+  .encabezado-vinculado { flex-direction: column; align-items: flex-start; }
+  .boton-desvincular { margin-left: 0; }
+}

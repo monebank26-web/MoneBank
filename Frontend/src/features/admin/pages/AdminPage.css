@@ -1,0 +1,295 @@
+
+.pagina-admin {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.encabezado-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.titulo-admin {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.25rem;
+}
+
+.subtitulo-admin {
+  font-size: 0.875rem;
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.mensaje-exito-admin {
+  background: #e1f5ee;
+  color: #085041;
+  border: 0.5px solid #5dcaa5;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.barra-filtros-admin {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.campo-busqueda-admin {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  padding: 10px 14px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 200px;
+  outline: none;
+}
+
+.campo-busqueda-admin:focus {
+  border-color: var(--color-accent);
+}
+
+.filtros-rol-admin {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.boton-filtro-admin {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 99px;
+  color: var(--color-text-soft);
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.boton-filtro-admin--activo,
+.boton-filtro-admin:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-surface-hover);
+}
+
+.tabla-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fila-usuario-admin {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  transition: border-color 0.15s;
+}
+
+.fila-usuario-admin:hover {
+  border-color: var(--color-accent);
+}
+
+.avatar-usuario-admin {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.informacion-usuario-admin {
+  flex: 1;
+  min-width: 150px;
+}
+
+.nombre-usuario-admin {
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+
+.correo-usuario-admin {
+  color: var(--color-text-soft);
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+
+.etiqueta-rol-admin {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+
+.etiqueta-rol-admin--administrador { background: #f0e6ff; color: #6b21a8; }
+.etiqueta-rol-admin--padre { background: #e0f2fe; color: #0369a1; }
+.etiqueta-rol-admin--hijo { background: #fef9c3; color: #854d0e; }
+.etiqueta-rol-admin--normal { background: var(--color-surface-hover); color: var(--color-text-soft); }
+
+.saldo-usuario-admin {
+  text-align: right;
+  min-width: 120px;
+}
+
+.valor-saldo-admin {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0 0 2px;
+}
+
+.etiqueta-saldo-admin {
+  font-size: 11px;
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.acciones-usuario-admin {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.boton-accion-admin {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 0.5px solid;
+  transition: opacity 0.15s;
+}
+
+.boton-accion-admin:hover { opacity: 0.8; }
+
+.boton-accion-admin--ver {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-soft);
+}
+
+.boton-accion-admin--editar {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #000;
+}
+
+.boton-accion-admin--eliminar {
+  background: transparent;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.admin-sin-resultados {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-soft);
+}
+
+/* Detalle modal */
+.detalle-usuario-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-detalle-admin {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.nombre-detalle-admin {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.correo-detalle-admin {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin: 0 0 4px;
+}
+
+.campos-detalle-admin {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.campo-detalle-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--color-surface-hover);
+  border-radius: 8px;
+}
+
+.etiqueta-campo-detalle {
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+.valor-campo-detalle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.boton-peligro {
+  width: 100%;
+  padding: 12px;
+  background: #ef4444;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.boton-peligro:hover { opacity: 0.85; }
+
+@media (max-width: 640px) {
+  .pagina-admin { padding: 1rem; }
+  .fila-usuario-admin { flex-direction: column; align-items: flex-start; }
+  .saldo-usuario-admin { text-align: left; }
+}

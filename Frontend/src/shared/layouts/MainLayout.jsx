@@ -1,15 +1,8 @@
-// shared/layouts/MainLayout.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
-import { ROUTES } from '../../core/constants';
+import { ROUTES, ROLES } from '../../core/constants';
 import './MainLayout.css';
-
-const NAV_ITEMS = [
-  { to: ROUTES.DASHBOARD, label: 'Inicio', icon: '⊞' },
-  { to: ROUTES.BOLSILLOS, label: 'Bolsillos', icon: '◈' },
-  { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icon: '↕' },
-];
 
 const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
@@ -21,6 +14,32 @@ const MainLayout = ({ children }) => {
     navigate(ROUTES.LOGIN);
   };
 
+  const esAdmin = user?.rol === ROLES.ADMIN;
+  const esPadre = user?.rol === ROLES.PADRE;
+  const esHijo = user?.rol === ROLES.HIJO;
+  const tienControlParental = esPadre || esHijo;
+
+  const elementosNav = [
+    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
+    { to: ROUTES.BOLSILLOS, label: 'Bolsillos', icono: '◈', visible: !esAdmin },
+    { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: '↕', visible: !esAdmin },
+    {
+      to: esPadre ? ROUTES.CONTROL_PARENTAL_PADRE : ROUTES.CONTROL_PARENTAL_HIJO,
+      label: 'Control parental',
+      icono: '👨‍👧',
+      visible: tienControlParental,
+    },
+    { to: ROUTES.ADMIN, label: 'Administrador', icono: '👑', visible: esAdmin },
+    { to: ROUTES.PERFIL, label: 'Mi perfil', icono: '⚙', visible: true },
+  ].filter((e) => e.visible);
+
+  const etiquetaRol = {
+    administrador: '👑 Administrador',
+    padre: '👨‍👧 Padre/Madre',
+    hijo: '🧒 Hijo/Hija',
+    normal: '',
+  }[user?.rol] || '';
+
   return (
     <div className="raiz-estructura">
       {/* Sidebar */}
@@ -31,7 +50,7 @@ const MainLayout = ({ children }) => {
         </div>
 
         <nav className="navegacion-barra-lateral">
-          {NAV_ITEMS.map((item) => (
+          {elementosNav.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -40,7 +59,7 @@ const MainLayout = ({ children }) => {
               }
               onClick={() => setMenuOpen(false)}
             >
-              <span className="icono-navegacion">{item.icon}</span>
+              <span className="icono-navegacion">{item.icono}</span>
               <span className="etiqueta-navegacion">{item.label}</span>
             </NavLink>
           ))}
@@ -53,7 +72,10 @@ const MainLayout = ({ children }) => {
             </div>
             <div className="informacion-usuario">
               <p className="nombre-usuario">{user?.nombre}</p>
-              <p className="correo-usuario">{user?.email}</p>
+              {etiquetaRol
+                ? <p className="rol-usuario">{etiquetaRol}</p>
+                : <p className="correo-usuario">{user?.email}</p>
+              }
             </div>
           </div>
           <button className="boton-cerrar-sesion" onClick={handleLogout}>
@@ -69,7 +91,6 @@ const MainLayout = ({ children }) => {
 
       {/* Contenido */}
       <main className="contenido-principal">
-        {/* Header móvil */}
         <header className="encabezado-movil">
           <button className="boton-menu-hamburguesa" onClick={() => setMenuOpen(!menuOpen)}>
             ☰

@@ -1,4 +1,4 @@
-from app.modules.cuenta.infrastucture.repository.sql_cuenta_repository import (
+﻿from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
     SqlCuentaRepository
 )
 

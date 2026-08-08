@@ -1,4 +1,3 @@
-// App.jsx
 import React from 'react';
 import { AuthProvider } from './core/context/AuthContext';
 import AppRouter from './core/routes/router';
