@@ -1,0 +1,241 @@
+:root {
+  --color-bg: #080808;
+  --color-surface: #111111;
+  --color-surface-2: #1a1a1a;
+  --color-border: #2a2418;
+
+  --color-accent: #c9a84c;
+  --color-accent-hover: #e0bc6a;
+  --color-accent-soft: rgba(201, 168, 76, 0.12);
+
+  --color-success: #4ade80;
+  --color-success-soft: rgba(74, 222, 128, 0.10);
+
+  --color-danger: #ef4444;
+  --color-danger-soft: rgba(239, 68, 68, 0.12);
+
+  --color-text: #f5f0e8;
+  --color-text-muted: #6b6045;
+  --color-text-soft: #a89060;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* ---------- App shell ---------- */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.app-header h1 {
+  font-family: var(--font-display);
+  color: var(--color-accent);
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.app-header p {
+  color: var(--color-text-soft);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 18px 32px;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover);
+}
+
+.nav-btn.active {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.app-main {
+  flex: 1;
+  padding: 32px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---------- Page (padre) ---------- */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-text);
+}
+
+.page-header span {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+/* ---------- CardAccion (hijo) ---------- */
+.card-accion {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-accion .icono {
+  font-size: 1.6rem;
+}
+
+.card-accion h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--color-accent);
+}
+
+.card-accion p {
+  color: var(--color-text-soft);
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.card-accion button {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #100c02;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.card-accion button:hover {
+  background: var(--color-accent-hover);
+}
+
+.card-accion.variante-peligro button {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.card-accion.variante-exito button {
+  background: var(--color-success);
+  color: #06280f;
+}
+
+/* ---------- Formularios (Login / Registro) ---------- */
+.auth-form {
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.auth-form label {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-form input {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.auth-form button[type="submit"] {
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #100c02;
+  font-weight: 700;
+}
+
+.auth-form button[type="submit"]:hover {
+  background: var(--color-accent-hover);
+}
