@@ -74,13 +74,3 @@ class SqlUsuarioRepository:
         return {
             "mensaje": "Usuario eliminado"
         }
-    def login(self, db, correo, contrasena):
-
-        return (
-            db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.correo == correo,
-                UsuarioModel.contrasena == contrasena
-            )
-            .first()
-        )

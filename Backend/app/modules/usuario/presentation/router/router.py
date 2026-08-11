@@ -10,7 +10,7 @@ from app.modules.usuario.application.use_cases.obtener_usuario_por_id import Obt
 from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
 from app.modules.usuario.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
 from app.modules.usuario.presentation.schema.login_request import LoginRequest
-from app.modules.usuario.application.use_cases.login_usuario import LoginUsuarioUseCase
+from Backend.app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
 
 from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioCreate,

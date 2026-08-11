@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from app.modules.usuario.application.use_cases.login_usuario import LoginUsuarioUseCase
+from Backend.app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
 
 
 def test_login_exitoso():
