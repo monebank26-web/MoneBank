@@ -1,0 +1,2 @@
+ROL_ADMIN = 1
+ROL_USUARIO = 2

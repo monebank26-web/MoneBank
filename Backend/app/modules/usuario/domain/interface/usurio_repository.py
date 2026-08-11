@@ -23,5 +23,5 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def login(self, db, correo, contrasena):
+    def login(self, db, correo):
         pass
