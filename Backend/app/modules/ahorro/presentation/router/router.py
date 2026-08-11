@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+from app.core.security.auth import get_current_user
 
-from app.modules.ahorro.infrastucture.repository.sql_ahorro_repository import (
+from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import (
     SqlAhorroRepository
 )
 from app.modules.ahorro.application.use_cases.crear_ahorro import (
@@ -29,7 +30,8 @@ from app.modules.ahorro.presentation.schema.ahorro_schema import (
 
 router = APIRouter(
     prefix="/ahorros",
-    tags=["Ahorros"]
+    tags=["Ahorros"],
+    dependencies=[Depends(get_current_user)]
 )
 
 
@@ -39,7 +41,7 @@ def crear_ahorro(
     db: Session = Depends(get_db)
 ):
 
-    caso_uso = CrearAhorro()
+    caso_uso = CrearAhorro(SqlAhorroRepository())
 
     return caso_uso.execute(
         db,
@@ -102,8 +104,14 @@ def eliminar_ahorro(
     caso_uso = EliminarAhorroUseCase(
         SqlAhorroRepository()
     )
-
-    return caso_uso.execute(
+    
+    response = caso_uso.execute(
         db,
         id_ahorro
     )
+    if not response:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            mensaje="Item not found"
+        )
+    return response 

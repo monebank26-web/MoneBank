@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from Backend.app.modules.transaccion.presentation.schema.trans_schema import ListaTransaccionesResponse
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+
+from typing import List
 
 
 router = APIRouter(
@@ -9,16 +12,22 @@ router = APIRouter(
     tags=["transacciones"]
 )
 
-
-@router.post("/", response_model=transaccionResponse)
-def registrar_movimiento(
-    transaccion: transaccionCreate,
+@router.get(
+    "/",
+    response_model=List[ListaTransaccionesResponse],
+    status_code=200
+)
+def obtener_Transacciones(
     db: Session = Depends(get_db)
 ):
-
-    caso_uso = CrearUsuario()
-
-    return caso_uso.execute(
-        db,
-        usuario.model_dump()
+    caso_uso = ObtenerTransaccionesUseCase(
+        SqlTransaccionesRepository()
     )
+
+    try:
+        return caso_uso.execute(db)
+    except TransaccionesNoEncontrado:
+        raise HTTPException(
+            status_code=404,
+            detail=" no encontrado"
+        )

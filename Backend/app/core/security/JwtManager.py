@@ -1,23 +1,39 @@
 from datetime import datetime, timedelta, timezone
-from jose import jwt, JWTError
 
-SECRET_KEY = "CAMBIAR_ESTO_POR_UNA_VARIABLE_DE_ENTORNO"  # ver nota abajo
-ALGORITHM = "HS256"
-EXPIRE_MINUTES = 60
+from jose import JWTError, jwt
+
+from app.core.config.settings import settings
 
 
 class JwtManager:
 
     @staticmethod
-    def create_token(data: dict, expires_minutes: int = EXPIRE_MINUTES) -> str:
-        to_encode = data.copy()
-        expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
-        to_encode.update({"exp": expire})
-        return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    def create_token(
+        data: dict,
+        expires_minutes: int = None
+    ) -> str:
+
+        expire_min = (
+            expires_minutes or
+            settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+
+        payload = dict(data)
+        payload["exp"] = (
+            datetime.now(timezone.utc) +
+            timedelta(minutes=expire_min)
+        )
+
+        return jwt.encode(
+            payload,
+            settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM
+        )
 
     @staticmethod
-    def decode_token(token: str) -> dict | None:
-        try:
-            return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        except JWTError:
-            return None
+    def decode_token(token: str) -> dict:
+        return jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
+        )
