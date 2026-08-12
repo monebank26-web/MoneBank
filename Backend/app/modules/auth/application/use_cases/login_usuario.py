@@ -8,19 +8,21 @@ class LoginUsuarioUseCase:
     def __init__(self, repository):
         self.repository = repository
 
-    def execute(self, db, correo, contrasena):
+    def execute(self, correo, contrasena):
 
-        usuario = self.repository.login(db,correo)
+        usuario = self.repository.login(correo)
 
         if not usuario:
             raise InvalidCredentialsException()
 
-        if self.repository.is_locked(db, usuario.id_usuario):
+        if self.repository.is_locked(usuario.id_usuario):
             raise AccountLockedException()
 
         if not PasswordHasher.verify(contrasena, usuario.contrasena):
-            self.repository.register_failed_attempt(db, usuario.id_usuario)
+            self.repository.register_failed_attempt(usuario.id_usuario)
             raise InvalidCredentialsException()
+
+        self.repository.reset_failed_attempts(usuario.id_usuario)
 
         token = JwtManager.create_token({
             "sub": str(usuario.id_usuario),

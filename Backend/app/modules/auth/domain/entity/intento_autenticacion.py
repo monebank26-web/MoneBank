@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-MAX_INTENTOS = 3
+from app.core.constants import MAX_INTENTOS
 
 
 class IntentoAutenticacion:
@@ -15,4 +15,9 @@ class IntentoAutenticacion:
     def esta_bloqueado(self) -> bool:
         if not self.bloqueado_hasta:
             return False
-        return self.bloqueado_hasta > datetime.now(timezone.utc)
+
+        bloqueado = self.bloqueado_hasta
+        if bloqueado.tzinfo is None:
+            bloqueado = bloqueado.replace(tzinfo=timezone.utc)
+
+        return bloqueado > datetime.now(timezone.utc)

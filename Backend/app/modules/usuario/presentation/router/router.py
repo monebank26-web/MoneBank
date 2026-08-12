@@ -11,8 +11,6 @@ from app.modules.usuario.application.use_cases.obtener_usuario import ObtenerUsu
 from app.modules.usuario.application.use_cases.obtener_usuario_por_id import ObtenerUsuarioPorIdUseCase
 from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
 from app.modules.usuario.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
-from app.modules.usuario.presentation.schema.login_request import LoginRequest
-from Backend.app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
 
 from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioCreate,
@@ -98,20 +96,4 @@ def eliminar_usuario(
     return caso_uso.execute(
         db,
         id_usuario
-    )
-
-@router.post("/login")
-def login_usuario(
-    datos: LoginRequest,
-    db: Session = Depends(get_db)
-):
-
-    caso_uso = LoginUsuarioUseCase(
-        SqlUsuarioRepository()
-    )
-
-    return caso_uso.execute(
-        db,
-        datos.correo,
-        datos.contrasena
     )

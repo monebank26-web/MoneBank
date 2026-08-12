@@ -1,4 +1,4 @@
-from app.modules.usuario.infrastucture.model.usuario_model import UsuarioModel
+﻿from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
 
 
 class SqlUsuarioRepository:
@@ -74,3 +74,10 @@ class SqlUsuarioRepository:
         return {
             "mensaje": "Usuario eliminado"
         }
+    
+    def get_by_email(self, db, correo):
+        return (
+            db.query(UsuarioModel)
+            .filter(UsuarioModel.correo == correo)
+            .first()
+        )
