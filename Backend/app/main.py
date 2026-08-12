@@ -8,6 +8,9 @@ from app.modules.ahorro.presentation.router.router import router as ahorro_route
 from app.modules.cuenta.presentation.router.router import (
     router as cuenta_router
 )
+from app.modules.transaccion.presentation.router.router import (
+    router as transaccion_router
+)
 
 app = FastAPI(title="MoneBank API")
 
@@ -28,3 +31,4 @@ def root():
 
 app.include_router(ahorro_router)
 app.include_router(cuenta_router)
+app.include_router(transaccion_router)
