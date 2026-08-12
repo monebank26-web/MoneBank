@@ -1,5 +1,5 @@
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
-from app.modules.usuario.infrastucture.model import UsuarioModel
+from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
 
 
 class SqlAuthRepository(AuthRepository):
