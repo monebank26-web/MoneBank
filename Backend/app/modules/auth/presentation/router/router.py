@@ -11,7 +11,19 @@ router = APIRouter(
 )
 
 
-@router.post("/login", response_model=LoginResponse)
+@router.post(
+    "/login",
+    response_model=LoginResponse,
+    summary="Iniciar sesión",
+    description="Autentica un usuario mediante correo y contraseña.",
+    responses={
+        200: {"description": "Login exitoso, devuelve token JWT"},
+        401: {"description": "Credenciales incorrectas"},
+        423: {"description": "Cuenta bloqueada temporalmente"},
+        422: {"description": "Datos inválidos"},
+        500: {"description": "Error interno del servidor"},
+    }
+)
 def login(
     request: LoginRequest,
     db=Depends(get_db),

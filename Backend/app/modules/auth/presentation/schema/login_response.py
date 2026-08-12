@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class UsuarioLoginData(BaseModel):
@@ -13,7 +12,7 @@ class UsuarioLoginData(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    success: bool
-    message: Optional[str] = None
-    token: Optional[str] = None
-    usuario: Optional[UsuarioLoginData] = None
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    usuario_id: int
