@@ -1,21 +1,25 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, field_validator
+
+from app.core.security.password_policy import validate_password
 
 
 class UsuarioCreate(BaseModel):
     nombres: str
     apellidos: str
-    correo: str
+    correo: EmailStr
     contrasena: str
-    estado: str
-    id_rol: int
-    id_tipo_usuario: int
+
+    @field_validator("contrasena")
+    @classmethod
+    def validar_contrasena(cls, value):
+        return validate_password(value)
 
 
 class UsuarioResponse(BaseModel):
     id_usuario: int
     nombres: str
     apellidos: str
-    correo: str
+    correo: EmailStr
 
     class Config:
         from_attributes = True
