@@ -51,3 +51,4 @@ def obtener_transacciones(
             status_code=404,
             detail="No se encontraron transacciones"
         )
+    

@@ -26,7 +26,7 @@ app.include_router(usuario_router)
 
 @app.get("/")
 def root():
-    return {"message": "MoneBank funcionando"}
+    return {"message": "MoneBank Moneando tu dinero"}
 
 
 app.include_router(ahorro_router)
