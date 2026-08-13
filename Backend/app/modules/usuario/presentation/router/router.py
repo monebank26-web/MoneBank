@@ -29,7 +29,7 @@ def crear_usuario(
     db: Session = Depends(get_db)
 ):
 
-    caso_uso = CrearUsuario()
+    caso_uso = CrearUsuario(SqlUsuarioRepository())
 
     return caso_uso.execute(
         db,

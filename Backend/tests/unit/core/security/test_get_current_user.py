@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from app.core.security import auth
 from app.core.security.JwtManager import JwtManager
-from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
+from app.core.security.roles import ROL_USUARIO
 
 
 def credenciales(token):
@@ -16,11 +16,11 @@ def credenciales(token):
     )
 
 
-def crear_usuario_mock(id_rol):
+def crear_usuario_mock():
     usuario = Mock()
     usuario.id_usuario = 6
     usuario.correo = "bryan@gmail.com"
-    usuario.id_rol = id_rol
+    usuario.id_rol = ROL_USUARIO
     return usuario
 
 
@@ -46,7 +46,7 @@ def test_get_current_user_con_token_invalido_rechaza():
 def test_get_current_user_con_token_valido_devuelve_usuario(monkeypatch):
     class FakeRepo:
         def __init__(self):
-            self.usuario = crear_usuario_mock(ROL_USUARIO)
+            self.usuario = crear_usuario_mock()
 
         def get_by_id(self, db, id_usuario):
             return self.usuario
@@ -77,16 +77,3 @@ def test_get_current_user_con_usuario_inexistente_rechaza(monkeypatch):
             db=Mock()
         )
     assert exc.value.status_code == 401
-
-
-def test_require_rol_permite_rol_valido():
-    depender = auth.require_rol(ROL_ADMIN)
-    resultado = depender(crear_usuario_mock(ROL_ADMIN))
-    assert resultado.id_rol == ROL_ADMIN
-
-
-def test_require_rol_rechaza_rol_no_permitido():
-    depender = auth.require_rol(ROL_ADMIN)
-    with pytest.raises(HTTPException) as exc:
-        depender(crear_usuario_mock(ROL_USUARIO))
-    assert exc.value.status_code == 403

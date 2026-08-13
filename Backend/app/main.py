@@ -9,7 +9,11 @@ from app.modules.cuenta.presentation.router.router import (router as cuenta_rout
 from app.modules.auth.presentation.router.router import (router as auth_router)
 
 from app.core.responses import ErrorResponse
-from app.shared.exceptions.business_exceptions import InvalidCredentialsException, AccountLockedException
+from app.shared.exceptions.business_exceptions import (
+    AccountLockedException,
+    EmailAlreadyExistsException,
+    InvalidCredentialsException,
+)
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
 
 app = FastAPI(title="MoneBank API")
@@ -45,6 +49,14 @@ def invalid_credentials_handler(request: Request, exc: InvalidCredentialsExcepti
 def account_locked_handler(request: Request, exc: AccountLockedException):
     return JSONResponse(
         status_code=AccountLockedException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(EmailAlreadyExistsException)
+def email_already_exists_handler(request: Request, exc: EmailAlreadyExistsException):
+    return JSONResponse(
+        status_code=EmailAlreadyExistsException.status_code,
         content=ErrorResponse(message=exc.message).model_dump()
     )
 

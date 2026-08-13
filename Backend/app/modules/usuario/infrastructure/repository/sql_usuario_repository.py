@@ -12,6 +12,14 @@ class SqlUsuarioRepository:
         db.refresh(usuario)
 
         return usuario
+
+    def exists_by_email(self, db, correo):
+        return (
+            db.query(UsuarioModel.id_usuario)
+            .filter(UsuarioModel.correo == correo)
+            .first()
+            is not None
+        )
     
     def get_all(self, db):
         return db.query(UsuarioModel).all()
