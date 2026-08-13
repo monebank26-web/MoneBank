@@ -12,6 +12,10 @@ from app.modules.transaccion.presentation.router.router import (
     router as transaccion_router
 )
 
+from app.modules.transaccion.presentation.router.router import (
+    router as transaccion_router
+)
+
 app = FastAPI(title="MoneBank API")
 
 app.add_middleware(
@@ -29,6 +33,7 @@ def root():
     return {"message": "MoneBank Moneando tu dinero"}
 
 
+app.include_router(usuario_router)
 app.include_router(ahorro_router)
 app.include_router(cuenta_router)
 app.include_router(transaccion_router)
