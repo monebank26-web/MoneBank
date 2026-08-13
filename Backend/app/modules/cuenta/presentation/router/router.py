@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+from app.core.security.auth import get_current_user
 
 from app.modules.cuenta.presentation.schema.cuenta_schema import (
     CuentaCreate,
@@ -20,13 +21,14 @@ from app.modules.cuenta.application.use_cases.obtener_cuenta_por_id import (
     ObtenerCuentaPorIdUseCase
 )
 
-from app.modules.cuenta.infrastucture.repository.sql_cuenta_repository import (
+from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
     SqlCuentaRepository
 )
 
 router = APIRouter(
     prefix="/cuentas",
-    tags=["Cuentas"]
+    tags=["Cuentas"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/", response_model=CuentaResponse)

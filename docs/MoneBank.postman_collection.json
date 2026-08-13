@@ -1,0 +1,468 @@
+{
+  "info": {
+    "_postman_id": "1f9c2e6a-3b4c-4d5e-8f9a-0b1c2d3e4f56",
+    "name": "MoneBank API",
+    "description": "Colección completa de MoneBank. Los endpoints protegidos usan la variable {{token}}, que se llena automáticamente al ejecutar el login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "General",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login de usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.success) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    pm.collectionVariables.set('id_usuario', String(json.usuario.id_usuario));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"bryan@gmail.com\",\n  \"contrasena\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Registro de usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Maria\",\n  \"apellidos\": \"Calderon\",\n  \"correo\": \"maria@monebank.com\",\n  \"contrasena\": \"ClaveSegura123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Obtener todos los usuarios (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener usuario por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{id_usuario}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"brayan\",\n  \"apellidos\": \"reyes\",\n  \"correo\": \"bryan@gmail.com\",\n  \"contrasena\": \"ClaveSegura123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{id_usuario}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar usuario (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{id_usuario}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Crear cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"saldo\": 100000,\n  \"estado\": \"ACTIVA\",\n  \"id_usuario\": {{id_usuario}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cuentas/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener todas las cuentas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cuentas/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener cuenta por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cuentas/{{id_cuenta}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas",
+                "{{id_cuenta}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ahorros",
+      "item": [
+        {
+          "name": "Crear ahorro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Vacaciones\",\n  \"monto_objetivo\": 2000000,\n  \"saldo_inicial\": 0,\n  \"ahorro_automatico\": false,\n  \"estado\": \"ACTIVO\",\n  \"id_tipo_ahorro\": 1,\n  \"id_categoria\": 1,\n  \"id_cuenta\": {{id_cuenta}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ahorros/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ahorros",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener todos los ahorros",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ahorros/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ahorros",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener ahorro por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ahorros/{{id_ahorro}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ahorros",
+                "{{id_ahorro}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actualizar ahorro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Vacaciones 2026\",\n  \"monto_objetivo\": 2500000,\n  \"saldo_inicial\": 100000,\n  \"ahorro_automatico\": true,\n  \"estado\": \"ACTIVO\",\n  \"id_tipo_ahorro\": 1,\n  \"id_categoria\": 1,\n  \"id_cuenta\": {{id_cuenta}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ahorros/{{id_ahorro}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ahorros",
+                "{{id_ahorro}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar ahorro",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ahorros/{{id_ahorro}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ahorros",
+                "{{id_ahorro}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transacciones",
+      "item": [
+        {
+          "name": "Obtener transacciones del usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "id_usuario",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "id_cuenta",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "id_ahorro",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

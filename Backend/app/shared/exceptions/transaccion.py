@@ -1,0 +1,2 @@
+class TransaccionesNoEncontrado(Exception):
+    pass
