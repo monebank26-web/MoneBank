@@ -23,12 +23,19 @@ from app.modules.transaccion.infrastructure.repository.sql_transaccion_repositor
 )
 
 from app.modules.transaccion.presentation.schema.trans_schema import (
-    ListaTransaccionesResponse,
     GastoRequest,
-    GastoResponse
+    GastoResponse,
+    ListaTransaccionesResponse
 )
 
-from app.shared.exceptions.transaccion import TransaccionesNoEncontrado
+from app.shared.exceptions.transaccion import (
+    CategoriaInvalida,
+    CuentaNoEncontrada,
+    CuentaNoPerteneceAlUsuario,
+    FechaInvalida,
+    MontoInvalido,
+    TransaccionesNoEncontrado,
+)
 
 
 router = APIRouter(
@@ -43,19 +50,64 @@ def get_transaccion_repository(
     return SqlTransaccionesRepository(db)
 
 
-@router.post("/gastos", response_model=GastoResponse)
+@router.post(
+    "/gastos",
+    response_model=GastoResponse,
+    status_code=201
+)
 def registrar_gasto(
     gasto: GastoRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: object = Depends(get_current_user),
+    repository: TransaccionRepository = Depends(get_transaccion_repository)
 ):
-    caso_uso = RegistrarGasto(
-        SqlTransaccionesRepository(db)
-    )
+    caso_uso = RegistrarGasto(repository)
 
-    return caso_uso.execute(
-        db,
-        gasto.model_dump()
-    )
+    try:
+        return caso_uso.execute(
+            db,
+            gasto.model_dump(),
+            current_user.id_usuario
+        )
+
+    except HTTPException:
+        raise
+
+    except MontoInvalido:
+        raise HTTPException(
+            status_code=400,
+            detail="El monto del gasto debe ser mayor a 0"
+        )
+
+    except FechaInvalida:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha del gasto no es válida"
+        )
+
+    except CategoriaInvalida:
+        raise HTTPException(
+            status_code=422,
+            detail="La categoría no existe en el catálogo"
+        )
+
+    except CuentaNoEncontrada:
+        raise HTTPException(
+            status_code=404,
+            detail="Cuenta no encontrada"
+        )
+
+    except CuentaNoPerteneceAlUsuario:
+        raise HTTPException(
+            status_code=403,
+            detail="La cuenta no pertenece al usuario autenticado"
+        )
+
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al registrar el gasto"
+        )
 
 
 @router.get(

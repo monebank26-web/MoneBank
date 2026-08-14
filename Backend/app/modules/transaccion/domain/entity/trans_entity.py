@@ -1,5 +1,9 @@
 class Transaccion:
 
+    TIPO_INGRESO = "INGRESO"
+    TIPO_GASTO = "GASTO"
+    TIPO_AHORRO = "AHORRO"
+
     def __init__(
         self,
         id,
@@ -17,7 +21,10 @@ class Transaccion:
         self.categoria = categoria
 
     def es_ingreso(self):
-        return self.tipo == "INGRESO"
+        return self.tipo == self.TIPO_INGRESO
 
     def es_gasto(self):
-        return self.tipo == "GASTO"
+        return self.tipo == self.TIPO_GASTO
+
+    def es_ahorro(self):
+        return self.tipo == self.TIPO_AHORRO
