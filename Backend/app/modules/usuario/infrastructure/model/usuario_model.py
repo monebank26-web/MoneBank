@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, DateTime
 from datetime import date
 
 from app.core.database.base import Base
@@ -22,3 +22,6 @@ class UsuarioModel(Base):
 
     id_rol = Column(Integer)
     id_tipo_usuario = Column(Integer)
+
+    intentos_fallidos = Column(Integer, default=0, nullable=False)
+    bloqueado_hasta = Column(DateTime, nullable=True)

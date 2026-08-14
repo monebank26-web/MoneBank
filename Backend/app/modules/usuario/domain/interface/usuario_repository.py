@@ -15,7 +15,7 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, db, usuario_id, usuario_data):
+    def update(self, usuario_id, usuario_data):
         pass
 
     @abstractmethod

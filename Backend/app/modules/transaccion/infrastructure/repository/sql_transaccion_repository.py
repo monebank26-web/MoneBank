@@ -5,6 +5,9 @@ from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
+from app.modules.transaccion.infrastructure.model.categoria_model import (
+    CategoriaModel
+)
 from app.modules.transaccion.infrastructure.model.transaccion_model import (
     TransaccionModel
 )
@@ -40,3 +43,51 @@ class SqlTransaccionesRepository(TransaccionRepository):
             )
             for registro in registros
         ]
+
+    def create(self, db, transaccion_data):
+
+        transaccion = TransaccionModel(**transaccion_data)
+
+        db.add(transaccion)
+        db.commit()
+        db.refresh(transaccion)
+
+        return transaccion
+
+    def get_cuenta(self, db, id_cuenta):
+
+        return (
+            db.query(CuentaModel)
+            .filter(
+                CuentaModel.id_cuenta == id_cuenta
+            )
+            .first()
+        )
+
+    def existe_categoria(self, db, id_categoria):
+
+        return (
+            db.query(CategoriaModel)
+            .filter(
+                CategoriaModel.id_categoria == id_categoria
+            )
+            .first()
+            is not None
+        )
+
+    def descontar_saldo(self, db, id_cuenta, monto):
+
+        cuenta = self.get_cuenta(
+            db,
+            id_cuenta
+        )
+
+        if not cuenta:
+            return None
+
+        cuenta.saldo -= monto
+
+        db.commit()
+        db.refresh(cuenta)
+
+        return cuenta

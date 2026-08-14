@@ -83,7 +83,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombres\": \"Maria\",\n  \"apellidos\": \"Calderon\",\n  \"correo\": \"maria@monebank.com\",\n  \"contrasena\": \"ClaveSegura123\",\n  \"estado\": \"ACTIVO\",\n  \"id_rol\": 2,\n  \"id_tipo_usuario\": 1\n}"
+              "raw": "{\n  \"nombres\": \"Maria\",\n  \"apellidos\": \"Calderon\",\n  \"correo\": \"maria@monebank.com\",\n  \"contrasena\": \"ClaveSegura123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/usuarios/",
@@ -162,7 +162,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombres\": \"brayan\",\n  \"apellidos\": \"reyes\",\n  \"correo\": \"bryan@gmail.com\",\n  \"contrasena\": \"1234\",\n  \"estado\": \"ACTIVO\",\n  \"id_rol\": 2,\n  \"id_tipo_usuario\": 1\n}"
+              "raw": "{\n  \"nombres\": \"brayan\",\n  \"apellidos\": \"reyes\",\n  \"correo\": \"bryan@gmail.com\",\n  \"contrasena\": \"ClaveSegura123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/usuarios/{{id_usuario}}",
@@ -404,6 +404,33 @@
               "path": [
                 "ahorros",
                 "{{id_ahorro}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transacciones",
+      "item": [
+        {
+          "name": "Obtener transacciones del usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transacciones/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transacciones",
+                ""
               ]
             }
           }

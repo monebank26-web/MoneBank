@@ -1,10 +1,18 @@
-﻿from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
+from sqlalchemy.orm import Session
+
+from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
+from app.modules.usuario.domain.entity.usuario import Usuario
+
+from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
 
 
-class SqlUsuarioRepository:
+
+class SqlUsuarioRepository(UsuarioRepository):
+
+    def __init__(self, db: Session):
+        self.db = db
 
     def create(self, db, usuario_data):
-
         usuario = UsuarioModel(**usuario_data)
 
         db.add(usuario)
@@ -27,13 +35,12 @@ class SqlUsuarioRepository:
     
     def update(
         self,
-        db,
         id_usuario,
         usuario_data
     ):
 
         usuario = (
-            db.query(UsuarioModel)
+            self.db.query(UsuarioModel)
             .filter(
                 UsuarioModel.id_usuario == id_usuario
             )
@@ -46,10 +53,20 @@ class SqlUsuarioRepository:
         for key, value in usuario_data.items():
             setattr(usuario, key, value)
 
-        db.commit()
-        db.refresh(usuario)
+        self.db.commit()
+        self.db.refresh(usuario)
 
-        return usuario
+        return Usuario(
+            id_usuario=usuario.id_usuario,
+            nombres=usuario.nombres,
+            apellidos=usuario.apellidos,
+            correo=usuario.correo,
+            contrasena=usuario.contrasena,
+            estado=usuario.estado,
+            id_rol=usuario.id_rol,
+            id_tipo_usuario=usuario.id_tipo_usuario,
+            fecha_creacion=usuario.fecha_creacion,
+        )
     
     def delete(
         self,
@@ -74,12 +91,10 @@ class SqlUsuarioRepository:
         return {
             "mensaje": "Usuario eliminado"
         }
-    def login(self, db, correo):
-
+    
+    def get_by_email(self, db, correo):
         return (
             db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.correo == correo
-            )
+            .filter(UsuarioModel.correo == correo)
             .first()
         )
