@@ -7,6 +7,9 @@ from app.modules.usuario.presentation.router.router import (router as usuario_ro
 from app.modules.ahorro.presentation.router.router import router as ahorro_router
 from app.modules.cuenta.presentation.router.router import (router as cuenta_router)
 from app.modules.auth.presentation.router.router import (router as auth_router)
+from app.modules.transaccion.presentation.router.router import (
+    router as transaccion_router
+)
 
 from app.core.responses import ErrorResponse
 from app.shared.exceptions.business_exceptions import InvalidCredentialsException, AccountLockedException
@@ -22,16 +25,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(usuario_router)
-app.include_router(auth_router)
-
 @app.get("/")
 def root():
     return {"message": "MoneBank funcionando"}
 
 
+
+app.include_router(usuario_router)
+app.include_router(auth_router)
 app.include_router(ahorro_router)
 app.include_router(cuenta_router)
+app.include_router(transaccion_router)
 
 @app.exception_handler(InvalidCredentialsException)
 def invalid_credentials_handler(request: Request, exc: InvalidCredentialsException):
