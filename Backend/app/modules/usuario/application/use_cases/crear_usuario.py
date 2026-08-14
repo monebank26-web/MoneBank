@@ -1,18 +1,23 @@
-from app.modules.usuario.infrastucture.repository.sql_usuario_repository import (
-    SqlUsuarioRepository
-)
-
-from app.modules.cuenta.infrastucture.model.cuenta_model import (
+from app.modules.cuenta.infrastructure.model.cuenta_model import (
     CuentaModel
 )
 
 
 class CrearUsuario:
 
-    def __init__(self):
-        self.repository = SqlUsuarioRepository()
+    def __init__(self, repository):
+        self.repository = repository
 
     def execute(self, db, usuario_data):
+
+        usuario_data["contrasena"] = PasswordHasher.hash(
+            usuario_data["contrasena"]
+        )
+
+        # Valores automáticos del usuario
+        usuario_data["estado"] = "ACTIVO"
+        usuario_data["id_rol"] = 2
+        usuario_data["id_tipo_usuario"] = 3
 
         usuario = self.repository.create(
             db,

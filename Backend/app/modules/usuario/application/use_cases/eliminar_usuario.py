@@ -4,7 +4,24 @@ class EliminarUsuarioUseCase:
         self.repository = repository
 
     def execute(self, db, id_usuario):
-        return self.repository.delete(
-            db,
-            id_usuario
-        )
+
+        if id_usuario <= 0:
+            return {
+                "success": False,
+                "message": "Id inválido"
+            }
+    
+        usuario = self.repository.get_by_id(db, id_usuario)
+
+        if not usuario:
+            return {
+                "success": False,
+                "message": "Usuario no encontrado"
+            }
+
+        self.repository.delete(db, id_usuario)
+
+        return {
+            "success": True,
+            "message": "Usuario eliminado correctamente"
+        }
