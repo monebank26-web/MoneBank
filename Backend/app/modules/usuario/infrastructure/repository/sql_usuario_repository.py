@@ -91,12 +91,10 @@ class SqlUsuarioRepository(UsuarioRepository):
         return {
             "mensaje": "Usuario eliminado"
         }
-    def login(self, db, correo):
-
+    
+    def get_by_email(self, db, correo):
         return (
             db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.correo == correo
-            )
+            .filter(UsuarioModel.correo == correo)
             .first()
         )
