@@ -18,9 +18,6 @@ class SqlAuthRepository(AuthRepository):
     def login(self, correo):
         return self.usuario_repository.get_by_email(self.db, correo)
 
-    def get_by_email(self, correo):
-        return self.usuario_repository.get_by_email(self.db, correo)
-
     def register_failed_attempt(self, usuario_id):
         usuario = (
             self.db.query(UsuarioModel)

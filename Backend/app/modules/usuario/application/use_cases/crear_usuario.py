@@ -1,6 +1,9 @@
+from app.core.security.PasswordHasher import PasswordHasher
+from app.core.security.roles import ROL_USUARIO, INDEPENDIENTE
 from app.modules.cuenta.infrastructure.model.cuenta_model import (
     CuentaModel
 )
+from app.shared.exceptions.business_exceptions import EmailAlreadyExistsException
 
 
 class CrearUsuario:
@@ -10,14 +13,16 @@ class CrearUsuario:
 
     def execute(self, db, usuario_data):
 
+        if self.repository.exists_by_email(db, usuario_data["correo"]):
+            raise EmailAlreadyExistsException()
+
         usuario_data["contrasena"] = PasswordHasher.hash(
             usuario_data["contrasena"]
         )
 
-        # Valores automáticos del usuario
         usuario_data["estado"] = "ACTIVO"
-        usuario_data["id_rol"] = 2
-        usuario_data["id_tipo_usuario"] = 3
+        usuario_data["id_rol"] = ROL_USUARIO
+        usuario_data["id_tipo_usuario"] = INDEPENDIENTE
 
         usuario = self.repository.create(
             db,

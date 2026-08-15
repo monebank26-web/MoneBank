@@ -14,3 +14,12 @@ class AccountLockedException(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class EmailAlreadyExistsException(Exception):
+    status_code = 409
+    description = "El correo ya está registrado"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)

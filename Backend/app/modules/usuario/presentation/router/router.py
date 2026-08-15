@@ -14,7 +14,6 @@ from app.modules.usuario.application.use_cases.eliminar_usuario import EliminarU
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 
-from app.modules.usuario.presentation.schema.login_request import LoginRequest
 from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioCreate,
     UsuarioResponse,
@@ -39,7 +38,7 @@ def crear_usuario(
     db: Session = Depends(get_db)
 ):
 
-    caso_uso = CrearUsuario()
+    caso_uso = CrearUsuario(SqlUsuarioRepository())
 
     return caso_uso.execute(
         db,

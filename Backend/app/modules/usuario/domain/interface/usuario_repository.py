@@ -7,6 +7,10 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
+    def exists_by_email(self, db, correo):
+        pass
+
+    @abstractmethod
     def get_all(self, db):
         pass
 

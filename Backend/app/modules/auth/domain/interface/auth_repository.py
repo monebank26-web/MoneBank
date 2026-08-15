@@ -21,11 +21,6 @@ class AuthRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_email(self, correo):
-        """Debe devolver el usuario que coincide con ese correo, o None."""
-        pass
-
-    @abstractmethod
     def reset_failed_attempts(self, usuario_id):
         """Debe poner a cero los intentos fallidos del usuario
         y limpiar el bloqueo temporal tras un login exitoso."""
