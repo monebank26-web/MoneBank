@@ -45,14 +45,14 @@ def test_get_current_user_con_token_invalido_rechaza():
 
 def test_get_current_user_con_token_valido_devuelve_usuario(monkeypatch):
     class FakeRepo:
-        def __init__(self):
+        def __init__(self, db):
             self.usuario = crear_usuario_mock()
 
-        def get_by_id(self, db, id_usuario):
+        def get_by_id(self, id_usuario):
             return self.usuario
 
-    fake = FakeRepo()
-    monkeypatch.setattr(auth, "SqlUsuarioRepository", lambda: fake)
+    fake = FakeRepo(None)
+    monkeypatch.setattr(auth, "SqlUsuarioRepository", lambda db: fake)
 
     token = crear_token(6)
     resultado = auth.get_current_user(
@@ -65,7 +65,10 @@ def test_get_current_user_con_token_valido_devuelve_usuario(monkeypatch):
 
 def test_get_current_user_con_usuario_inexistente_rechaza(monkeypatch):
     class FakeRepo:
-        def get_by_id(self, db, id_usuario):
+        def __init__(self, db):
+            pass
+
+        def get_by_id(self, id_usuario):
             return None
 
     monkeypatch.setattr(auth, "SqlUsuarioRepository", FakeRepo)

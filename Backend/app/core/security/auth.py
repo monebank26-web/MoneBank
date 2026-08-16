@@ -35,10 +35,8 @@ def get_current_user(
             detail="Token inválido o expirado"
         )
 
-    usuario = SqlUsuarioRepository().get_by_id(
-        db,
-        int(payload["sub"])
-    )
+    repository = SqlUsuarioRepository(db)
+    usuario = repository.get_by_id(int(payload["sub"]))
 
     if not usuario:
         raise HTTPException(

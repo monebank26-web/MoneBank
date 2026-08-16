@@ -32,9 +32,9 @@ class SqlUsuarioRepository(UsuarioRepository):
     def get_all(self, db):
         return db.query(UsuarioModel).all()
     
-    def get_by_id(self, db, id_usuario):
+    def get_by_id(self, id_usuario):
         return (
-            db.query(UsuarioModel)
+            self.db.query(UsuarioModel)
             .filter(
                 UsuarioModel.id_usuario == id_usuario
             )
@@ -100,9 +100,26 @@ class SqlUsuarioRepository(UsuarioRepository):
             "mensaje": "Usuario eliminado"
         }
     
-    def get_by_email(self, db, correo):
+    def get_by_email(self, correo):
         return (
-            db.query(UsuarioModel)
+            self.db.query(UsuarioModel)
             .filter(UsuarioModel.correo == correo)
             .first()
         )
+
+    def update_auth_fields(self, usuario_id, intentos_fallidos, bloqueado_hasta):
+        usuario = (
+            self.db.query(UsuarioModel)
+            .filter(UsuarioModel.id_usuario == usuario_id)
+            .first()
+        )
+
+        if not usuario:
+            return None
+
+        usuario.intentos_fallidos = intentos_fallidos
+        usuario.bloqueado_hasta = bloqueado_hasta
+
+        self.db.commit()
+        self.db.refresh(usuario)
+        return usuario

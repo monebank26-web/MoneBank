@@ -4,4 +4,4 @@ class ObtenerUsuarioPorIdUseCase:
         self.repository = repository
 
     def execute(self, db, id_usuario):
-        return self.repository.get_by_id(db, id_usuario)
+        return self.repository.get_by_id(id_usuario)

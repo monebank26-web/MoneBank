@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.dependencies.database import get_db
+from app.core.database.connection import get_db
 from app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
 from app.modules.auth.infrastructure.repository.sql_auth_repository import SqlAuthRepository
 from app.modules.auth.presentation.schema.login_request import LoginRequest
 from app.modules.auth.presentation.schema.login_response import LoginResponse
+from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
+from app.modules.usuario.presentation.router import get_usuario_repository
 
 from app.shared.exceptions.business_exceptions import InvalidCredentialsException, AccountLockedException
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
@@ -19,9 +21,10 @@ router = APIRouter(
 
 
 def get_auth_repository(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_repository: UsuarioRepository = Depends(get_usuario_repository)
 ) -> AuthRepository:
-    return SqlAuthRepository(db)
+    return SqlAuthRepository(db, usuario_repository)
 
 
 @router.post(

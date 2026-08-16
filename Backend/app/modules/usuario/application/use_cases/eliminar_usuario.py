@@ -11,7 +11,7 @@ class EliminarUsuarioUseCase:
                 "message": "Id inválido"
             }
     
-        usuario = self.repository.get_by_id(db, id_usuario)
+        usuario = self.repository.get_by_id(id_usuario)
 
         if not usuario:
             return {

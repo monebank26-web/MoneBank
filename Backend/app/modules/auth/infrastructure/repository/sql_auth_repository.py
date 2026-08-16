@@ -2,52 +2,44 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
-from app.core.constants import MAX_INTENTOS, MINUTOS_BLOQUEO
+from app.core.constants import MINUTOS_BLOQUEO
 from app.modules.auth.domain.entity.intento_autenticacion import IntentoAutenticacion
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
-from app.modules.usuario.infrastructure.repository.sql_usuario_repository import SqlUsuarioRepository
-from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
+from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 
 
 class SqlAuthRepository(AuthRepository):
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, usuario_repository: UsuarioRepository):
         self.db = db
-        self.usuario_repository = SqlUsuarioRepository()
+        self.usuario_repository = usuario_repository
 
     def login(self, correo):
-        return self.usuario_repository.get_by_email(self.db, correo)
+        return self.usuario_repository.get_by_email(correo)
 
     def register_failed_attempt(self, usuario_id):
-        usuario = (
-            self.db.query(UsuarioModel)
-            .filter(UsuarioModel.id_usuario == usuario_id)
-            .first()
-        )
+        usuario = self.usuario_repository.get_by_id(usuario_id)
 
         if not usuario:
             return None
 
-        usuario.intentos_fallidos = (usuario.intentos_fallidos or 0) + 1
+        nuevos_intentos = (usuario.intentos_fallidos or 0) + 1
+        bloqueado_hasta = usuario.bloqueado_hasta
 
         intento = IntentoAutenticacion(
-            usuario.intentos_fallidos,
+            nuevos_intentos,
             usuario.bloqueado_hasta
         )
 
         if intento.debe_bloquearse():
-            usuario.bloqueado_hasta = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_BLOQUEO)
+            bloqueado_hasta = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_BLOQUEO)
 
-        self.db.commit()
-        self.db.refresh(usuario)
-        return usuario
+        return self.usuario_repository.update_auth_fields(
+            usuario_id, nuevos_intentos, bloqueado_hasta
+        )
 
     def is_locked(self, usuario_id):
-        usuario = (
-            self.db.query(UsuarioModel)
-            .filter(UsuarioModel.id_usuario == usuario_id)
-            .first()
-        )
+        usuario = self.usuario_repository.get_by_id(usuario_id)
 
         if not usuario:
             return False
@@ -58,18 +50,4 @@ class SqlAuthRepository(AuthRepository):
         ).esta_bloqueado()
 
     def reset_failed_attempts(self, usuario_id):
-        usuario = (
-            self.db.query(UsuarioModel)
-            .filter(UsuarioModel.id_usuario == usuario_id)
-            .first()
-        )
-
-        if not usuario:
-            return None
-
-        usuario.intentos_fallidos = 0
-        usuario.bloqueado_hasta = None
-
-        self.db.commit()
-        self.db.refresh(usuario)
-        return usuario
+        return self.usuario_repository.update_auth_fields(usuario_id, 0, None)
