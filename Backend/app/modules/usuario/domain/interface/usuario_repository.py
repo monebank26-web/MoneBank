@@ -33,3 +33,7 @@ class UsuarioRepository(ABC):
     @abstractmethod
     def update_auth_fields(self, usuario_id, intentos_fallidos, bloqueado_hasta):
         pass
+
+    @abstractmethod
+    def update_password(self, usuario_id, nuevo_hash):
+        pass

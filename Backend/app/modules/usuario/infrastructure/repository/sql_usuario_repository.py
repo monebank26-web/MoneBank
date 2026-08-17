@@ -123,3 +123,19 @@ class SqlUsuarioRepository(UsuarioRepository):
         self.db.commit()
         self.db.refresh(usuario)
         return usuario
+
+    def update_password(self, usuario_id, nuevo_hash):
+        usuario = (
+            self.db.query(UsuarioModel)
+            .filter(UsuarioModel.id_usuario == usuario_id)
+            .first()
+        )
+
+        if not usuario:
+            return None
+
+        usuario.contrasena = nuevo_hash
+
+        self.db.commit()
+        self.db.refresh(usuario)
+        return usuario

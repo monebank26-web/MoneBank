@@ -15,7 +15,9 @@ from app.core.responses import ErrorResponse
 from app.shared.exceptions.business_exceptions import (
     AccountLockedException,
     EmailAlreadyExistsException,
+    EmailNotFoundException,
     InvalidCredentialsException,
+    InvalidOrExpiredTokenException,
 )
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
 
@@ -61,6 +63,22 @@ def account_locked_handler(request: Request, exc: AccountLockedException):
 def email_already_exists_handler(request: Request, exc: EmailAlreadyExistsException):
     return JSONResponse(
         status_code=EmailAlreadyExistsException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(EmailNotFoundException)
+def email_not_found_handler(request: Request, exc: EmailNotFoundException):
+    return JSONResponse(
+        status_code=EmailNotFoundException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(InvalidOrExpiredTokenException)
+def invalid_or_expired_token_handler(request: Request, exc: InvalidOrExpiredTokenException):
+    return JSONResponse(
+        status_code=InvalidOrExpiredTokenException.status_code,
         content=ErrorResponse(message=exc.message).model_dump()
     )
 
