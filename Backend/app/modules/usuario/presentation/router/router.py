@@ -89,10 +89,18 @@ def actualizar_usuario(
 
     caso_uso = ActualizarUsuarioUseCase(repository)
 
-    return caso_uso.execute(
-        id_usuario,
-        usuario.model_dump(exclude_unset=True)
-    )
+    try:
+        return caso_uso.execute(
+            id_usuario,
+            usuario.model_dump(exclude_unset=True)
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al actualizar usuario: {str(e)}"
+        )
 
 @router.delete("/{id_usuario}")
 def eliminar_usuario(

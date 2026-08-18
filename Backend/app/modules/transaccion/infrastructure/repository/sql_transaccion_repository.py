@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
@@ -28,6 +29,9 @@ class SqlTransaccionesRepository(TransaccionRepository):
             )
             .filter(
                 CuentaModel.id_usuario == usuario_id
+            )
+            .order_by(
+                CuentaModel.fecha_creacion.desc()
             )
             .all()
         )

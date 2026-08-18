@@ -18,6 +18,7 @@ from app.shared.exceptions.business_exceptions import (
     EmailNotFoundException,
     InvalidCredentialsException,
     InvalidOrExpiredTokenException,
+    UsuarioNotFoundException,
 )
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
 
@@ -79,6 +80,14 @@ def email_not_found_handler(request: Request, exc: EmailNotFoundException):
 def invalid_or_expired_token_handler(request: Request, exc: InvalidOrExpiredTokenException):
     return JSONResponse(
         status_code=InvalidOrExpiredTokenException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(UsuarioNotFoundException)
+def usuario_not_found_handler(request: Request, exc: UsuarioNotFoundException):
+    return JSONResponse(
+        status_code=UsuarioNotFoundException.status_code,
         content=ErrorResponse(message=exc.message).model_dump()
     )
 
