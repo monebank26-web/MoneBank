@@ -14,7 +14,7 @@ from app.modules.auth.presentation.schema.login_response import LoginResponse
 from app.modules.auth.presentation.schema.password_recovery_request import ( PasswordRecoveryRequest, PasswordRecoveryConfirmRequest)
 from app.modules.auth.presentation.schema.password_recovery_response import PasswordRecoveryResponse
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.modules.usuario.presentation.router.router import get_usuario_repository
+from app.core.security.auth import get_usuario_repository
 
 from app.shared.exceptions.business_exceptions import (InvalidCredentialsException, AccountLockedException,EmailNotFoundException, InvalidOrExpiredTokenException)
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
