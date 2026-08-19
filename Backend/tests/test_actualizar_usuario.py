@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
+from app.shared.exceptions.business_exceptions import UsuarioNotFoundException
 
 
 def test_execute_actualiza_usuario():
@@ -9,7 +10,6 @@ def test_execute_actualiza_usuario():
     repository = MagicMock()
     use_case = ActualizarUsuarioUseCase(repository)
 
-    db = MagicMock()
     id_usuario = 1
     usuario_data = {
         "nombre": "Juan",
@@ -25,14 +25,13 @@ def test_execute_actualiza_usuario():
     repository.update.return_value = resultado_esperado
 
     # Act
-    resultado = use_case.execute(db, id_usuario, usuario_data)
+    resultado = use_case.execute(id_usuario, usuario_data)
 
     # Assert
     repository.update.assert_called_once_with(
-        db,
         id_usuario,
-        usuario_data
-    )
+          usuario_data)
+    
     assert resultado == resultado_esperado
 
 
@@ -45,8 +44,14 @@ def test_execute_lanza_excepcion():
 
     # Act & Assert
     with pytest.raises(Exception, match="Error al actualizar"):
-        use_case.execute(
-            MagicMock(),
-            1,
-            {"nombre": "Juan"}
-        )
+        use_case.execute(1, {"nombre": "Juan"})
+
+
+def test_execute_lanza_excepcion_usuario_no_encontrado():
+    repository = MagicMock()
+    use_case = ActualizarUsuarioUseCase(repository)
+
+    repository.update.return_value = None
+
+    with pytest.raises(UsuarioNotFoundException):
+        use_case.execute(999, {"nombre": "Juan"})

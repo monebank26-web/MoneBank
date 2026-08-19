@@ -7,7 +7,6 @@ def test_obtener_cuentas_exitosamente():
 
     # Arrange
     repository = Mock()
-    db = Mock()
 
     cuentas_mock = [
         {
@@ -22,9 +21,9 @@ def test_obtener_cuentas_exitosamente():
     use_case = ObtenerCuentasUseCase(repository)
 
     # Act
-    resultado = use_case.execute(db)
+    resultado = use_case.execute()
 
     # Assert
     assert resultado == cuentas_mock
 
-    repository.get_all.assert_called_once_with(db)
+    repository.get_all.assert_called_once_with()
