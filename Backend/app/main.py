@@ -12,7 +12,13 @@ from app.modules.transaccion.presentation.router.router import (
 )
 
 from app.core.responses import ErrorResponse
-from app.shared.exceptions.business_exceptions import InvalidCredentialsException, AccountLockedException
+from app.shared.exceptions.business_exceptions import (
+    AccountLockedException,
+    EmailAlreadyExistsException,
+    EmailNotFoundException,
+    InvalidCredentialsException,
+    InvalidOrExpiredTokenException,
+)
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
 
 app = FastAPI(title="MoneBank API")
@@ -27,7 +33,7 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "MoneBank funcionando"}
+    return {"message": "MoneBank monenando tu dinero."}
 
 
 
@@ -49,6 +55,30 @@ def invalid_credentials_handler(request: Request, exc: InvalidCredentialsExcepti
 def account_locked_handler(request: Request, exc: AccountLockedException):
     return JSONResponse(
         status_code=AccountLockedException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(EmailAlreadyExistsException)
+def email_already_exists_handler(request: Request, exc: EmailAlreadyExistsException):
+    return JSONResponse(
+        status_code=EmailAlreadyExistsException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(EmailNotFoundException)
+def email_not_found_handler(request: Request, exc: EmailNotFoundException):
+    return JSONResponse(
+        status_code=EmailNotFoundException.status_code,
+        content=ErrorResponse(message=exc.message).model_dump()
+    )
+
+
+@app.exception_handler(InvalidOrExpiredTokenException)
+def invalid_or_expired_token_handler(request: Request, exc: InvalidOrExpiredTokenException):
+    return JSONResponse(
+        status_code=InvalidOrExpiredTokenException.status_code,
         content=ErrorResponse(message=exc.message).model_dump()
     )
 

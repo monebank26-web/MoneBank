@@ -29,7 +29,7 @@ def test_debe_retornar_error_si_el_usuario_no_existe():
 
     resultado = use_case.execute(db, 1)
 
-    repository.get_by_id.assert_called_once_with(db, 1)
+    repository.get_by_id.assert_called_once_with(1)
     repository.delete.assert_not_called()
 
     assert resultado == {
@@ -51,7 +51,7 @@ def test_debe_eliminar_usuario_correctamente():
 
     resultado = use_case.execute(db, 1)
 
-    repository.get_by_id.assert_called_once_with(db, 1)
+    repository.get_by_id.assert_called_once_with(1)
     repository.delete.assert_called_once_with(db, 1)
 
     assert resultado == {

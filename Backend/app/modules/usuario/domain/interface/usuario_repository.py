@@ -7,11 +7,15 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
+    def exists_by_email(self, db, correo):
+        pass
+
+    @abstractmethod
     def get_all(self, db):
         pass
 
     @abstractmethod
-    def get_by_id(self, db, usuario_id):
+    def get_by_id(self, usuario_id):
         pass
 
     @abstractmethod
@@ -23,5 +27,13 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def login(self, db, correo):
+    def get_by_email(self, correo):
+        pass
+
+    @abstractmethod
+    def update_auth_fields(self, usuario_id, intentos_fallidos, bloqueado_hasta):
+        pass
+
+    @abstractmethod
+    def update_password(self, usuario_id, nuevo_hash):
         pass
