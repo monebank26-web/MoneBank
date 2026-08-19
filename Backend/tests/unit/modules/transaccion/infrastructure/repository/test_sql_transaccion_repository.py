@@ -27,7 +27,7 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
     registro.descripcion = "Salario"
     registro.id_categoria = 3
 
-    db.query.return_value.join.return_value.filter.return_value.all.return_value = [
+    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = [
         registro
     ]
 
@@ -38,7 +38,8 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
     db.query.assert_called_once()
     db.query.return_value.join.assert_called_once()
     db.query.return_value.join.return_value.filter.assert_called_once()
-    db.query.return_value.join.return_value.filter.return_value.all.assert_called_once()
+    db.query.return_value.join.return_value.filter.return_value.order_by.assert_called_once()
+    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.assert_called_once()
 
     assert len(resultado) == 1
     assert isinstance(resultado[0], Transaccion)
@@ -53,7 +54,7 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
 def test_find_by_usuario_sin_registros_retorna_lista_vacia():
 
     db = Mock()
-    db.query.return_value.join.return_value.filter.return_value.all.return_value = []
+    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = []
 
     resultado = SqlTransaccionesRepository(db).find_by_usuario(
         6
@@ -91,7 +92,6 @@ def test_create_guarda_y_retorna_la_transaccion():
         modelo_mock.return_value = transaccion_guardada
 
         resultado = SqlTransaccionesRepository(db).create(
-            db,
             datos
         )
 
@@ -114,7 +114,6 @@ def test_descontar_saldo_resta_el_monto_de_la_cuenta():
     db.query.return_value.filter.return_value.first.return_value = cuenta
 
     resultado = SqlTransaccionesRepository(db).descontar_saldo(
-        db,
         1,
         Decimal("20000.00")
     )

@@ -1,22 +1,26 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
 
 from jose import JWTError
 
 from app.core.database.connection import get_db
 from app.core.security.JwtManager import JwtManager
-from app.modules.usuario.infrastructure.repository.sql_usuario_repository import (
-    SqlUsuarioRepository
-)
+from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
+from app.modules.usuario.infrastructure.repository.sql_usuario_repository import SqlUsuarioRepository
 
 
 security = HTTPBearer(auto_error=False)
 
 
+def get_usuario_repository(
+    db=Depends(get_db),
+) -> UsuarioRepository:
+    return SqlUsuarioRepository(db)
+
+
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db),
+    repository: UsuarioRepository = Depends(get_usuario_repository),
 ):
 
     if not credentials:
@@ -35,7 +39,6 @@ def get_current_user(
             detail="Token inválido o expirado"
         )
 
-    repository = SqlUsuarioRepository(db)
     usuario = repository.get_by_id(int(payload["sub"]))
 
     if not usuario:

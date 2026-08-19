@@ -4,7 +4,7 @@ from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
-from app.shared.exceptions.transaccion import (
+from app.shared.exceptions.business_exceptions import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
@@ -18,7 +18,7 @@ class RegistrarGasto:
     def __init__(self, repository: TransaccionRepository):
         self.repository = repository
 
-    def execute(self, db, transaccion_data, id_usuario):
+    def execute(self, transaccion_data, id_usuario):
 
         transaccion = Transaccion(
             id=None,
@@ -39,13 +39,11 @@ class RegistrarGasto:
             raise FechaInvalida()
 
         if not self.repository.existe_categoria(
-            db,
             transaccion.categoria
         ):
             raise CategoriaInvalida()
 
         cuenta = self.repository.get_cuenta(
-            db,
             transaccion_data["id_cuenta"]
         )
 
@@ -57,13 +55,9 @@ class RegistrarGasto:
 
         transaccion_data["tipo"] = Transaccion.TIPO_GASTO
 
-        gasto = self.repository.create(
-            db,
-            transaccion_data
-        )
+        gasto = self.repository.create(transaccion_data)
 
         self.repository.descontar_saldo(
-            db,
             transaccion_data["id_cuenta"],
             transaccion_data["monto"]
         )

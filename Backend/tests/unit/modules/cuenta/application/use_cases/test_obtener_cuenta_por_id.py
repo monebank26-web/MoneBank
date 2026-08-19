@@ -4,10 +4,10 @@ from app.modules.cuenta.application.use_cases.obtener_cuenta_por_id import (
     ObtenerCuentaPorIdUseCase
 )
 
+
 def test_debe_obtener_cuenta_por_id():
 
     repository = Mock()
-    db = Mock()
 
     cuenta = {
         "id": 1,
@@ -18,9 +18,9 @@ def test_debe_obtener_cuenta_por_id():
 
     use_case = ObtenerCuentaPorIdUseCase(repository)
 
-    resultado = use_case.execute(db, 1)
+    resultado = use_case.execute(1)
 
-    repository.get_by_id.assert_called_once_with(db, 1)
+    repository.get_by_id.assert_called_once_with(1)
 
     assert resultado["success"] is True
     assert resultado["cuenta"] == cuenta

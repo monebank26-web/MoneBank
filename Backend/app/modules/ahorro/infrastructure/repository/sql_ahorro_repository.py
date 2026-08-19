@@ -1,46 +1,38 @@
-﻿from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
+﻿from sqlalchemy.orm import Session
+
+from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
+from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 
 
-class SqlAhorroRepository:
+class SqlAhorroRepository(AhorroRepository):
 
-    def create(self, db, ahorro_data):
+    def __init__(self, db: Session):
+        self.db = db
 
+    def create(self, ahorro_data):
         ahorro = AhorroModel(
             **ahorro_data,
             saldo_actual=ahorro_data["saldo_inicial"]
         )
-
-        db.add(ahorro)
-        db.commit()
-        db.refresh(ahorro)
-
+        self.db.add(ahorro)
+        self.db.commit()
+        self.db.refresh(ahorro)
         return ahorro
 
-    def get_all(self, db):
-        return db.query(AhorroModel).all()
+    def get_all(self):
+        return self.db.query(AhorroModel).all()
 
-    def get_by_id(self, db, id_ahorro):
-
+    def get_by_id(self, id_ahorro):
         return (
-            db.query(AhorroModel)
-            .filter(
-                AhorroModel.id_ahorro == id_ahorro
-            )
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_ahorro == id_ahorro)
             .first()
         )
 
-    def update(
-        self,
-        db,
-        id_ahorro,
-        ahorro_data
-    ):
-
+    def update(self, id_ahorro, ahorro_data):
         ahorro = (
-            db.query(AhorroModel)
-            .filter(
-                AhorroModel.id_ahorro == id_ahorro
-            )
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_ahorro == id_ahorro)
             .first()
         )
 
@@ -50,31 +42,21 @@ class SqlAhorroRepository:
         for key, value in ahorro_data.items():
             setattr(ahorro, key, value)
 
-        db.commit()
-        db.refresh(ahorro)
-
+        self.db.commit()
+        self.db.refresh(ahorro)
         return ahorro
 
-    def delete(
-        self,
-        db,
-        id_ahorro
-    ):
-
+    def delete(self, id_ahorro):
         ahorro = (
-            db.query(AhorroModel)
-            .filter(
-                AhorroModel.id_ahorro == id_ahorro
-            )
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_ahorro == id_ahorro)
             .first()
         )
 
         if not ahorro:
-            None
+            return None
 
-        db.delete(ahorro)
-        db.commit()
+        self.db.delete(ahorro)
+        self.db.commit()
 
-        return {
-            "mensaje": "Ahorro eliminado"
-        }
+        return {"mensaje": "Ahorro eliminado"}

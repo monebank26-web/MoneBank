@@ -20,19 +20,14 @@ class SqlTransaccionesRepository(TransaccionRepository):
         self.db = db
 
     def find_by_usuario(self, usuario_id):
-
         registros = (
             self.db.query(TransaccionModel)
             .join(
                 CuentaModel,
                 CuentaModel.id_cuenta == TransaccionModel.id_cuenta
             )
-            .filter(
-                CuentaModel.id_usuario == usuario_id
-            )
-            .order_by(
-                CuentaModel.fecha_creacion.desc()
-            )
+            .filter(CuentaModel.id_usuario == usuario_id)
+            .order_by(CuentaModel.fecha_creacion.desc())
             .all()
         )
 
@@ -48,50 +43,35 @@ class SqlTransaccionesRepository(TransaccionRepository):
             for registro in registros
         ]
 
-    def create(self, db, transaccion_data):
-
+    def create(self, transaccion_data):
         transaccion = TransaccionModel(**transaccion_data)
-
-        db.add(transaccion)
-        db.commit()
-        db.refresh(transaccion)
-
+        self.db.add(transaccion)
+        self.db.commit()
+        self.db.refresh(transaccion)
         return transaccion
 
-    def get_cuenta(self, db, id_cuenta):
-
+    def get_cuenta(self, id_cuenta):
         return (
-            db.query(CuentaModel)
-            .filter(
-                CuentaModel.id_cuenta == id_cuenta
-            )
+            self.db.query(CuentaModel)
+            .filter(CuentaModel.id_cuenta == id_cuenta)
             .first()
         )
 
-    def existe_categoria(self, db, id_categoria):
-
+    def existe_categoria(self, id_categoria):
         return (
-            db.query(CategoriaModel)
-            .filter(
-                CategoriaModel.id_categoria == id_categoria
-            )
+            self.db.query(CategoriaModel)
+            .filter(CategoriaModel.id_categoria == id_categoria)
             .first()
             is not None
         )
 
-    def descontar_saldo(self, db, id_cuenta, monto):
-
-        cuenta = self.get_cuenta(
-            db,
-            id_cuenta
-        )
+    def descontar_saldo(self, id_cuenta, monto):
+        cuenta = self.get_cuenta(id_cuenta)
 
         if not cuenta:
             return None
 
         cuenta.saldo -= monto
-
-        db.commit()
-        db.refresh(cuenta)
-
+        self.db.commit()
+        self.db.refresh(cuenta)
         return cuenta

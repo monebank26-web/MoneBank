@@ -30,7 +30,7 @@ def crear_token(id_usuario):
 
 def test_get_current_user_sin_header_rechaza():
     with pytest.raises(HTTPException) as exc:
-        auth.get_current_user(credentials=None, db=Mock())
+        auth.get_current_user(credentials=None, repository=Mock())
     assert exc.value.status_code == 401
 
 
@@ -38,45 +38,33 @@ def test_get_current_user_con_token_invalido_rechaza():
     with pytest.raises(HTTPException) as exc:
         auth.get_current_user(
             credentials=credenciales("token-invalido"),
-            db=Mock()
+            repository=Mock()
         )
     assert exc.value.status_code == 401
 
 
-def test_get_current_user_con_token_valido_devuelve_usuario(monkeypatch):
-    class FakeRepo:
-        def __init__(self, db):
-            self.usuario = crear_usuario_mock()
-
-        def get_by_id(self, id_usuario):
-            return self.usuario
-
-    fake = FakeRepo(None)
-    monkeypatch.setattr(auth, "SqlUsuarioRepository", lambda db: fake)
+def test_get_current_user_con_token_valido_devuelve_usuario():
+    repository = Mock()
+    repository.get_by_id.return_value = crear_usuario_mock()
 
     token = crear_token(6)
     resultado = auth.get_current_user(
         credentials=credenciales(token),
-        db=Mock()
+        repository=repository
     )
 
-    assert resultado is fake.usuario
+    repository.get_by_id.assert_called_once_with(6)
+    assert resultado.id_usuario == 6
 
 
-def test_get_current_user_con_usuario_inexistente_rechaza(monkeypatch):
-    class FakeRepo:
-        def __init__(self, db):
-            pass
-
-        def get_by_id(self, id_usuario):
-            return None
-
-    monkeypatch.setattr(auth, "SqlUsuarioRepository", FakeRepo)
+def test_get_current_user_con_usuario_inexistente_rechaza():
+    repository = Mock()
+    repository.get_by_id.return_value = None
 
     token = crear_token(99)
     with pytest.raises(HTTPException) as exc:
         auth.get_current_user(
             credentials=credenciales(token),
-            db=Mock()
+            repository=repository
         )
     assert exc.value.status_code == 401

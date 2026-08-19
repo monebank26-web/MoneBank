@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
-from app.core.database.connection import get_db
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
 
@@ -20,10 +18,18 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioUpdate
 )
 
+from app.core.database.connection import get_db
+from sqlalchemy.orm import Session
+
+from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
+from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
+
+
 router = APIRouter(
     prefix="/usuarios",
     tags=["Usuarios"]
 )
+
 
 def get_usuario_repository(
     db: Session = Depends(get_db)
@@ -31,56 +37,48 @@ def get_usuario_repository(
     return SqlUsuarioRepository(db)
 
 
+def get_cuenta_repository(
+    db: Session = Depends(get_db)
+) -> CuentaRepository:
+    return SqlCuentaRepository(db)
+
 
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(
     usuario: UsuarioCreate,
-    db: Session = Depends(get_db)
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
+    caso_uso = CrearUsuario(repository, cuenta_repository)
+    return caso_uso.execute(usuario.model_dump())
 
-    caso_uso = CrearUsuario(SqlUsuarioRepository(db))
-
-    return caso_uso.execute(
-        db,
-        usuario.model_dump()
-    )
 
 @router.get("/")
 def obtener_usuarios(
-    db: Session = Depends(get_db),
-    current_user: object = Depends(require_rol(ROL_ADMIN))
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
 ):
-    caso_uso = ObtenerUsuariosUseCase(
-        SqlUsuarioRepository()
-    )
+    caso_uso = ObtenerUsuariosUseCase(repository)
+    return caso_uso.execute()
 
-
-    return caso_uso.execute(db)
 
 @router.get("/{id_usuario}")
 def obtener_usuario_por_id(
     id_usuario: int,
-    db: Session = Depends(get_db),
-    current_user: object = Depends(get_current_user)
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    current_user: object = Depends(get_current_user),
 ):
+    caso_uso = ObtenerUsuarioPorIdUseCase(repository)
+    return caso_uso.execute(id_usuario)
 
-    caso_uso = ObtenerUsuarioPorIdUseCase(
-        SqlUsuarioRepository()
-    )
-
-    return caso_uso.execute(
-        db,
-        id_usuario
-    )
 
 @router.put("/{id_usuario}", response_model=UsuarioResponse)
 def actualizar_usuario(
     id_usuario: int,
     usuario: UsuarioUpdate,
     repository: UsuarioRepository = Depends(get_usuario_repository),
-    current_user: object = Depends(get_current_user)
+    current_user: object = Depends(get_current_user),
 ):
-
     if current_user.id_usuario != id_usuario:
         raise HTTPException(
             status_code=403,
@@ -102,18 +100,12 @@ def actualizar_usuario(
             detail=f"Error al actualizar usuario: {str(e)}"
         )
 
+
 @router.delete("/{id_usuario}")
 def eliminar_usuario(
     id_usuario: int,
-    db: Session = Depends(get_db),
-    current_user: object = Depends(require_rol(ROL_ADMIN))
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
 ):
-
-    caso_uso = EliminarUsuarioUseCase(
-        SqlUsuarioRepository()
-    )
-
-    return caso_uso.execute(
-        db,
-        id_usuario
-    )
+    caso_uso = EliminarUsuarioUseCase(repository)
+    return caso_uso.execute(id_usuario)
