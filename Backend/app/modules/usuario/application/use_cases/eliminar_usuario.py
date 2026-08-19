@@ -3,14 +3,14 @@ class EliminarUsuarioUseCase:
     def __init__(self, repository):
         self.repository = repository
 
-    def execute(self, db, id_usuario):
+    def execute(self, id_usuario):
 
         if id_usuario <= 0:
             return {
                 "success": False,
                 "message": "Id inválido"
             }
-    
+
         usuario = self.repository.get_by_id(id_usuario)
 
         if not usuario:
@@ -19,7 +19,7 @@ class EliminarUsuarioUseCase:
                 "message": "Usuario no encontrado"
             }
 
-        self.repository.delete(db, id_usuario)
+        self.repository.delete(id_usuario)
 
         return {
             "success": True,

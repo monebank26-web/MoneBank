@@ -8,7 +8,7 @@ from app.modules.transaccion.application.use_cases.registrar_gasto import (
     RegistrarGasto
 )
 from app.modules.transaccion.domain.entity.trans_entity import Transaccion
-from app.shared.exceptions.transaccion import (
+from app.shared.exceptions.business_exceptions import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
@@ -33,7 +33,6 @@ def datos_validos():
 def test_registrar_gasto_exitoso_guarda_y_descuenta_saldo():
 
     repository = Mock()
-    db = Mock()
 
     repository.existe_categoria.return_value = True
 
@@ -45,18 +44,16 @@ def test_registrar_gasto_exitoso_guarda_y_descuenta_saldo():
     repository.create.return_value = gasto_creado
 
     resultado = RegistrarGasto(repository).execute(
-        db,
         datos_validos(),
         6
     )
 
     repository.create.assert_called_once()
 
-    data_enviada = repository.create.call_args.args[1]
+    data_enviada = repository.create.call_args.args[0]
     assert data_enviada["tipo"] == Transaccion.TIPO_GASTO
 
     repository.descontar_saldo.assert_called_once_with(
-        db,
         1,
         Decimal("50000.00")
     )
@@ -72,7 +69,6 @@ def test_registrar_gasto_con_monto_invalido_lanza_monto_invalido():
 
     with pytest.raises(MontoInvalido):
         RegistrarGasto(repository).execute(
-            Mock(),
             datos,
             6
         )
@@ -91,7 +87,6 @@ def test_registrar_gasto_con_fecha_invalida_lanza_fecha_invalida():
 
     with pytest.raises(FechaInvalida):
         RegistrarGasto(repository).execute(
-            Mock(),
             datos,
             6
         )
@@ -104,7 +99,6 @@ def test_registrar_gasto_con_categoria_inexistente_lanza_categoria_invalida():
 
     with pytest.raises(CategoriaInvalida):
         RegistrarGasto(repository).execute(
-            Mock(),
             datos_validos(),
             6
         )
@@ -120,7 +114,6 @@ def test_registrar_gasto_con_cuenta_inexistente_lanza_cuenta_no_encontrada():
 
     with pytest.raises(CuentaNoEncontrada):
         RegistrarGasto(repository).execute(
-            Mock(),
             datos_validos(),
             6
         )
@@ -139,7 +132,6 @@ def test_registrar_gasto_con_cuenta_de_otro_usuario_lanza_sin_permiso():
 
     with pytest.raises(CuentaNoPerteneceAlUsuario):
         RegistrarGasto(repository).execute(
-            Mock(),
             datos_validos(),
             6
         )

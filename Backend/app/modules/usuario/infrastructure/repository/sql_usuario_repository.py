@@ -2,9 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.modules.usuario.domain.entity.usuario import Usuario
-
 from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
-
 
 
 class SqlUsuarioRepository(UsuarioRepository):
@@ -12,46 +10,35 @@ class SqlUsuarioRepository(UsuarioRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, db, usuario_data):
+    def create(self, usuario_data):
         usuario = UsuarioModel(**usuario_data)
-
-        db.add(usuario)
-        db.commit()
-        db.refresh(usuario)
-
+        self.db.add(usuario)
+        self.db.commit()
+        self.db.refresh(usuario)
         return usuario
 
-    def exists_by_email(self, db, correo):
+    def exists_by_email(self, correo):
         return (
-            db.query(UsuarioModel.id_usuario)
+            self.db.query(UsuarioModel.id_usuario)
             .filter(UsuarioModel.correo == correo)
             .first()
             is not None
         )
-    
-    def get_all(self, db):
-        return db.query(UsuarioModel).all()
-    
+
+    def get_all(self):
+        return self.db.query(UsuarioModel).all()
+
     def get_by_id(self, id_usuario):
         return (
             self.db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.id_usuario == id_usuario
-            )
+            .filter(UsuarioModel.id_usuario == id_usuario)
             .first()
         )
-    
-    def update(
-        self,
-        id_usuario,
-        usuario_data
-    ):
 
+    def update(self, id_usuario, usuario_data):
         usuario = (
             self.db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.id_usuario == id_usuario
-            )
+            .filter(UsuarioModel.id_usuario == id_usuario)
             .first()
         )
 
@@ -75,31 +62,22 @@ class SqlUsuarioRepository(UsuarioRepository):
             id_tipo_usuario=usuario.id_tipo_usuario,
             fecha_creacion=usuario.fecha_creacion,
         )
-    
-    def delete(
-        self,
-        db,
-        id_usuario
-    ):
 
+    def delete(self, id_usuario):
         usuario = (
-            db.query(UsuarioModel)
-            .filter(
-                UsuarioModel.id_usuario == id_usuario
-            )
+            self.db.query(UsuarioModel)
+            .filter(UsuarioModel.id_usuario == id_usuario)
             .first()
         )
 
         if not usuario:
             return None
 
-        db.delete(usuario)
-        db.commit()
+        self.db.delete(usuario)
+        self.db.commit()
 
-        return {
-            "mensaje": "Usuario eliminado"
-        }
-    
+        return {"mensaje": "Usuario eliminado"}
+
     def get_by_email(self, correo):
         return (
             self.db.query(UsuarioModel)

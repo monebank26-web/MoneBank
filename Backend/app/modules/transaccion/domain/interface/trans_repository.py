@@ -1,43 +1,24 @@
 from abc import ABC, abstractmethod
 
+
 class TransaccionRepository(ABC):
 
     @abstractmethod
-    def find_by_usuario(
-        self,
-        usuario_id
-    ):
+    def find_by_usuario(self, usuario_id):
         pass
 
     @abstractmethod
-    def create(
-        self,
-        db,
-        transaccion_data
-    ):
+    def create(self, transaccion_data):
         pass
 
     @abstractmethod
-    def get_cuenta(
-        self,
-        db,
-        id_cuenta
-    ):
+    def get_cuenta(self, id_cuenta):
         pass
 
     @abstractmethod
-    def existe_categoria(
-        self,
-        db,
-        id_categoria
-    ):
+    def existe_categoria(self, id_categoria):
         pass
 
     @abstractmethod
-    def descontar_saldo(
-        self,
-        db,
-        id_cuenta,
-        monto
-    ):
+    def descontar_saldo(self, id_cuenta, monto):
         pass

@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
 
+
 class UsuarioRepository(ABC):
 
     @abstractmethod
-    def create(self, db, usuario_data):
+    def create(self, usuario_data):
         pass
 
     @abstractmethod
-    def exists_by_email(self, db, correo):
+    def exists_by_email(self, correo):
         pass
 
     @abstractmethod
-    def get_all(self, db):
+    def get_all(self):
         pass
 
     @abstractmethod
@@ -23,7 +24,7 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, db, usuario_id):
+    def delete(self, usuario_id):
         pass
 
     @abstractmethod
