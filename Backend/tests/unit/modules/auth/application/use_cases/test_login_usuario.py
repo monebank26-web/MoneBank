@@ -18,6 +18,8 @@ def crear_usuario():
         id_usuario=1,
         correo="usuario@test.com",
         id_rol=2,
+        nombres="Juan",
+        apellidos="Pérez",
         contrasena=PasswordHasher.hash("password123"),
     )
 
@@ -37,6 +39,10 @@ def test_login_exitoso():
     assert resultado["token_type"] == "bearer"
     assert resultado["expires_in"] == settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     assert resultado["usuario_id"] == 1
+    assert resultado["id_rol"] == 2
+    assert resultado["nombres"] == "Juan"
+    assert resultado["apellidos"] == "Pérez"
+    assert resultado["correo"] == "usuario@test.com"
 
     payload = JwtManager.decode_token(resultado["access_token"])
     assert payload["sub"] == "1"

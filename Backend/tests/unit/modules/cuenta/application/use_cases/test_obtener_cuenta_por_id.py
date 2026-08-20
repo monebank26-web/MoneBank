@@ -10,17 +10,18 @@ def test_debe_obtener_cuenta_por_id():
     repository = Mock()
 
     cuenta = {
-        "id": 1,
-        "saldo": 150000
+        "id_cuenta": 1,
+        "saldo": 150000,
+        "id_usuario": 3
     }
 
     repository.get_by_id.return_value = cuenta
 
     use_case = ObtenerCuentaPorIdUseCase(repository)
 
-    resultado = use_case.execute(1)
+    resultado = use_case.execute(3)
 
-    repository.get_by_id.assert_called_once_with(1)
+    repository.get_by_id.assert_called_once_with(3)
 
     assert resultado["success"] is True
     assert resultado["cuenta"] == cuenta
