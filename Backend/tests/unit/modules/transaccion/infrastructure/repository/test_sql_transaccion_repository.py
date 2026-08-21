@@ -22,13 +22,13 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
     registro = Mock()
     registro.id_transaccion = 1
     registro.monto = Decimal("50000.00")
-    registro.tipo = "INGRESO"
+    registro.id_tipo_transaccion = 1
     registro.fecha = date(2026, 1, 1)
     registro.descripcion = "Salario"
     registro.id_categoria = 3
 
-    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = [
-        registro
+    db.query.return_value.join.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = [
+        (registro, "INGRESO")
     ]
 
     resultado = SqlTransaccionesRepository(db).find_by_usuario(
@@ -37,9 +37,10 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
 
     db.query.assert_called_once()
     db.query.return_value.join.assert_called_once()
-    db.query.return_value.join.return_value.filter.assert_called_once()
-    db.query.return_value.join.return_value.filter.return_value.order_by.assert_called_once()
-    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.assert_called_once()
+    db.query.return_value.join.return_value.join.assert_called_once()
+    db.query.return_value.join.return_value.join.return_value.filter.assert_called_once()
+    db.query.return_value.join.return_value.join.return_value.filter.return_value.order_by.assert_called_once()
+    db.query.return_value.join.return_value.join.return_value.filter.return_value.order_by.return_value.all.assert_called_once()
 
     assert len(resultado) == 1
     assert isinstance(resultado[0], Transaccion)
@@ -54,13 +55,30 @@ def test_find_by_usuario_retorna_entidades_de_dominio():
 def test_find_by_usuario_sin_registros_retorna_lista_vacia():
 
     db = Mock()
-    db.query.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = []
+    db.query.return_value.join.return_value.join.return_value.filter.return_value.order_by.return_value.all.return_value = []
 
     resultado = SqlTransaccionesRepository(db).find_by_usuario(
         6
     )
 
     assert resultado == []
+
+
+def test_get_tipo_transaccion_retorna_el_tipo_por_nombre():
+
+    db = Mock()
+
+    tipo = Mock()
+    tipo.id_tipo_transaccion = 2
+    tipo.nombre_tipo_transaccion = "GASTO"
+
+    db.query.return_value.filter.return_value.first.return_value = tipo
+
+    resultado = SqlTransaccionesRepository(db).get_tipo_transaccion(
+        "GASTO"
+    )
+
+    assert resultado == tipo
 
 
 def test_create_guarda_y_retorna_la_transaccion():
@@ -78,7 +96,6 @@ def test_create_guarda_y_retorna_la_transaccion():
 
     datos = {
         "monto": Decimal("20000.00"),
-        "tipo": "GASTO",
         "fecha": date(2026, 1, 1),
         "descripcion": "Transporte",
         "id_cuenta": 1,

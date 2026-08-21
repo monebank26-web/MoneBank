@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 
@@ -10,9 +10,9 @@ class ListaTransaccionesResponse(BaseModel):
     id: int
     tipo: str
     monto: Decimal
-    fecha: date
+    fecha: datetime
     categoria: int
-    descripcion: str
+    descripcion: Optional[str] = None
 
     model_config = ConfigDict(
         from_attributes=True
@@ -40,21 +40,19 @@ class GastoRequest(BaseModel):
         description="Monto del gasto, debe ser mayor a 0"
     )
     fecha: date
-    referencia: Optional[str] = None
     descripcion: Optional[str] = None
-    id_tipo_transaccion: int
+    id_tipo_transaccion: Optional[int] = None
     id_cuenta: int
     id_categoria: int
-    id_ahorro: Optional[int] = None
+    id_ahorro: Optional[int] = Field(None, gt=0)
 
 
 class GastoResponse(BaseModel):
     id_transaccion: int
     monto: Decimal
-    fecha: date
-    referencia: Optional[str] = None
+    fecha: datetime
     descripcion: Optional[str] = None
-    tipo: str
+    estado: str
     id_tipo_transaccion: int
     id_cuenta: int
     id_categoria: int

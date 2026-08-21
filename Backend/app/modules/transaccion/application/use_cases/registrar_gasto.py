@@ -5,11 +5,13 @@ from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
 from app.shared.exceptions.business_exceptions import (
+    AhorroAsociadoNoValido,
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     FechaInvalida,
     MontoInvalido,
+    TipoTransaccionNoValido,
 )
 
 
@@ -53,7 +55,26 @@ class RegistrarGasto:
         if cuenta.id_usuario != id_usuario:
             raise CuentaNoPerteneceAlUsuario()
 
-        transaccion_data["tipo"] = Transaccion.TIPO_GASTO
+        tipo_gasto = self.repository.get_tipo_transaccion(
+            Transaccion.TIPO_GASTO
+        )
+
+        if not tipo_gasto:
+            raise TipoTransaccionNoValido()
+
+        transaccion_data["id_tipo_transaccion"] = (
+            tipo_gasto.id_tipo_transaccion
+        )
+
+        id_ahorro = transaccion_data.get("id_ahorro")
+
+        if id_ahorro:
+            ahorro = self.repository.get_ahorro(id_ahorro)
+
+            if not ahorro or ahorro.id_cuenta != cuenta.id_cuenta:
+                raise AhorroAsociadoNoValido()
+        else:
+            transaccion_data["id_ahorro"] = None
 
         gasto = self.repository.create(transaccion_data)
 

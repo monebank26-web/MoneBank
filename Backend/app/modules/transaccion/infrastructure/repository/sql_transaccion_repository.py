@@ -1,6 +1,7 @@
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
+from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
@@ -8,6 +9,9 @@ from app.modules.transaccion.domain.interface.trans_repository import (
 )
 from app.modules.transaccion.infrastructure.model.categoria_model import (
     CategoriaModel
+)
+from app.modules.transaccion.infrastructure.model.tipo_transaccion_model import (
+    TipoTransaccionModel
 )
 from app.modules.transaccion.infrastructure.model.transaccion_model import (
     TransaccionModel
@@ -21,13 +25,21 @@ class SqlTransaccionesRepository(TransaccionRepository):
 
     def find_by_usuario(self, usuario_id):
         registros = (
-            self.db.query(TransaccionModel)
+            self.db.query(
+                TransaccionModel,
+                TipoTransaccionModel.nombre_tipo_transaccion
+            )
             .join(
                 CuentaModel,
                 CuentaModel.id_cuenta == TransaccionModel.id_cuenta
             )
+            .join(
+                TipoTransaccionModel,
+                TipoTransaccionModel.id_tipo_transaccion
+                == TransaccionModel.id_tipo_transaccion
+            )
             .filter(CuentaModel.id_usuario == usuario_id)
-            .order_by(CuentaModel.fecha_creacion.desc())
+            .order_by(TransaccionModel.fecha.desc())
             .all()
         )
 
@@ -35,12 +47,12 @@ class SqlTransaccionesRepository(TransaccionRepository):
             Transaccion(
                 id=registro.id_transaccion,
                 monto=registro.monto,
-                tipo=registro.tipo,
+                tipo=nombre_tipo,
                 fecha=registro.fecha,
                 descripcion=registro.descripcion,
                 categoria=registro.id_categoria
             )
-            for registro in registros
+            for registro, nombre_tipo in registros
         ]
 
     def create(self, transaccion_data):
@@ -63,6 +75,20 @@ class SqlTransaccionesRepository(TransaccionRepository):
             .filter(CategoriaModel.id_categoria == id_categoria)
             .first()
             is not None
+        )
+
+    def get_tipo_transaccion(self, nombre):
+        return (
+            self.db.query(TipoTransaccionModel)
+            .filter(TipoTransaccionModel.nombre_tipo_transaccion == nombre)
+            .first()
+        )
+
+    def get_ahorro(self, id_ahorro):
+        return (
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_ahorro == id_ahorro)
+            .first()
         )
 
     def descontar_saldo(self, id_cuenta, monto):

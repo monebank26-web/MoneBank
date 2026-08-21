@@ -88,6 +88,24 @@ class CategoriaInvalida(Exception):
         super().__init__(self.message)
 
 
+class TipoTransaccionNoValido(Exception):
+    status_code = 422
+    description = "El tipo de transacción no existe en el catálogo"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class AhorroAsociadoNoValido(Exception):
+    status_code = 422
+    description = "El ahorro asociado no existe o no pertenece a la cuenta"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
 class CuentaNoEncontrada(Exception):
     status_code = 404
     description = "Cuenta no encontrada"
