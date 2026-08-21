@@ -68,10 +68,10 @@ const MainLayout = ({ children }) => {
         <div className="pie-barra-lateral">
           <div className="usuario-barra-lateral">
             <div className="avatar-usuario">
-              {user?.nombre?.charAt(0).toUpperCase() || 'U'}
+              {user?.nombres?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="informacion-usuario">
-              <p className="nombre-usuario">{user?.nombre}</p>
+              <p className="nombre-usuario">{user?.nombres} {user?.apellidos}</p>
               {etiquetaRol
                 ? <p className="rol-usuario">{etiquetaRol}</p>
                 : <p className="correo-usuario">{user?.email}</p>

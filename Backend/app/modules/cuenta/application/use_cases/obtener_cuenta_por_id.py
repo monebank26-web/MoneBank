@@ -3,15 +3,9 @@ class ObtenerCuentaPorIdUseCase:
     def __init__(self, repository):
         self.repository = repository
 
-    def execute(self, id_cuenta):
+    def execute(self, id_usuario):
 
-        if id_cuenta <= 0:
-            return {
-                "success": False,
-                "message": "Id inválido"
-            }
-
-        cuenta = self.repository.get_by_id(id_cuenta)
+        cuenta = self.repository.get_by_id(id_usuario)
 
         if cuenta is None:
             return {

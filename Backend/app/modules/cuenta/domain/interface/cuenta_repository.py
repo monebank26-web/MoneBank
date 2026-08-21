@@ -12,7 +12,11 @@ class CuentaRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id_cuenta):
+    def get_by_id(self, id_usuario):
+        pass
+
+    @abstractmethod
+    def get_by_id_cuenta(self, id_cuenta):
         pass
 
     @abstractmethod

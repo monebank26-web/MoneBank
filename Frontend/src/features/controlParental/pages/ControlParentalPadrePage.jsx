@@ -118,10 +118,10 @@ const ControlParentalPadrePage = () => {
           <div className="tarjeta-vinculado">
             <div className="encabezado-vinculado">
               <div className="avatar-vinculado">
-                {usuarioVinculado.nombre.charAt(0).toUpperCase()}
+                {usuarioVinculado.nombres?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="nombre-vinculado">{usuarioVinculado.nombre}</p>
+                <p className="nombre-vinculado">{usuarioVinculado.nombres} {usuarioVinculado.apellidos}</p>
                 <p className="correo-vinculado">{usuarioVinculado.email}</p>
                 <span className="etiqueta-vinculado">🧒 Tu hijo/hija</span>
               </div>
@@ -138,7 +138,7 @@ const ControlParentalPadrePage = () => {
 
           {bolsillosHijo.length > 0 && (
             <div className="seccion-parental">
-              <h3 className="titulo-seccion-parental">Bolsillos de {usuarioVinculado.nombre}</h3>
+              <h3 className="titulo-seccion-parental">Bolsillos de {usuarioVinculado.nombres}</h3>
               <div className="cuadricula-bolsillos-parental">
                 {bolsillosHijo.map((b) => (
                   <div key={b.id} className="bolsillo-parental" style={{ '--color-bolsillo': b.color }}>
@@ -154,7 +154,7 @@ const ControlParentalPadrePage = () => {
           )}
 
           <div className="seccion-parental">
-            <h3 className="titulo-seccion-parental">Últimos movimientos de {usuarioVinculado.nombre}</h3>
+            <h3 className="titulo-seccion-parental">Últimos movimientos de {usuarioVinculado.nombres}</h3>
             {transaccionesHijo.length === 0 ? (
               <p className="sin-movimientos-parental">Sin movimientos registrados aún.</p>
             ) : (
