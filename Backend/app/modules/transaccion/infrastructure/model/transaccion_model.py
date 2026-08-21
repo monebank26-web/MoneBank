@@ -2,11 +2,11 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Date,
+    DateTime,
     Numeric
 )
 
-from datetime import date
+from datetime import datetime
 
 from app.core.database.base import Base
 
@@ -27,13 +27,8 @@ class TransaccionModel(Base):
     )
 
     fecha = Column(
-        Date,
-        default=date.today
-    )
-
-    referencia = Column(
-        String(150),
-        nullable=True
+        DateTime,
+        default=datetime.now
     )
 
     descripcion = Column(
@@ -41,9 +36,10 @@ class TransaccionModel(Base):
         nullable=True
     )
 
-    tipo = Column(
+    estado = Column(
         String(20),
-        nullable=False
+        nullable=False,
+        default="COMPLETADA"
     )
 
     id_tipo_transaccion = Column(Integer)
