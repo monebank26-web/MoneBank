@@ -20,5 +20,13 @@ class TransaccionRepository(ABC):
         pass
 
     @abstractmethod
+    def get_tipo_transaccion(self, nombre):
+        pass
+
+    @abstractmethod
+    def get_ahorro(self, id_ahorro):
+        pass
+
+    @abstractmethod
     def descontar_saldo(self, id_cuenta, monto):
         pass

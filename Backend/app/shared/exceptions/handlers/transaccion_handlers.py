@@ -7,6 +7,8 @@ from app.shared.exceptions.business_exceptions import (
     MontoInvalido,
     FechaInvalida,
     CategoriaInvalida,
+    TipoTransaccionNoValido,
+    AhorroAsociadoNoValido,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )
@@ -39,6 +41,20 @@ def register_transaccion_exception_handlers(app: FastAPI):
     async def categoria_invalida_handler(request: Request, exc: CategoriaInvalida):
         return JSONResponse(
             status_code=CategoriaInvalida.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(TipoTransaccionNoValido)
+    async def tipo_transaccion_no_valido_handler(request: Request, exc: TipoTransaccionNoValido):
+        return JSONResponse(
+            status_code=TipoTransaccionNoValido.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(AhorroAsociadoNoValido)
+    async def ahorro_asociado_no_valido_handler(request: Request, exc: AhorroAsociadoNoValido):
+        return JSONResponse(
+            status_code=AhorroAsociadoNoValido.status_code,
             content=ErrorResponse(message=exc.message).model_dump()
         )
 
