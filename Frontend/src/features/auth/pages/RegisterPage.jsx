@@ -7,7 +7,8 @@ import './Auth.css';
 const RegisterPage = () => {
   const { submit, loading, error } = useAuthForm('register');
   const [form, setForm] = useState({
-    nombre: '',
+    nombres: '',
+    apellidos: '',
     email: '',
     password: '',
     confirmar: '',
@@ -27,7 +28,7 @@ const RegisterPage = () => {
   const handleSiguiente = (e) => {
     e.preventDefault();
     setLocalError('');
-    if (!form.nombre || !form.email || !form.password || !form.confirmar || !form.saldoInicial) {
+    if (!form.nombres || !form.apellidos || !form.email || !form.password || !form.confirmar || !form.saldoInicial) {
       setLocalError('Por favor completa todos los campos.');
       return;
     }
@@ -45,7 +46,8 @@ const RegisterPage = () => {
 
   const enviarRegistro = (rol, menor) => {
     submit({
-      nombre: form.nombre,
+      nombres: form.nombres,
+      apellidos: form.apellidos,
       email: form.email,
       password: form.password,
       saldoInicial: parseInt(form.saldoInicial, 10) || 0,
@@ -91,9 +93,14 @@ const RegisterPage = () => {
         {paso === 1 && (
           <form onSubmit={handleSiguiente} className="formulario-autenticacion">
             <div className="grupo-campo">
-              <label className="etiqueta-campo">Nombre completo</label>
-              <input className="campo-entrada" type="text" name="nombre"
-                placeholder="Tu nombre" value={form.nombre} onChange={handleChange} required />
+              <label className="etiqueta-campo">Nombres</label>
+              <input className="campo-entrada" type="text" name="nombres"
+                placeholder="Tus nombres" value={form.nombres} onChange={handleChange} required />
+            </div>
+            <div className="grupo-campo">
+              <label className="etiqueta-campo">Apellidos</label>
+              <input className="campo-entrada" type="text" name="apellidos"
+                placeholder="Tus apellidos" value={form.apellidos} onChange={handleChange} required />
             </div>
             <div className="grupo-campo">
               <label className="etiqueta-campo">Correo electrónico</label>

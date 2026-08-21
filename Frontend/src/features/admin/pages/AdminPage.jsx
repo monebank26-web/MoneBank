@@ -28,9 +28,13 @@ const AdminPage = () => {
   const [filtroRol, setFiltroRol] = useState('todos');
   const [mensaje, setMensaje] = useState('');
 
-  const cargarUsuarios = () => {
-    const todos = authService.obtenerTodosLosUsuarios();
-    setUsuarios(todos);
+  const cargarUsuarios = async () => {
+    try {
+      const todos = await authService.obtenerTodosLosUsuarios();
+      setUsuarios(todos);
+    } catch (err) {
+      console.error('Error cargando usuarios:', err.message);
+    }
   };
 
   useEffect(() => {
@@ -39,7 +43,7 @@ const AdminPage = () => {
 
   const usuariosFiltrados = usuarios.filter((u) => {
     const coincideBusqueda =
-      u.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      `${u.nombres} ${u.apellidos}`.toLowerCase().includes(busqueda.toLowerCase()) ||
       u.email.toLowerCase().includes(busqueda.toLowerCase());
     const coincideRol = filtroRol === 'todos' || u.rol === filtroRol;
     return coincideBusqueda && coincideRol;
@@ -52,7 +56,7 @@ const AdminPage = () => {
 
   const abrirEditar = (usuario) => {
     setUsuarioSeleccionado(usuario);
-    setFormEditar({ nombre: usuario.nombre, email: usuario.email, saldoCuenta: usuario.saldoCuenta, rol: usuario.rol });
+    setFormEditar({ nombres: usuario.nombres, apellidos: usuario.apellidos, email: usuario.email });
     setModalEditar(true);
   };
 
@@ -61,30 +65,34 @@ const AdminPage = () => {
     setModalEliminar(true);
   };
 
-  const handleGuardarEdicion = () => {
-    authService.actualizarUsuario(usuarioSeleccionado.id, {
-      nombre: formEditar.nombre,
-      email: formEditar.email,
-      saldoCuenta: parseInt(formEditar.saldoCuenta, 10) || 0,
-      rol: formEditar.rol,
-    });
-    setMensaje('✓ Usuario actualizado correctamente.');
-    setModalEditar(false);
-    cargarUsuarios();
-    setTimeout(() => setMensaje(''), 3000);
+  const handleGuardarEdicion = async () => {
+    try {
+      await authService.actualizarUsuario(usuarioSeleccionado.id, {
+        nombres: formEditar.nombres,
+        apellidos: formEditar.apellidos,
+        email: formEditar.email,
+      });
+      setMensaje('✓ Usuario actualizado correctamente.');
+      setModalEditar(false);
+      await cargarUsuarios();
+      setTimeout(() => setMensaje(''), 3000);
+    } catch (err) {
+      setMensaje('✗ ' + err.message);
+      setTimeout(() => setMensaje(''), 3000);
+    }
   };
 
-  const handleEliminar = () => {
-    authService.eliminarUsuario(usuarioSeleccionado.id);
-    setMensaje('✓ Usuario eliminado correctamente.');
-    setModalEliminar(false);
-    cargarUsuarios();
-    setTimeout(() => setMensaje(''), 3000);
-  };
-
-  const usuarioVinculado = (usuario) => {
-    if (!usuario.cuentaVinculada) return null;
-    return usuarios.find((u) => u.id === usuario.cuentaVinculada) || null;
+  const handleEliminar = async () => {
+    try {
+      await authService.eliminarUsuario(usuarioSeleccionado.id);
+      setMensaje('✓ Usuario eliminado correctamente.');
+      setModalEliminar(false);
+      await cargarUsuarios();
+      setTimeout(() => setMensaje(''), 3000);
+    } catch (err) {
+      setMensaje('✗ ' + err.message);
+      setTimeout(() => setMensaje(''), 3000);
+    }
   };
 
   return (
@@ -107,7 +115,7 @@ const AdminPage = () => {
           onChange={(e) => setBusqueda(e.target.value)}
         />
         <div className="filtros-rol-admin">
-          {['todos', ROLES.NORMAL, ROLES.PADRE, ROLES.HIJO, ROLES.ADMIN].map((rol) => (
+          {['todos', ROLES.NORMAL, ROLES.ADMIN].map((rol) => (
             <button
               key={rol}
               className={`boton-filtro-admin ${filtroRol === rol ? 'boton-filtro-admin--activo' : ''}`}
@@ -129,18 +137,14 @@ const AdminPage = () => {
           {usuariosFiltrados.map((usuario) => (
             <div key={usuario.id} className="fila-usuario-admin">
               <div className="avatar-usuario-admin">
-                {usuario.nombre.charAt(0).toUpperCase()}
+                {usuario.nombres?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="informacion-usuario-admin">
-                <p className="nombre-usuario-admin">{usuario.nombre}</p>
+                <p className="nombre-usuario-admin">{usuario.nombres} {usuario.apellidos}</p>
                 <p className="correo-usuario-admin">{usuario.email}</p>
                 <span className={`etiqueta-rol-admin etiqueta-rol-admin--${usuario.rol}`}>
                   {etiquetaRol(usuario.rol)}
                 </span>
-              </div>
-              <div className="saldo-usuario-admin">
-                <p className="valor-saldo-admin">{formatMoney(usuario.saldoCuenta)}</p>
-                <p className="etiqueta-saldo-admin">Saldo en cuenta</p>
               </div>
               <div className="acciones-usuario-admin">
                 <button className="boton-accion-admin boton-accion-admin--ver" onClick={() => abrirDetalle(usuario)}>
@@ -165,9 +169,9 @@ const AdminPage = () => {
         {usuarioSeleccionado && (
           <div className="detalle-usuario-admin">
             <div className="avatar-detalle-admin">
-              {usuarioSeleccionado.nombre.charAt(0).toUpperCase()}
+              {usuarioSeleccionado.nombres?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <h2 className="nombre-detalle-admin">{usuarioSeleccionado.nombre}</h2>
+            <h2 className="nombre-detalle-admin">{usuarioSeleccionado.nombres} {usuarioSeleccionado.apellidos}</h2>
             <p className="correo-detalle-admin">{usuarioSeleccionado.email}</p>
             <span className={`etiqueta-rol-admin etiqueta-rol-admin--${usuarioSeleccionado.rol}`}>
               {etiquetaRol(usuarioSeleccionado.rol)}
@@ -175,29 +179,25 @@ const AdminPage = () => {
 
             <div className="campos-detalle-admin">
               <div className="campo-detalle-admin">
+                <span className="etiqueta-campo-detalle">Nombres</span>
+                <span className="valor-campo-detalle">{usuarioSeleccionado.nombres}</span>
+              </div>
+              <div className="campo-detalle-admin">
+                <span className="etiqueta-campo-detalle">Apellidos</span>
+                <span className="valor-campo-detalle">{usuarioSeleccionado.apellidos}</span>
+              </div>
+              <div className="campo-detalle-admin">
+                <span className="etiqueta-campo-detalle">Correo electrónico</span>
+                <span className="valor-campo-detalle">{usuarioSeleccionado.email}</span>
+              </div>
+              <div className="campo-detalle-admin">
                 <span className="etiqueta-campo-detalle">Saldo en cuenta</span>
-                <span className="valor-campo-detalle">{formatMoney(usuarioSeleccionado.saldoCuenta)}</span>
+                <span className="valor-campo-detalle">—</span>
               </div>
               <div className="campo-detalle-admin">
                 <span className="etiqueta-campo-detalle">Miembro desde</span>
-                <span className="valor-campo-detalle">
-                  {new Date(usuarioSeleccionado.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
-                </span>
+                <span className="valor-campo-detalle">—</span>
               </div>
-              {usuarioSeleccionado.esMenor && (
-                <div className="campo-detalle-admin">
-                  <span className="etiqueta-campo-detalle">Menor de edad</span>
-                  <span className="valor-campo-detalle">Sí</span>
-                </div>
-              )}
-              {usuarioVinculado(usuarioSeleccionado) && (
-                <div className="campo-detalle-admin">
-                  <span className="etiqueta-campo-detalle">
-                    {usuarioSeleccionado.rol === ROLES.PADRE ? 'Hijo/Hija vinculado' : 'Padre/Madre vinculado'}
-                  </span>
-                  <span className="valor-campo-detalle">{usuarioVinculado(usuarioSeleccionado).nombre}</span>
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -207,29 +207,19 @@ const AdminPage = () => {
       <Modal open={modalEditar} onClose={() => setModalEditar(false)} title="Editar usuario">
         <div className="formulario-modal">
           <div className="grupo-campo">
-            <label className="etiqueta-campo">Nombre completo</label>
-            <input className="campo-entrada" type="text" value={formEditar.nombre || ''}
-              onChange={(e) => setFormEditar({ ...formEditar, nombre: e.target.value })} />
+            <label className="etiqueta-campo">Nombres</label>
+            <input className="campo-entrada" type="text" value={formEditar.nombres || ''}
+              onChange={(e) => setFormEditar({ ...formEditar, nombres: e.target.value })} />
+          </div>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Apellidos</label>
+            <input className="campo-entrada" type="text" value={formEditar.apellidos || ''}
+              onChange={(e) => setFormEditar({ ...formEditar, apellidos: e.target.value })} />
           </div>
           <div className="grupo-campo">
             <label className="etiqueta-campo">Correo electrónico</label>
             <input className="campo-entrada" type="email" value={formEditar.email || ''}
               onChange={(e) => setFormEditar({ ...formEditar, email: e.target.value })} />
-          </div>
-          <div className="grupo-campo">
-            <label className="etiqueta-campo">Saldo en cuenta (COP)</label>
-            <input className="campo-entrada" type="number" value={formEditar.saldoCuenta || 0}
-              onChange={(e) => setFormEditar({ ...formEditar, saldoCuenta: e.target.value })} />
-          </div>
-          <div className="grupo-campo">
-            <label className="etiqueta-campo">Rol</label>
-            <select className="campo-entrada" value={formEditar.rol || ''}
-              onChange={(e) => setFormEditar({ ...formEditar, rol: e.target.value })}>
-              <option value={ROLES.NORMAL}>Normal</option>
-              <option value={ROLES.PADRE}>Padre/Madre</option>
-              <option value={ROLES.HIJO}>Hijo/Hija</option>
-              <option value={ROLES.ADMIN}>Administrador</option>
-            </select>
           </div>
           <button className="boton-principal" onClick={handleGuardarEdicion}>Guardar cambios</button>
         </div>
@@ -239,7 +229,7 @@ const AdminPage = () => {
       <Modal open={modalEliminar} onClose={() => setModalEliminar(false)} title="Eliminar usuario">
         <div className="formulario-modal">
           <p style={{ color: 'var(--color-text-soft)', marginBottom: '1rem', textAlign: 'center' }}>
-            ¿Estás seguro de que quieres eliminar a <strong style={{ color: 'var(--color-text)' }}>{usuarioSeleccionado?.nombre}</strong>?
+            ¿Estás seguro de que quieres eliminar a <strong style={{ color: 'var(--color-text)' }}>{usuarioSeleccionado?.nombres} {usuarioSeleccionado?.apellidos}</strong>?
             Esta acción no se puede deshacer.
           </p>
           <button className="boton-peligro" onClick={handleEliminar}>Sí, eliminar</button>

@@ -29,7 +29,7 @@ const PerfilPage = () => {
 
   // ── Edición de datos básicos ──
   const [editando, setEditando] = useState(false);
-  const [formDatos, setFormDatos] = useState({ nombre: user?.nombre || '', email: user?.email || '' });
+  const [formDatos, setFormDatos] = useState({ nombres: user?.nombres || '', apellidos: user?.apellidos || '', email: user?.email || '' });
   const [errorDatos, setErrorDatos] = useState('');
   const [exitoDatos, setExitoDatos] = useState('');
 
@@ -40,43 +40,39 @@ const PerfilPage = () => {
   const [exitoPassword, setExitoPassword] = useState('');
   const [cargandoPassword, setCargandoPassword] = useState(false);
 
-  const iniciales = user?.nombre?.charAt(0).toUpperCase() || 'U';
+  const iniciales = user?.nombres?.charAt(0).toUpperCase() || 'U';
 
   const handleChangeDatos = (e) => {
     setFormDatos({ ...formDatos, [e.target.name]: e.target.value });
     setExitoDatos('');
   };
 
-  const handleGuardarDatos = (e) => {
+  const handleGuardarDatos = async (e) => {
     e.preventDefault();
     setErrorDatos('');
     setExitoDatos('');
 
-    if (!formDatos.nombre.trim() || !formDatos.email.trim()) {
-      setErrorDatos('El nombre y el correo no pueden quedar vacíos.');
+    if (!formDatos.nombres.trim() || !formDatos.apellidos.trim() || !formDatos.email.trim()) {
+      setErrorDatos('Los nombres, apellidos y el correo no pueden quedar vacíos.');
       return;
     }
 
-    // Si cambia el correo, verificar que no esté en uso por otra cuenta
-    if (formDatos.email !== user.email) {
-      const existente = authService.obtenerUsuarioPorCorreo(formDatos.email);
-      if (existente && existente.id !== user.id) {
-        setErrorDatos('Ese correo ya está en uso por otra cuenta.');
-        return;
-      }
+    try {
+      await authService.actualizarUsuario(user.id, {
+        nombres: formDatos.nombres.trim(),
+        apellidos: formDatos.apellidos.trim(),
+        email: formDatos.email.trim(),
+      });
+      login({ ...user, nombres: formDatos.nombres.trim(), apellidos: formDatos.apellidos.trim(), email: formDatos.email.trim() });
+      setEditando(false);
+      setExitoDatos('Tus datos se actualizaron correctamente.');
+    } catch (err) {
+      setErrorDatos(err.message);
     }
-
-    authService.actualizarUsuario(user.id, {
-      nombre: formDatos.nombre.trim(),
-      email: formDatos.email.trim(),
-    });
-    login({ ...user, nombre: formDatos.nombre.trim(), email: formDatos.email.trim() });
-    setEditando(false);
-    setExitoDatos('Tus datos se actualizaron correctamente.');
   };
 
   const handleCancelarEdicion = () => {
-    setFormDatos({ nombre: user?.nombre || '', email: user?.email || '' });
+    setFormDatos({ nombres: user?.nombres || '', apellidos: user?.apellidos || '', email: user?.email || '' });
     setErrorDatos('');
     setEditando(false);
   };
@@ -134,7 +130,7 @@ const PerfilPage = () => {
       <div className="tarjeta-resumen-perfil">
         <div className="avatar-perfil">{iniciales}</div>
         <div className="info-resumen-perfil">
-          <h2 className="nombre-resumen-perfil">{user?.nombre}</h2>
+          <h2 className="nombre-resumen-perfil">{user?.nombres} {user?.apellidos}</h2>
           <p className="correo-resumen-perfil">{user?.email}</p>
           <span className="chip-rol-perfil">{etiquetaRol[user?.rol] || user?.rol}</span>
         </div>
@@ -161,7 +157,7 @@ const PerfilPage = () => {
           <div className="lista-datos-perfil">
             <div className="fila-dato-perfil">
               <span className="etiqueta-dato-perfil">Nombre completo</span>
-              <span className="valor-dato-perfil">{user?.nombre}</span>
+              <span className="valor-dato-perfil">{user?.nombres} {user?.apellidos}</span>
             </div>
             <div className="fila-dato-perfil">
               <span className="etiqueta-dato-perfil">Correo electrónico</span>
@@ -180,12 +176,23 @@ const PerfilPage = () => {
         ) : (
           <form className="formulario-perfil" onSubmit={handleGuardarDatos}>
             <div className="grupo-campo">
-              <label className="etiqueta-campo">Nombre completo</label>
+              <label className="etiqueta-campo">Nombres</label>
               <input
                 className="campo-entrada"
                 type="text"
-                name="nombre"
-                value={formDatos.nombre}
+                name="nombres"
+                value={formDatos.nombres}
+                onChange={handleChangeDatos}
+                required
+              />
+            </div>
+            <div className="grupo-campo">
+              <label className="etiqueta-campo">Apellidos</label>
+              <input
+                className="campo-entrada"
+                type="text"
+                name="apellidos"
+                value={formDatos.apellidos}
                 onChange={handleChangeDatos}
                 required
               />
