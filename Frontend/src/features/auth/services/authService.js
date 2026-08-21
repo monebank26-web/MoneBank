@@ -1,123 +1,81 @@
-import { STORAGE_KEYS, CORREO_ADMIN, ROLES } from '../../../core/constants';
+import { apiClient } from '../../../core/api/client';
 
-const USERS_KEY = STORAGE_KEYS.USERS;
+const ROLES_MAP = { 1: 'administrador', 2: 'normal' };
 
-const obtenerUsuarios = () => {
-  const datos = localStorage.getItem(USERS_KEY);
-  return datos ? JSON.parse(datos) : [];
-};
-
-const guardarUsuarios = (usuarios) => {
-  localStorage.setItem(USERS_KEY, JSON.stringify(usuarios));
-};
+const toFrontend = (u) => ({
+  id: u.id_usuario,
+  nombres: u.nombres,
+  apellidos: u.apellidos,
+  email: u.correo,
+  rol: ROLES_MAP[u.id_rol] || 'normal',
+});
 
 export const authService = {
-  register: async ({ nombre, email, password, saldoInicial, rol, esMenor }) => {
-    const usuarios = obtenerUsuarios();
-    const existeCorreo = usuarios.find((u) => u.email === email);
-    if (existeCorreo) throw new Error('Este correo ya está registrado.');
-
-    const rolFinal = email === CORREO_ADMIN ? ROLES.ADMIN : (rol || ROLES.NORMAL);
-
-    const nuevoUsuario = {
-      id: Date.now().toString(),
-      nombre,
-      email,
-      password,
-      saldoCuenta: parseInt(saldoInicial, 10) || 0,
-      rol: rolFinal,
-      esMenor: esMenor || false,
-      cuentaVinculada: null, // id del padre o hijo vinculado
-      createdAt: new Date().toISOString(),
-    };
-
-    guardarUsuarios([...usuarios, nuevoUsuario]);
-    const { password: _, ...usuarioSeguro } = nuevoUsuario;
-    return usuarioSeguro;
-  },
-
   login: async ({ email, password }) => {
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find((u) => u.email === email && u.password === password);
-    if (!usuario) throw new Error('Correo o contraseña incorrectos.');
-    const { password: _, ...usuarioSeguro } = usuario;
-    return usuarioSeguro;
-  },
-
-  actualizarSaldo: (userId, nuevoSaldo) => {
-    const usuarios = obtenerUsuarios();
-    const actualizados = usuarios.map((u) =>
-      u.id === userId ? { ...u, saldoCuenta: nuevoSaldo } : u
-    );
-    guardarUsuarios(actualizados);
-
-    const usuarioSesion = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
-    if (usuarioSesion.id === userId) {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({ ...usuarioSesion, saldoCuenta: nuevoSaldo }));
-    }
-  },
-
-  obtenerTodosLosUsuarios: () => {
-    return obtenerUsuarios().map(({ password: _, ...u }) => u);
-  },
-
-  eliminarUsuario: (userId) => {
-    const usuarios = obtenerUsuarios();
-    guardarUsuarios(usuarios.filter((u) => u.id !== userId));
-  },
-
-  actualizarUsuario: (userId, datos) => {
-    const usuarios = obtenerUsuarios();
-    const actualizados = usuarios.map((u) =>
-      u.id === userId ? { ...u, ...datos } : u
-    );
-    guardarUsuarios(actualizados);
-  },
-
-  vincularCuentas: (idPadre, idHijo) => {
-    const usuarios = obtenerUsuarios();
-    const actualizados = usuarios.map((u) => {
-      if (u.id === idPadre) return { ...u, cuentaVinculada: idHijo };
-      if (u.id === idHijo) return { ...u, cuentaVinculada: idPadre };
-      return u;
+    const data = await apiClient.post('/auth/login', {
+      correo: email,
+      contrasena: password,
     });
-    guardarUsuarios(actualizados);
-
-    // Actualizar sesión si aplica
-    const sesion = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
-    if (sesion.id === idPadre) {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({ ...sesion, cuentaVinculada: idHijo }));
-    } else if (sesion.id === idHijo) {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({ ...sesion, cuentaVinculada: idPadre }));
-    }
+    return {
+      id: data.usuario_id,
+      nombres: data.nombres,
+      apellidos: data.apellidos,
+      email: data.correo,
+      rol: ROLES_MAP[data.id_rol] || 'normal',
+      access_token: data.access_token,
+    };
   },
 
-  obtenerUsuarioPorId: (id) => {
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find((u) => u.id === id);
-    if (!usuario) return null;
-    const { password: _, ...usuarioSeguro } = usuario;
-    return usuarioSeguro;
+  register: async ({ nombres, apellidos, email, password }) => {
+    const data = await apiClient.post('/usuarios/', {
+      nombres,
+      apellidos,
+      correo: email,
+      contrasena: password,
+    });
+    return toFrontend(data);
   },
 
-  obtenerUsuarioPorCorreo: (email) => {
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find((u) => u.email === email);
-    if (!usuario) return null;
-    const { password: _, ...usuarioSeguro } = usuario;
-    return usuarioSeguro;
+  obtenerUsuarioPorId: async (id) => {
+    const data = await apiClient.get(`/usuarios/${id}`);
+    return toFrontend(data);
   },
 
-  cambiarPassword: (userId, passwordActual, passwordNueva) => {
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find((u) => u.id === userId);
-    if (!usuario) throw new Error('Usuario no encontrado.');
-    if (usuario.password !== passwordActual) {
-      throw new Error('La contraseña actual no es correcta.');
-    }
-    const actualizados = usuarios.map((u) =>
-      u.id === userId ? { ...u, password: passwordNueva } : u
-    );
-    guardarUsuarios(actualizados);
+  obtenerTodosLosUsuarios: async () => {
+    const data = await apiClient.get('/usuarios/');
+    return Array.isArray(data) ? data.map(toFrontend) : [];
+  },
+
+  eliminarUsuario: async (id) => {
+    return apiClient.delete(`/usuarios/${id}`);
+  },
+
+  actualizarUsuario: async (id, datos) => {
+    const payload = {};
+    if (datos.nombres !== undefined) payload.nombres = datos.nombres;
+    if (datos.apellidos !== undefined) payload.apellidos = datos.apellidos;
+    if (datos.email !== undefined) payload.correo = datos.email;
+    const data = await apiClient.put(`/usuarios/${id}`, payload);
+    return toFrontend(data);
+  },
+
+  obtenerSaldo: async () => {
+    const data = await apiClient.get('/cuentas/');
+    const cuentas = Array.isArray(data) ? data : [];
+    const cuenta = cuentas.find((c) => c.estado === 'ACTIVA') || cuentas[0];
+    return cuenta
+      ? { saldo: parseFloat(cuenta.saldo), id_cuenta: cuenta.id_cuenta }
+      : { saldo: 0, id_cuenta: null };
+  },
+
+  registrarGasto: async ({ monto, descripcion, id_cuenta, id_categoria = 3, id_tipo_transaccion = 1 }) => {
+    return apiClient.post('/transacciones/gastos', {
+      monto,
+      fecha: new Date().toISOString().split('T')[0],
+      descripcion: descripcion || null,
+      id_tipo_transaccion,
+      id_cuenta,
+      id_categoria,
+    });
   },
 };

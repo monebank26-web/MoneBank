@@ -7,30 +7,52 @@ import { authService } from '../../auth/services/authService';
 import Modal from '../../../shared/components/Modal';
 import { ROUTES } from '../../../core/constants';
 import './DashboardPage.css';
+
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
 
 const DashboardPage = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const { bolsillos, loading, totalSaldo } = useBolsillos();
   const [transacciones, setTransacciones] = useState([]);
-  const [modalConsignar, setModalConsignar] = useState(false);
-  const [montoConsignar, setMontoConsignar] = useState('');
-  const [errorConsignar, setErrorConsignar] = useState('');
+  const [saldoCuenta, setSaldoCuenta] = useState(0);
+  const [cuentaId, setCuentaId] = useState(null);
 
+  const [modalGasto, setModalGasto] = useState(false);
+  const [montoGasto, setMontoGasto] = useState('');
+  const [descripcionGasto, setDescripcionGasto] = useState('');
+  const [errorGasto, setErrorGasto] = useState('');
 
- const handleConsignar = () => {
-  const m = parseInt(montoConsignar, 10);
-  if (!m || m <= 0) { setErrorConsignar('Ingresa un monto válido.'); return; }
-  const nuevoSaldo = (user.saldoCuenta || 0) + m;
-  authService.actualizarSaldo(user.id, nuevoSaldo);
-  login({ ...user, saldoCuenta: nuevoSaldo });
-  setMontoConsignar('');
-  setErrorConsignar('');
-  setModalConsignar(false);
-};
+  const handleIngreso = () => {
+    alert('Pendiente: el ingreso aún no está disponible en el backend.');
+  };
+
+  const handleGasto = async () => {
+    const m = parseFloat(montoGasto);
+    if (!m || m <= 0) { setErrorGasto('Ingresa un monto válido.'); return; }
+    if (!cuentaId) { setErrorGasto('No se encontró tu cuenta.'); return; }
+    try {
+      await authService.registrarGasto({
+        monto: m,
+        descripcion: descripcionGasto.trim() || null,
+        id_cuenta: cuentaId,
+      });
+      const { saldo } = await authService.obtenerSaldo();
+      setSaldoCuenta(saldo);
+      setMontoGasto('');
+      setDescripcionGasto('');
+      setErrorGasto('');
+      setModalGasto(false);
+    } catch (err) {
+      setErrorGasto(err.message);
+    }
+  };
 
   useEffect(() => {
+    authService.obtenerSaldo().then(({ saldo, id_cuenta }) => {
+      setSaldoCuenta(saldo);
+      setCuentaId(id_cuenta);
+    }).catch(() => {});
     if (user) {
       bolsillosService.historialTransacciones(user.id).then((data) => {
         setTransacciones(data.slice(0, 5));
@@ -39,7 +61,7 @@ const DashboardPage = () => {
   }, [user]);
 
   const hora = new Date().getHours();
-  const saludo = hora < 12 ? 'Buenos días' : hora < 18 ? 'Buenas tardes' : 'Buenas noches';
+  const saludo = hora < 12 ? 'Buenos días' : hora < 18 ? 'Buenas tardes': 'Buenas noches';
 
   return (
     <div className="pagina-inicio">
@@ -47,25 +69,26 @@ const DashboardPage = () => {
       <div className="encabezado-inicio">
         <div>
           <p className="saludo-inicio">{saludo},</p>
-          <h1 className="nombre-inicio">{user?.nombre}</h1>
+          <h1 className="nombre-inicio">{user?.nombres}</h1>
         </div>
       </div>
 
       {/* Tarjetas de saldo */}
       <div className="tarjeta-saldos-row">
-       {/* Mi Cuenta */}
         <div className="tarjeta-saldo tarjeta-saldo--cuenta-principal">
           <p className="etiqueta-saldo">Mi Cuenta</p>
-          <h2 className="valor-saldo">{formatMoney(user?.saldoCuenta || 0)}</h2>
-          <p className="subtexto-saldo">Saldo disponible para bolsillos</p>
-        <div className="acciones-saldo">
-        <button className="boton-saldo" onClick={() => setModalConsignar(true)}>
-      + Consignar
-      </button>
-    </div>
-  </div>
+          <h2 className="valor-saldo">{formatMoney(saldoCuenta)}</h2>
+          <p className="subtexto-saldo">Saldo disponible</p>
+          <div className="acciones-saldo">
+            <button className="boton-saldo" onClick={handleIngreso}>
+              + Ingreso
+            </button>
+            <button className="boton-saldo" onClick={() => setModalGasto(true)}>
+              − Gasto
+            </button>
+          </div>
+        </div>
 
-        {/* Bolsillos */}
         <div className="tarjeta-saldo tarjeta-saldo--bolsillos">
           <p className="etiqueta-saldo">En bolsillos</p>
           <h2 className="valor-saldo">{formatMoney(totalSaldo)}</h2>
@@ -137,22 +160,29 @@ const DashboardPage = () => {
           </div>
         )}
       </section>
-      <Modal open={modalConsignar} onClose={() => setModalConsignar(false)} title="Consignar a Mi Cuenta">
-  <div className="formulario-modal">
-    <p style={{ color: 'var(--color-text-soft)', fontSize: '13px' }}>
-      Saldo actual: <strong style={{ color: 'var(--color-accent)' }}>{formatMoney(user?.saldoCuenta || 0)}</strong>
-    </p>
-    <div className="grupo-campo">
-      <label className="etiqueta-campo">Monto a consignar (COP)</label>
-      <input className="campo-entrada" type="number" placeholder="Ej: 300000" min="1000" step="1"value={montoConsignar} onChange={(e) => setMontoConsignar(e.target.value)} 
-/>
-    </div>
-    {errorConsignar && <p className="error-formulario">{errorConsignar}</p>}
-    <button className="boton-principal" onClick={handleConsignar}>
-      Consignar
-    </button>
-  </div>
-</Modal>
+
+      {/* Modal Gasto */}
+      <Modal open={modalGasto} onClose={() => setModalGasto(false)} title="Registrar gasto">
+        <div className="formulario-modal">
+          <p style={{ color: 'var(--color-text-soft)', fontSize: '13px' }}>
+            Saldo actual: <strong style={{ color: 'var(--color-accent)' }}>{formatMoney(saldoCuenta)}</strong>
+          </p>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Monto (COP)</label>
+            <input className="campo-entrada" type="number" placeholder="Ej: 50000"
+              min="1" step="1" value={montoGasto}
+              onChange={(e) => setMontoGasto(e.target.value)} />
+          </div>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Descripción (opcional, máx. 255)</label>
+            <input className="campo-entrada" type="text" placeholder="Ej: Almuerzo"
+              maxLength={255} value={descripcionGasto}
+              onChange={(e) => setDescripcionGasto(e.target.value)} />
+          </div>
+          {errorGasto && <p className="error-formulario">{errorGasto}</p>}
+          <button className="boton-principal" onClick={handleGasto}>Registrar gasto</button>
+        </div>
+      </Modal>
     </div>
   );
 };
