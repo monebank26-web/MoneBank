@@ -23,9 +23,6 @@ class SqlAhorroRepository(AhorroRepository):
         self.db.refresh(ahorro)
         return ahorro
 
-    def get_all(self):
-        return self.db.query(AhorroModel).all()
-
     def get_by_id(self, id_ahorro):
         return (
             self.db.query(AhorroModel)
@@ -123,3 +120,22 @@ class SqlAhorroRepository(AhorroRepository):
             "porcentaje_avance": fila.porcentaje_avance,
             "monto_faltante": fila.monto_faltante,
         }
+
+    def get_gasto_periodo(self, id_categoria, id_cuenta, fecha_desde, fecha_hasta):
+        fila = self.db.execute(
+            text(
+                "SELECT fn_gasto_categoria_periodo("
+                ":id_categoria, :id_cuenta, :fecha_desde, :fecha_hasta) AS total"
+            ),
+            {"id_categoria": id_categoria, "id_cuenta": id_cuenta,
+             "fecha_desde": fecha_desde, "fecha_hasta": fecha_hasta},
+        ).first()
+
+        return fila.total if fila else 0
+
+    def get_by_cuenta(self, id_cuenta):
+        return (
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_cuenta == id_cuenta)
+            .all()
+        )

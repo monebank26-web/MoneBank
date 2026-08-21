@@ -185,3 +185,30 @@ class FechaObjetivoPasada(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class PresupuestoDuplicado(Exception):
+    status_code = 422
+    description = "Ya existe un presupuesto activo para esta categoría y período"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class EstadoInvalido(Exception):
+    status_code = 400
+    description = "El estado debe ser ACTIVO, PAUSADO o FINALIZADO"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class AhorroNoEncontrado(Exception):
+    status_code = 404
+    description = "Ahorro no encontrado"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)

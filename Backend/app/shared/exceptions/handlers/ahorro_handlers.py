@@ -3,7 +3,10 @@ from fastapi.responses import JSONResponse
 
 from app.core.responses import ErrorResponse
 from app.shared.exceptions.business_exceptions import (
+    AhorroNoEncontrado,
+    EstadoInvalido,
     MetaNoEncontrada,
+    PresupuestoDuplicado,
     PresupuestoNoEncontrado,
     PeriodoInvalido,
     CategoriaNoExiste,
@@ -61,5 +64,26 @@ def register_ahorro_exception_handlers(app: FastAPI):
     async def fecha_objetivo_pasada_handler(request: Request, exc: FechaObjetivoPasada):
         return JSONResponse(
             status_code=FechaObjetivoPasada.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(PresupuestoDuplicado)
+    async def presupuesto_duplicado_handler(request: Request, exc: PresupuestoDuplicado):
+        return JSONResponse(
+            status_code=PresupuestoDuplicado.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(EstadoInvalido)
+    async def estado_invalido_handler(request: Request, exc: EstadoInvalido):
+        return JSONResponse(
+            status_code=EstadoInvalido.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(AhorroNoEncontrado)
+    async def ahorro_no_encontrado_handler(request: Request, exc: AhorroNoEncontrado):
+        return JSONResponse(
+            status_code=AhorroNoEncontrado.status_code,
             content=ErrorResponse(message=exc.message).model_dump()
         )

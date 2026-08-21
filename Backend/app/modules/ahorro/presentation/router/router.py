@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, status
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
@@ -73,43 +73,41 @@ def obtener_progreso_meta(
     return caso_uso.execute(id_ahorro, current_user.id_usuario)
 
 
-@router.get("/")
+@router.get("/", response_model=list[AhorroResponse])
 def obtener_ahorros(
+    current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
     caso_uso = ObtenerAhorrosUseCase(repository)
-    return caso_uso.execute()
+    return caso_uso.execute(current_user.id_usuario)
 
 
-@router.get("/{id_ahorro}")
+@router.get("/{id_ahorro}", response_model=AhorroResponse)
 def obtener_ahorro_por_id(
     id_ahorro: int,
+    current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
     caso_uso = ObtenerAhorroPorIdUseCase(repository)
-    return caso_uso.execute(id_ahorro)
+    return caso_uso.execute(id_ahorro, current_user.id_usuario)
 
 
-@router.put("/{id_ahorro}")
+@router.put("/{id_ahorro}", response_model=AhorroResponse)
 def actualizar_ahorro(
     id_ahorro: int,
     ahorro: AhorroCreate,
+    current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
     caso_uso = ActualizarAhorroUseCase(repository)
-    return caso_uso.execute(id_ahorro, ahorro.model_dump())
+    return caso_uso.execute(id_ahorro, ahorro.model_dump(), current_user.id_usuario)
 
 
 @router.delete("/{id_ahorro}")
 def eliminar_ahorro(
     id_ahorro: int,
+    current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
     caso_uso = EliminarAhorroUseCase(repository)
-    response = caso_uso.execute(id_ahorro)
-    if not response:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found"
-        )
-    return response
+    return caso_uso.execute(id_ahorro, current_user.id_usuario)

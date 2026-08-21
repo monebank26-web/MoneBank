@@ -19,10 +19,11 @@ class AhorroCreate(BaseModel):
 class AhorroResponse(BaseModel):
     id_ahorro: int
     nombre: str
-    saldo_actual: float
+    monto_objetivo: Optional[Decimal] = None
+    saldo_actual: Optional[Decimal] = None
+    estado: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MetaCreate(BaseModel):
