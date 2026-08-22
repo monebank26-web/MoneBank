@@ -212,3 +212,12 @@ class AhorroNoEncontrado(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class SaldoInsuficiente(Exception):
+    status_code = 400
+    description = "Saldo insuficiente en la cuenta"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)

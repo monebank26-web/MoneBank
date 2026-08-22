@@ -47,6 +47,18 @@ class GastoRequest(BaseModel):
     id_ahorro: Optional[int] = Field(None, gt=0)
 
 
+class AbonoAhorroRequest(BaseModel):
+    monto: Decimal = Field(
+        ...,
+        gt=0,
+        description="Monto del abono al ahorro, debe ser mayor a 0"
+    )
+    fecha: date
+    descripcion: Optional[str] = None
+    id_cuenta: int
+    id_ahorro: int = Field(..., gt=0)
+
+
 class GastoResponse(BaseModel):
     id_transaccion: int
     monto: Decimal

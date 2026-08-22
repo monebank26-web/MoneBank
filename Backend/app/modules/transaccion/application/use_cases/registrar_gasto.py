@@ -11,6 +11,7 @@ from app.shared.exceptions.business_exceptions import (
     CuentaNoPerteneceAlUsuario,
     FechaInvalida,
     MontoInvalido,
+    SaldoInsuficiente,
     TipoTransaccionNoValido,
 )
 
@@ -54,6 +55,9 @@ class RegistrarGasto:
 
         if cuenta.id_usuario != id_usuario:
             raise CuentaNoPerteneceAlUsuario()
+
+        if transaccion.monto > cuenta.saldo:
+            raise SaldoInsuficiente()
 
         tipo_gasto = self.repository.get_tipo_transaccion(
             Transaccion.TIPO_GASTO

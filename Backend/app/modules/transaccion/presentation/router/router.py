@@ -7,11 +7,15 @@ from app.core.security.auth import get_current_user
 from app.modules.transaccion.application.use_cases.obtener_transacciones import (
     ObtenerTransaccionesUseCase
 )
+from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
+    RegistrarAbonoAhorro
+)
 from app.modules.transaccion.application.use_cases.registrar_gasto import RegistrarGasto
 
 from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
 from app.modules.transaccion.infrastructure.repository.sql_transaccion_repository import SqlTransaccionesRepository
 from app.modules.transaccion.presentation.schema.trans_schema import (
+    AbonoAhorroRequest,
     GastoRequest,
     GastoResponse,
     ListaTransaccionesResponse
@@ -49,6 +53,24 @@ def registrar_gasto(
 
     return caso_uso.execute(
         gasto.model_dump(),
+        current_user.id_usuario
+    )
+
+
+@router.post(
+    "/ahorros",
+    response_model=GastoResponse,
+    status_code=201
+)
+def registrar_abono_ahorro(
+    abono: AbonoAhorroRequest,
+    current_user: object = Depends(get_current_user),
+    repository: TransaccionRepository = Depends(get_transaccion_repository),
+):
+    caso_uso = RegistrarAbonoAhorro(repository)
+
+    return caso_uso.execute(
+        abono.model_dump(),
         current_user.id_usuario
     )
 

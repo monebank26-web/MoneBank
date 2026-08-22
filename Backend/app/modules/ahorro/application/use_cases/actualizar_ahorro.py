@@ -3,6 +3,7 @@ from app.shared.exceptions.business_exceptions import (
     AhorroNoEncontrado,
     CuentaNoEncontrada,
     EstadoInvalido,
+    PeriodoInvalido,
     PresupuestoDuplicado,
 )
 
@@ -49,6 +50,11 @@ class ActualizarAhorroUseCase:
             )
         ):
             periodo_resultante = data_filtrada.get("periodo", ahorro.periodo)
+
+            if periodo_resultante and not Ahorro.es_periodo_valido(
+                periodo_resultante
+            ):
+                raise PeriodoInvalido()
 
             if periodo_resultante:
                 existentes = self.repository.get_by_cuenta_y_tipo(

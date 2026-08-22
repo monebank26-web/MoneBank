@@ -11,6 +11,7 @@ from app.shared.exceptions.business_exceptions import (
     CuentaNoEncontrada,
     FechaObjetivoPasada,
     FechaObjetivoRequerida,
+    SaldoInsuficiente,
 )
 
 
@@ -29,6 +30,7 @@ def repository_mock():
 
     cuenta = Mock()
     cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta_por_usuario.return_value = cuenta
 
     categoria = Mock()
@@ -107,6 +109,18 @@ def test_fecha_objetivo_pasada_lanza_fecha_objetivo_pasada():
     datos["fecha_objetivo"] = date.today() - timedelta(days=1)
 
     with pytest.raises(FechaObjetivoPasada):
+        CrearMeta(repository).execute(datos, 6)
+
+    repository.create.assert_not_called()
+
+
+def test_saldo_inicial_mayor_al_saldo_lanza_saldo_insuficiente():
+
+    repository = repository_mock()
+    datos = datos_validos()
+    datos["saldo_inicial"] = Decimal("10000000.00")
+
+    with pytest.raises(SaldoInsuficiente):
         CrearMeta(repository).execute(datos, 6)
 
     repository.create.assert_not_called()

@@ -11,6 +11,7 @@ from app.shared.exceptions.business_exceptions import (
     AhorroAsociadoNoValido,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
+    SaldoInsuficiente,
 )
 
 
@@ -69,5 +70,12 @@ def register_transaccion_exception_handlers(app: FastAPI):
     async def cuenta_no_pertenece_al_usuario_handler(request: Request, exc: CuentaNoPerteneceAlUsuario):
         return JSONResponse(
             status_code=CuentaNoPerteneceAlUsuario.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(SaldoInsuficiente)
+    async def saldo_insuficiente_handler(request: Request, exc: SaldoInsuficiente):
+        return JSONResponse(
+            status_code=SaldoInsuficiente.status_code,
             content=ErrorResponse(message=exc.message).model_dump()
         )
