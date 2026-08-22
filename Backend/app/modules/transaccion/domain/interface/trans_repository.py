@@ -4,7 +4,11 @@ from abc import ABC, abstractmethod
 class TransaccionRepository(ABC):
 
     @abstractmethod
-    def find_by_usuario(self, usuario_id):
+    def find_historial(self, usuario_id, filtros):
+        pass
+
+    @abstractmethod
+    def find_categorias(self):
         pass
 
     @abstractmethod

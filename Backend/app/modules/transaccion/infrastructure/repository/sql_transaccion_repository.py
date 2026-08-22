@@ -1,9 +1,8 @@
-from sqlalchemy import desc
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
-from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
@@ -17,43 +16,77 @@ from app.modules.transaccion.infrastructure.model.transaccion_model import (
     TransaccionModel
 )
 
+ORDEN_PERMITIDO = {"fecha": "v.fecha", "monto": "v.monto"}
+
 
 class SqlTransaccionesRepository(TransaccionRepository):
 
     def __init__(self, db: Session):
         self.db = db
 
-    def find_by_usuario(self, usuario_id):
-        registros = (
-            self.db.query(
-                TransaccionModel,
-                TipoTransaccionModel.nombre_tipo_transaccion
-            )
-            .join(
-                CuentaModel,
-                CuentaModel.id_cuenta == TransaccionModel.id_cuenta
-            )
-            .join(
-                TipoTransaccionModel,
-                TipoTransaccionModel.id_tipo_transaccion
-                == TransaccionModel.id_tipo_transaccion
-            )
-            .filter(CuentaModel.id_usuario == usuario_id)
-            .order_by(TransaccionModel.fecha.desc())
-            .all()
+    def find_historial(self, usuario_id, filtros):
+        condiciones = ["v.id_usuario = :usuario_id"]
+        parametros = {"usuario_id": usuario_id}
+
+        if filtros["fecha_inicio"]:
+            condiciones.append("v.fecha >= :fecha_inicio")
+            parametros["fecha_inicio"] = filtros["fecha_inicio"]
+
+        if filtros["fecha_fin"]:
+            condiciones.append("v.fecha <= :fecha_fin")
+            parametros["fecha_fin"] = filtros["fecha_fin"]
+
+        if filtros["monto_min"] is not None:
+            condiciones.append("v.monto >= :monto_min")
+            parametros["monto_min"] = filtros["monto_min"]
+
+        if filtros["monto_max"] is not None:
+            condiciones.append("v.monto <= :monto_max")
+            parametros["monto_max"] = filtros["monto_max"]
+
+        if filtros["busqueda"]:
+            condiciones.append("v.descripcion ILIKE :busqueda")
+            parametros["busqueda"] = f"%{filtros['busqueda']}%"
+
+        if filtros["id_tipo_transaccion"]:
+            condiciones.append("v.id_tipo_transaccion = :id_tipo_transaccion")
+            parametros["id_tipo_transaccion"] = filtros["id_tipo_transaccion"]
+
+        if filtros["id_categoria"]:
+            condiciones.append("v.id_categoria = :id_categoria")
+            parametros["id_categoria"] = filtros["id_categoria"]
+
+        where = " AND ".join(condiciones)
+        columna = ORDEN_PERMITIDO[filtros["ordenar_por"]]
+        direccion = "ASC" if filtros["orden"] == "asc" else "DESC"
+
+        total = self.db.execute(
+            text(f"SELECT COUNT(*) FROM vw_historial_transacciones v WHERE {where}"),
+            parametros
+        ).scalar()
+
+        filas = self.db.execute(
+            text(
+                f"SELECT * FROM vw_historial_transacciones v WHERE {where} "
+                f"ORDER BY {columna} {direccion}, v.id_transaccion {direccion} "
+                "LIMIT :limite OFFSET :offset"
+            ),
+            {
+                **parametros,
+                "limite": filtros["por_pagina"],
+                "offset": (filtros["pagina"] - 1) * filtros["por_pagina"]
+            }
         )
 
-        return [
-            Transaccion(
-                id=registro.id_transaccion,
-                monto=registro.monto,
-                tipo=nombre_tipo,
-                fecha=registro.fecha,
-                descripcion=registro.descripcion,
-                categoria=registro.id_categoria
-            )
-            for registro, nombre_tipo in registros
-        ]
+        return [dict(fila._mapping) for fila in filas], total
+
+    def find_categorias(self):
+        resultado = (
+            self.db.query(CategoriaModel.id_categoria, CategoriaModel.nombre_categoria)
+            .order_by(CategoriaModel.nombre_categoria)
+            .all()
+        )
+        return [dict(fila._mapping) for fila in resultado]
 
     def create(self, transaccion_data):
         transaccion = TransaccionModel(**transaccion_data)

@@ -1,36 +1,40 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class ListaTransaccionesResponse(BaseModel):
-
-    id: int
-    tipo: str
+class HistorialTransaccionResponse(BaseModel):
+    id_usuario: int
+    id_cuenta: int
+    id_transaccion: int
+    tipo_transaccion: str
     monto: Decimal
     fecha: datetime
-    categoria: int
+    referencia: Optional[str] = None
     descripcion: Optional[str] = None
+    estado_transaccion: str
+    id_tipo_transaccion: int
+    id_categoria: Optional[int] = None
+    nombre_categoria: Optional[str] = None
+    id_ahorro: Optional[int] = None
+    nombre_ahorro: Optional[str] = None
+    nombre_tipo_ahorro: Optional[str] = None
+    nombres: str
+    apellidos: str
 
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+class HistorialPaginadoResponse(BaseModel):
+    items: List[HistorialTransaccionResponse]
+    total: int
+    pagina: int
+    por_pagina: int
+    total_paginas: int
 
-    @model_validator(mode="before")
-    @classmethod
-    def desde_modelo(cls, data):
-        if hasattr(data, "id_transaccion"):
-            return {
-                "id": data.id_transaccion,
-                "tipo": data.tipo,
-                "monto": data.monto,
-                "fecha": data.fecha,
-                "categoria": data.id_categoria,
-                "descripcion": data.descripcion,
-            }
-        return data
+
+class CategoriaResponse(BaseModel):
+    id_categoria: int
+    nombre_categoria: str
 
 
 class GastoRequest(BaseModel):
