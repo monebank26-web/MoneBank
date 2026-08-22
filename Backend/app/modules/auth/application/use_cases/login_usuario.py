@@ -35,4 +35,8 @@ class LoginUsuarioUseCase:
             "token_type": "bearer",
             "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             "usuario_id": usuario.id_usuario,
+            "id_rol": usuario.id_rol,
+            "nombres": usuario.nombres,
+            "apellidos": usuario.apellidos,
+            "correo": usuario.correo,
         }

@@ -17,9 +17,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    const userToSave = { ...userData, id: userData.id || Date.now().toString() };
+    const { access_token, ...userInfo } = userData;
+    const userToSave = { ...userInfo, id: userInfo.id || userInfo.usuario_id || Date.now().toString() };
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userToSave));
-    localStorage.setItem(STORAGE_KEYS.TOKEN, 'local-token-' + userToSave.id);
+    if (access_token) {
+      localStorage.setItem(STORAGE_KEYS.TOKEN, access_token);
+    }
     setUser(userToSave);
   };
 

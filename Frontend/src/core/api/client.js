@@ -1,4 +1,3 @@
-
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export const apiClient = {
@@ -10,7 +9,11 @@ export const apiClient = {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      let msg;
+      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
+      throw new Error(msg);
+    }
     return res.json();
   },
 
@@ -24,7 +27,11 @@ export const apiClient = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      let msg;
+      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
+      throw new Error(msg);
+    }
     return res.json();
   },
 
@@ -38,7 +45,11 @@ export const apiClient = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      let msg;
+      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
+      throw new Error(msg);
+    }
     return res.json();
   },
 
@@ -51,7 +62,11 @@ export const apiClient = {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      let msg;
+      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
+      throw new Error(msg);
+    }
     return res.json();
   },
 };
