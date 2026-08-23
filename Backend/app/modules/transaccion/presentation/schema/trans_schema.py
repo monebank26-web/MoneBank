@@ -12,17 +12,60 @@ class HistorialTransaccionResponse(BaseModel):
     tipo_transaccion: str
     monto: Decimal
     fecha: datetime
-    referencia: Optional[str] = None
     descripcion: Optional[str] = None
     estado_transaccion: str
     id_tipo_transaccion: int
-    id_categoria: Optional[int] = None
-    nombre_categoria: Optional[str] = None
+    id_categoria: int
+    nombre_categoria: str
     id_ahorro: Optional[int] = None
     nombre_ahorro: Optional[str] = None
     nombre_tipo_ahorro: Optional[str] = None
     nombres: str
     apellidos: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class HistorialRequest(BaseModel):
+    pagina: int = Field(1, ge=1)
+    por_pagina: int = Field(10, ge=1, le=100)
+    ordenar_por: str = Field("fecha", pattern="^(fecha|monto)$")
+    orden: str = Field("desc", pattern="^(asc|desc)$")
+    fecha_inicio: Optional[date] = None
+    fecha_fin: Optional[date] = None
+    monto_min: Optional[float] = None
+    monto_max: Optional[float] = None
+    busqueda: Optional[str] = Field(None, max_length=100)
+    id_tipo_transaccion: Optional[int] = Field(None, gt=0)
+    id_categoria: Optional[int] = Field(None, gt=0)
+
+    @model_validator(mode="after")
+    def validar_rangos(self):
+        if self.fecha_inicio and self.fecha_fin and self.fecha_inicio > self.fecha_fin:
+            raise ValueError("fecha_inicio no puede ser mayor a fecha_fin")
+        if self.monto_min is not None and self.monto_max is not None and self.monto_min > self.monto_max:
+            raise ValueError("monto_min no puede ser mayor a monto_max")
+        return self
+
+
+    
+class DetalleTransaccionResponse(BaseModel):
+    nombres: str
+    apellidos: str
+    id_cuenta: int
+    id_transaccion: int
+    monto: Decimal
+    fecha: datetime
+    descripcion: Optional[str] = None
+    estado_transaccion: str
+    id_tipo_transaccion: int
+    id_categoria: int
+    tipo_transaccion: str
+    nombre_categoria: str
+    nombre_ahorro: Optional[str] = None
+    nombre_tipo_ahorro: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 class HistorialPaginadoResponse(BaseModel):
     items: List[HistorialTransaccionResponse]

@@ -7,6 +7,11 @@ class TransaccionRepository(ABC):
     def find_historial(self, usuario_id, filtros):
         pass
 
+
+    @abstractmethod
+    def find_detalle(self, usuario_id, transaccion_id):
+        pass
+
     @abstractmethod
     def find_categorias(self):
         pass

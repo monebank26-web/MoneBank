@@ -1,4 +1,3 @@
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
@@ -9,14 +8,21 @@ from app.modules.transaccion.domain.interface.trans_repository import (
 from app.modules.transaccion.infrastructure.model.categoria_model import (
     CategoriaModel
 )
-from app.modules.transaccion.infrastructure.model.tipo_transaccion_model import (
-    TipoTransaccionModel
+from app.modules.transaccion.infrastructure.model.historial_transaccion_model import (
+    HistorialTransaccionModel
 )
 from app.modules.transaccion.infrastructure.model.transaccion_model import (
     TransaccionModel
 )
 
-ORDEN_PERMITIDO = {"fecha": "v.fecha", "monto": "v.monto"}
+from app.modules.transaccion.infrastructure.model.tipo_transaccion_model import (
+    TipoTransaccionModel
+)
+
+ORDEN_PERMITIDO = {
+    "fecha": HistorialTransaccionModel.fecha,
+    "monto": HistorialTransaccionModel.monto,
+}
 
 
 class SqlTransaccionesRepository(TransaccionRepository):
@@ -25,60 +31,76 @@ class SqlTransaccionesRepository(TransaccionRepository):
         self.db = db
 
     def find_historial(self, usuario_id, filtros):
-        condiciones = ["v.id_usuario = :usuario_id"]
-        parametros = {"usuario_id": usuario_id}
-
-        if filtros["fecha_inicio"]:
-            condiciones.append("v.fecha >= :fecha_inicio")
-            parametros["fecha_inicio"] = filtros["fecha_inicio"]
-
-        if filtros["fecha_fin"]:
-            condiciones.append("v.fecha <= :fecha_fin")
-            parametros["fecha_fin"] = filtros["fecha_fin"]
-
-        if filtros["monto_min"] is not None:
-            condiciones.append("v.monto >= :monto_min")
-            parametros["monto_min"] = filtros["monto_min"]
-
-        if filtros["monto_max"] is not None:
-            condiciones.append("v.monto <= :monto_max")
-            parametros["monto_max"] = filtros["monto_max"]
-
-        if filtros["busqueda"]:
-            condiciones.append("v.descripcion ILIKE :busqueda")
-            parametros["busqueda"] = f"%{filtros['busqueda']}%"
-
-        if filtros["id_tipo_transaccion"]:
-            condiciones.append("v.id_tipo_transaccion = :id_tipo_transaccion")
-            parametros["id_tipo_transaccion"] = filtros["id_tipo_transaccion"]
-
-        if filtros["id_categoria"]:
-            condiciones.append("v.id_categoria = :id_categoria")
-            parametros["id_categoria"] = filtros["id_categoria"]
-
-        where = " AND ".join(condiciones)
-        columna = ORDEN_PERMITIDO[filtros["ordenar_por"]]
-        direccion = "ASC" if filtros["orden"] == "asc" else "DESC"
-
-        total = self.db.execute(
-            text(f"SELECT COUNT(*) FROM vw_historial_transacciones v WHERE {where}"),
-            parametros
-        ).scalar()
-
-        filas = self.db.execute(
-            text(
-                f"SELECT * FROM vw_historial_transacciones v WHERE {where} "
-                f"ORDER BY {columna} {direccion}, v.id_transaccion {direccion} "
-                "LIMIT :limite OFFSET :offset"
-            ),
-            {
-                **parametros,
-                "limite": filtros["por_pagina"],
-                "offset": (filtros["pagina"] - 1) * filtros["por_pagina"]
-            }
+        consulta = self.db.query(HistorialTransaccionModel).filter(
+            HistorialTransaccionModel.id_usuario == usuario_id
         )
 
-        return [dict(fila._mapping) for fila in filas], total
+        if filtros["fecha_inicio"]:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.fecha >= filtros["fecha_inicio"]
+            )
+
+        if filtros["fecha_fin"]:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.fecha <= filtros["fecha_fin"]
+            )
+
+        if filtros["monto_min"] is not None:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.monto >= filtros["monto_min"]
+            )
+
+        if filtros["monto_max"] is not None:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.monto <= filtros["monto_max"]
+            )
+
+        if filtros["busqueda"]:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.descripcion.ilike(
+                    f"%{filtros['busqueda']}%"
+                )
+            )
+
+        if filtros["id_tipo_transaccion"]:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.id_tipo_transaccion
+                == filtros["id_tipo_transaccion"]
+            )
+
+        if filtros["id_categoria"]:
+            consulta = consulta.filter(
+                HistorialTransaccionModel.id_categoria == filtros["id_categoria"]
+            )
+
+        columna = ORDEN_PERMITIDO[filtros["ordenar_por"]]
+        if filtros["orden"] == "asc":
+            consulta = consulta.order_by(
+                columna.asc(), HistorialTransaccionModel.id_transaccion.asc()
+            )
+        else:
+            consulta = consulta.order_by(
+                columna.desc(), HistorialTransaccionModel.id_transaccion.desc()
+            )
+
+        total = consulta.count()
+        filas = (
+            consulta.offset((filtros["pagina"] - 1) * filtros["por_pagina"])
+            .limit(filtros["por_pagina"])
+            .all()
+        )
+
+        return filas, total
+
+    def find_detalle(self, id_usuario, id_transaccion):
+        return (
+            self.db.query(HistorialTransaccionModel)
+            .filter(
+                HistorialTransaccionModel.id_usuario == id_usuario,
+                HistorialTransaccionModel.id_transaccion == id_transaccion,
+            )
+            .first()
+        )
 
     def find_categorias(self):
         resultado = (
