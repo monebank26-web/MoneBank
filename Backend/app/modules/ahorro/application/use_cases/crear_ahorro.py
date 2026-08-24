@@ -3,8 +3,5 @@ class CrearAhorro:
     def __init__(self, repository):
         self.repository = repository
 
-    def execute(self, db, ahorro_data):
-        return self.repository.create(
-            db,
-            ahorro_data
-        )
+    def execute(self, ahorro_data):
+        return self.repository.create(ahorro_data)

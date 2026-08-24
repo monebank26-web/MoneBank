@@ -1,18 +1,10 @@
-﻿from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
-    SqlCuentaRepository
-)
+﻿from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
+
 
 class CrearCuenta:
 
-    def __init__(self, repository):
+    def __init__(self, repository: CuentaRepository):
         self.repository = repository
 
-    def execute(
-        self,
-        db,
-        cuenta_data
-    ):
-        return self.repository.create(
-            db,
-            cuenta_data
-        )
+    def execute(self, cuenta_data):
+        return self.repository.create(cuenta_data)

@@ -5,7 +5,7 @@ import pytest
 from app.modules.transaccion.application.use_cases.obtener_transacciones import (
     ObtenerTransaccionesUseCase
 )
-from app.shared.exceptions.transaccion import TransaccionesNoEncontrado
+from app.shared.exceptions.business_exceptions import TransaccionesNoEncontrado
 
 
 def test_debe_retornar_transacciones_del_usuario():

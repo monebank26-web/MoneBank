@@ -7,7 +7,6 @@ def test_crear_cuenta_exitosamente():
 
     # Arrange
     repository = Mock()
-    db = Mock()
 
     cuenta_data = {
         "saldo": 0,
@@ -22,15 +21,9 @@ def test_crear_cuenta_exitosamente():
     use_case = CrearCuenta(repository)
 
     # Act
-    resultado = use_case.execute(
-        db,
-        cuenta_data
-    )
+    resultado = use_case.execute(cuenta_data)
 
     # Assert
     assert resultado == cuenta_mock
 
-    repository.create.assert_called_once_with(
-        db,
-        cuenta_data
-    )
+    repository.create.assert_called_once_with(cuenta_data)

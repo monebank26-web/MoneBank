@@ -1,17 +1,22 @@
 from abc import ABC, abstractmethod
 
+
 class UsuarioRepository(ABC):
 
     @abstractmethod
-    def create(self, db, usuario_data):
+    def create(self, usuario_data):
         pass
 
     @abstractmethod
-    def get_all(self, db):
+    def exists_by_email(self, correo):
         pass
 
     @abstractmethod
-    def get_by_id(self, db, usuario_id):
+    def get_all(self):
+        pass
+
+    @abstractmethod
+    def get_by_id(self, usuario_id):
         pass
 
     @abstractmethod
@@ -19,9 +24,17 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, db, usuario_id):
+    def delete(self, usuario_id):
         pass
 
     @abstractmethod
-    def login(self, db, correo):
+    def get_by_email(self, correo):
+        pass
+
+    @abstractmethod
+    def update_auth_fields(self, usuario_id, intentos_fallidos, bloqueado_hasta):
+        pass
+
+    @abstractmethod
+    def update_password(self, usuario_id, nuevo_hash):
         pass

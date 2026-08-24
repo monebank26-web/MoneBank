@@ -3,7 +3,7 @@ class ObtenerCuentaPorIdUseCase:
     def __init__(self, repository):
         self.repository = repository
 
-    def execute(self, db, id_cuenta):
+    def execute(self, id_cuenta):
 
         if id_cuenta <= 0:
             return {
@@ -11,7 +11,7 @@ class ObtenerCuentaPorIdUseCase:
                 "message": "Id inválido"
             }
 
-        cuenta = self.repository.get_by_id(db, id_cuenta)
+        cuenta = self.repository.get_by_id(id_cuenta)
 
         if cuenta is None:
             return {

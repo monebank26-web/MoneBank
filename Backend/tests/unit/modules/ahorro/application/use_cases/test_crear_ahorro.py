@@ -7,7 +7,6 @@ def test_debe_crear_un_ahorro():
 
     # Arrange
     repository = Mock()
-    db = Mock()
 
     ahorro_data = {
         "nombre": "Viaje",
@@ -25,12 +24,9 @@ def test_debe_crear_un_ahorro():
     use_case = CrearAhorro(repository)
 
     # Act
-    resultado = use_case.execute(db, ahorro_data)
+    resultado = use_case.execute(ahorro_data)
 
     # Assert
-    repository.create.assert_called_once_with(
-        db,
-        ahorro_data
-    )
+    repository.create.assert_called_once_with(ahorro_data)
 
     assert resultado == ahorro_creado

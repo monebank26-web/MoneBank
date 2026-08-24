@@ -10,7 +10,9 @@ Backend/__pycache__/
 
 # Pytest
 .pytest_cache/
-
+.coverage
+.coverage.*
+htmlcov/
 # =========================
 # Frontend Node
 # =========================
