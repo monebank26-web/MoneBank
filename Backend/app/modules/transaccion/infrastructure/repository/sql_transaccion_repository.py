@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 
 from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
+from app.modules.ahorro.infrastructure.model.tipo_ahorro_model import (
+    TipoAhorroModel
+)
 from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
@@ -156,3 +159,10 @@ class SqlTransaccionesRepository(TransaccionRepository):
         self.db.commit()
         self.db.refresh(cuenta)
         return cuenta
+
+    def get_tipo_ahorro(self, nombre):
+        return (
+            self.db.query(TipoAhorroModel)
+            .filter(TipoAhorroModel.nombre_tipo_ahorro == nombre)
+            .first()
+        )

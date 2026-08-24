@@ -7,6 +7,7 @@ from app.shared.exceptions.business_exceptions import (
     CuentaNoEncontrada,
     FechaObjetivoPasada,
     FechaObjetivoRequerida,
+    SaldoInsuficiente,
 )
 
 
@@ -48,6 +49,11 @@ class CrearMeta:
 
         if not meta.es_fecha_objetivo_valida():
             raise FechaObjetivoPasada()
+
+        saldo_inicial = meta_data.get("saldo_inicial") or 0
+
+        if saldo_inicial > cuenta.saldo:
+            raise SaldoInsuficiente()
 
         tipo_meta = self.repository.get_tipo_ahorro(Ahorro.TIPO_META)
 

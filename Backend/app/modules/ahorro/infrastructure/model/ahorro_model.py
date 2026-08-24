@@ -38,6 +38,10 @@ class AhorroModel(Base):
 
     fecha_objetivo = Column(Date, nullable=True)
 
+    periodo = Column(String(20), nullable=True)
+
+    fecha_finalizacion = Column(Date, nullable=True)
+
     id_tipo_ahorro = Column(Integer)
     id_categoria = Column(Integer)
     id_cuenta = Column(Integer)

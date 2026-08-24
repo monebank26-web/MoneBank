@@ -8,10 +8,6 @@ class AhorroRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all(self):
-        pass
-
-    @abstractmethod
     def get_by_id(self, id_ahorro):
         pass
 
@@ -45,4 +41,12 @@ class AhorroRepository(ABC):
 
     @abstractmethod
     def get_progreso(self, id_ahorro):
+        pass
+
+    @abstractmethod
+    def get_gasto_periodo(self, id_categoria, id_cuenta, fecha_desde, fecha_hasta):
+        pass
+
+    @abstractmethod
+    def get_by_cuenta(self, id_cuenta):
         pass

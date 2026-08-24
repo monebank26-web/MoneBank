@@ -6,6 +6,9 @@ from app.core.security.auth import get_current_user
 
 from app.modules.transaccion.application.use_cases.obtener_detalle_transaccion import ObtenerDetalleUseCase
 from app.modules.transaccion.application.use_cases.obtener_transacciones_historial import ObtenerHistorialUseCase
+from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
+    RegistrarAbonoAhorro
+)
 from app.modules.transaccion.application.use_cases.registrar_gasto import RegistrarGasto
 
 from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
@@ -13,6 +16,7 @@ from app.modules.transaccion.infrastructure.repository.sql_transaccion_repositor
 from app.modules.transaccion.presentation.schema.trans_schema import (
     CategoriaResponse,
     DetalleTransaccionResponse,
+    AbonoAhorroRequest,
     GastoRequest,
     GastoResponse,
     HistorialRequest,
@@ -61,6 +65,24 @@ def obtener_historial(
 ):
     caso_uso = ObtenerHistorialUseCase(repository)
     return caso_uso.execute(current_user.id_usuario, filtros.model_dump())
+
+
+@router.post(
+    "/ahorros",
+    response_model=GastoResponse,
+    status_code=201
+)
+def registrar_abono_ahorro(
+    abono: AbonoAhorroRequest,
+    current_user: object = Depends(get_current_user),
+    repository: TransaccionRepository = Depends(get_transaccion_repository),
+):
+    caso_uso = RegistrarAbonoAhorro(repository)
+
+    return caso_uso.execute(
+        abono.model_dump(),
+        current_user.id_usuario
+    )
 
 
 @router.get("/categorias", response_model=List[CategoriaResponse], status_code=200)

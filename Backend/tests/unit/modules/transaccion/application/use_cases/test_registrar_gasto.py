@@ -14,6 +14,7 @@ from app.shared.exceptions.business_exceptions import (
     CuentaNoPerteneceAlUsuario,
     FechaInvalida,
     MontoInvalido,
+    SaldoInsuficiente,
 )
 
 
@@ -37,6 +38,7 @@ def test_registrar_gasto_exitoso_guarda_y_descuenta_saldo():
 
     cuenta = Mock()
     cuenta.id_usuario = 6
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta.return_value = cuenta
 
     tipo_gasto = Mock()
@@ -73,6 +75,7 @@ def test_registrar_gasto_con_ahorro_valido_asocia_el_id():
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta.return_value = cuenta
 
     tipo_gasto = Mock()
@@ -101,6 +104,7 @@ def test_registrar_gasto_con_ahorro_inexistente_lanza_error():
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta.return_value = cuenta
 
     tipo_gasto = Mock()
@@ -126,6 +130,7 @@ def test_registrar_gasto_con_ahorro_de_otra_cuenta_lanza_error():
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta.return_value = cuenta
 
     tipo_gasto = Mock()
@@ -153,6 +158,7 @@ def test_registrar_gasto_sin_ahorro_envia_none():
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("999999.00")
     repository.get_cuenta.return_value = cuenta
 
     tipo_gasto = Mock()
@@ -247,3 +253,47 @@ def test_registrar_gasto_con_cuenta_de_otro_usuario_lanza_sin_permiso():
 
     repository.create.assert_not_called()
     repository.descontar_saldo.assert_not_called()
+
+
+def test_registrar_gasto_con_saldo_insuficiente_lanza_error():
+
+    repository = Mock()
+    repository.existe_categoria.return_value = True
+
+    cuenta = Mock()
+    cuenta.id_usuario = 6
+    cuenta.saldo = Decimal("100.00")
+    repository.get_cuenta.return_value = cuenta
+
+    datos = datos_validos()
+    datos["monto"] = Decimal("50000.00")
+
+    with pytest.raises(SaldoInsuficiente):
+        RegistrarGasto(repository).execute(datos, 6)
+
+    repository.create.assert_not_called()
+    repository.descontar_saldo.assert_not_called()
+
+
+def test_registrar_gasto_con_monto_igual_al_saldo_es_valido():
+
+    repository = Mock()
+    repository.existe_categoria.return_value = True
+
+    cuenta = Mock()
+    cuenta.id_usuario = 6
+    cuenta.id_cuenta = 1
+    cuenta.saldo = Decimal("50000.00")
+    repository.get_cuenta.return_value = cuenta
+
+    tipo_gasto = Mock()
+    tipo_gasto.id_tipo_transaccion = 2
+    repository.get_tipo_transaccion.return_value = tipo_gasto
+
+    RegistrarGasto(repository).execute(datos_validos(), 6)
+
+    repository.create.assert_called_once()
+    repository.descontar_saldo.assert_called_once_with(
+        1,
+        Decimal("50000.00")
+    )
