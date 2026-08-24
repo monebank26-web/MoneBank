@@ -59,6 +59,13 @@ export const authService = {
     return toFrontend(data);
   },
 
+  cambiarPassword: async (contrasenaActual, contrasenaNueva) => {
+    return apiClient.post('/auth/cambiar-password', {
+      contrasena_actual: contrasenaActual,
+      contrasena_nueva: contrasenaNueva,
+    });
+  },
+
   obtenerSaldo: async () => {
     const data = await apiClient.get('/cuentas/');
     const cuentas = Array.isArray(data) ? data : [];

@@ -95,18 +95,25 @@ const PerfilPage = () => {
       setErrorPassword('Completa todos los campos.');
       return;
     }
-    if (formPassword.nueva.length < 4) {
-      setErrorPassword('La nueva contraseña debe tener al menos 4 caracteres.');
-      return;
-    }
     if (formPassword.nueva !== formPassword.confirmar) {
       setErrorPassword('Las contraseñas nuevas no coinciden.');
       return;
     }
 
+    const faltantes = [];
+    if (formPassword.nueva.length < 8) faltantes.push('mínimo 8 caracteres');
+    if (!/[A-Z]/.test(formPassword.nueva)) faltantes.push('una mayúscula');
+    if (!/[a-z]/.test(formPassword.nueva)) faltantes.push('una minúscula');
+    if (!/\d/.test(formPassword.nueva)) faltantes.push('un número');
+    if (!/[!@#$%^&*(),.?":{}|<>_\-]/.test(formPassword.nueva)) faltantes.push('un carácter especial');
+    if (faltantes.length > 0) {
+      setErrorPassword(`La nueva contraseña requiere: ${faltantes.join(', ')}.`);
+      return;
+    }
+
     setCargandoPassword(true);
     try {
-      authService.cambiarPassword(user.id, formPassword.actual, formPassword.nueva);
+      await authService.cambiarPassword(formPassword.actual, formPassword.nueva);
       setExitoPassword('Contraseña actualizada correctamente.');
       setTimeout(() => {
         handleCerrarModalPassword();

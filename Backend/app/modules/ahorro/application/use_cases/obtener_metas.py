@@ -1,7 +1,7 @@
 from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
 
 
-class ObtenerAhorrosUseCase:
+class ObtenerMetas:
 
     def __init__(self, repository):
         self.repository = repository
@@ -13,4 +13,4 @@ class ObtenerAhorrosUseCase:
         if not cuenta:
             raise CuentaNoEncontrada()
 
-        return self.repository.get_by_cuenta(cuenta.id_cuenta)
+        return self.repository.get_metas_activas(cuenta.id_cuenta)

@@ -3,6 +3,7 @@ class Transaccion:
     TIPO_INGRESO = "INGRESO"
     TIPO_GASTO = "GASTO"
     TIPO_AHORRO = "AHORRO"
+    TIPO_MOVIMIENTO_AHORRO = "MOVIMIENTO_AHORRO"
 
     def __init__(
         self,

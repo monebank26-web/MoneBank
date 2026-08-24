@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+from datetime import date
+from decimal import Decimal
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AhorroCreate(BaseModel):
@@ -15,7 +19,66 @@ class AhorroCreate(BaseModel):
 class AhorroResponse(BaseModel):
     id_ahorro: int
     nombre: str
-    saldo_actual: float
+    monto_objetivo: Optional[Decimal] = None
+    saldo_actual: Optional[Decimal] = None
+    estado: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MetaCreate(BaseModel):
+    nombre: str = Field(..., min_length=1, max_length=100)
+    monto_objetivo: Decimal = Field(..., gt=0)
+    saldo_inicial: Optional[Decimal] = Field(None, ge=0)
+    fecha_objetivo: date
+    id_categoria: int
+
+
+class MetaResponse(BaseModel):
+    id_ahorro: int
+    nombre: str
+    nombre_categoria: Optional[str] = None
+    monto_objetivo: Optional[Decimal] = None
+    saldo_actual: Optional[Decimal] = None
+    porcentaje_completado: Optional[Decimal] = None
+    monto_faltante: Optional[Decimal] = None
+    fecha_objetivo: Optional[date] = None
+    estado: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AhorroProgresoResponse(BaseModel):
+    id_meta: int
+    nombre: str
+    monto_objetivo: Optional[Decimal] = None
+    monto_acumulado: Optional[Decimal] = None
+    porcentaje_avance: Optional[Decimal] = None
+    monto_faltante: Optional[Decimal] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LimiteCreate(BaseModel):
+    nombre: Optional[str] = Field(None, max_length=100)
+    monto_limite: Decimal = Field(..., gt=0)
+    periodo: str
+    id_categoria: int
+
+
+class LimiteResponse(BaseModel):
+    id_ahorro: int
+    nombre: str
+    nombre_categoria: Optional[str] = None
+    monto_limite: Optional[Decimal] = None
+    periodo: Optional[str] = None
+    gasto_actual: Optional[Decimal] = None
+    porcentaje_usado: Optional[Decimal] = None
+    monto_disponible: Optional[Decimal] = None
+    estado: str
+
+
+class AlertaResponse(BaseModel):
+    tipo_alerta: str
+    mensaje: str
+    fecha: date
