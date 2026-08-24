@@ -1,14 +1,130 @@
-import React from 'react';
-import { useDatosPersonales } from '../hooks/useDatosPersonales';
-import { useCambiarPassword } from '../hooks/useCambiarPassword';
-import TarjetaResumenPerfil from '../components/TarjetaResumenPerfil';
-import SeccionDatosPersonales from '../components/SeccionDatosPersonales';
-import ModalCambiarPassword from '../components/ModalCambiarPassword';
+import React, { useState } from 'react';
+import { useAuth } from '../../../core/context/AuthContext';
+import { authService } from '../../auth/services/authService';
+import Modal from '../../../shared/components/Modal';
+import { ROLES } from '../../../core/constants';
 import './PerfilPage.css';
 
+const formatFecha = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+const formatMoney = (val) =>
+  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
+
+const etiquetaRol = {
+  administrador: '👑 Administrador',
+  padre: '👨‍👧 Padre/Madre',
+  hijo: '🧒 Hijo/Hija',
+  normal: '👤 Cuenta normal',
+};
+
 const PerfilPage = () => {
-  const datosPersonales = useDatosPersonales();
-  const cambiarPassword = useCambiarPassword();
+  const { user, login } = useAuth();
+
+  // ── Edición de datos básicos ──
+  const [editando, setEditando] = useState(false);
+  const [formDatos, setFormDatos] = useState({ nombres: user?.nombres || '', apellidos: user?.apellidos || '', email: user?.email || '' });
+  const [errorDatos, setErrorDatos] = useState('');
+  const [exitoDatos, setExitoDatos] = useState('');
+
+  // ── Cambio de contraseña ──
+  const [modalPassword, setModalPassword] = useState(false);
+  const [formPassword, setFormPassword] = useState({ actual: '', nueva: '', confirmar: '' });
+  const [errorPassword, setErrorPassword] = useState('');
+  const [exitoPassword, setExitoPassword] = useState('');
+  const [cargandoPassword, setCargandoPassword] = useState(false);
+
+  const iniciales = user?.nombres?.charAt(0).toUpperCase() || 'U';
+
+  const handleChangeDatos = (e) => {
+    setFormDatos({ ...formDatos, [e.target.name]: e.target.value });
+    setExitoDatos('');
+  };
+
+  const handleGuardarDatos = async (e) => {
+    e.preventDefault();
+    setErrorDatos('');
+    setExitoDatos('');
+
+    if (!formDatos.nombres.trim() || !formDatos.apellidos.trim() || !formDatos.email.trim()) {
+      setErrorDatos('Los nombres, apellidos y el correo no pueden quedar vacíos.');
+      return;
+    }
+
+    try {
+      await authService.actualizarUsuario(user.id, {
+        nombres: formDatos.nombres.trim(),
+        apellidos: formDatos.apellidos.trim(),
+        email: formDatos.email.trim(),
+      });
+      login({ ...user, nombres: formDatos.nombres.trim(), apellidos: formDatos.apellidos.trim(), email: formDatos.email.trim() });
+      setEditando(false);
+      setExitoDatos('Tus datos se actualizaron correctamente.');
+    } catch (err) {
+      setErrorDatos(err.message);
+    }
+  };
+
+  const handleCancelarEdicion = () => {
+    setFormDatos({ nombres: user?.nombres || '', apellidos: user?.apellidos || '', email: user?.email || '' });
+    setErrorDatos('');
+    setEditando(false);
+  };
+
+  const handleChangePassword = (e) => {
+    setFormPassword({ ...formPassword, [e.target.name]: e.target.value });
+  };
+
+  const handleCerrarModalPassword = () => {
+    setModalPassword(false);
+    setFormPassword({ actual: '', nueva: '', confirmar: '' });
+    setErrorPassword('');
+  };
+
+  const handleGuardarPassword = async (e) => {
+    e.preventDefault();
+    setErrorPassword('');
+
+    if (!formPassword.actual || !formPassword.nueva || !formPassword.confirmar) {
+      setErrorPassword('Completa todos los campos.');
+      return;
+    }
+    if (formPassword.nueva !== formPassword.confirmar) {
+      setErrorPassword('Las contraseñas nuevas no coinciden.');
+      return;
+    }
+
+    const faltantes = [];
+    if (formPassword.nueva.length < 8) faltantes.push('mínimo 8 caracteres');
+    if (!/[A-Z]/.test(formPassword.nueva)) faltantes.push('una mayúscula');
+    if (!/[a-z]/.test(formPassword.nueva)) faltantes.push('una minúscula');
+    if (!/\d/.test(formPassword.nueva)) faltantes.push('un número');
+    if (!/[!@#$%^&*(),.?":{}|<>_\-]/.test(formPassword.nueva)) faltantes.push('un carácter especial');
+    if (faltantes.length > 0) {
+      setErrorPassword(`La nueva contraseña requiere: ${faltantes.join(', ')}.`);
+      return;
+    }
+
+    setCargandoPassword(true);
+    try {
+      await authService.cambiarPassword(formPassword.actual, formPassword.nueva);
+      setExitoPassword('Contraseña actualizada correctamente.');
+      setTimeout(() => {
+        handleCerrarModalPassword();
+        setExitoPassword('');
+      }, 1200);
+    } catch (err) {
+      setErrorPassword(err.message);
+    } finally {
+      setCargandoPassword(false);
+    }
+  };
 
   return (
     <div className="pagina-perfil">
@@ -17,20 +133,100 @@ const PerfilPage = () => {
         <p className="subtitulo-perfil">Consulta y modifica la información de tu cuenta.</p>
       </div>
 
-      <TarjetaResumenPerfil user={datosPersonales.user} />
+      {/* Tarjeta de resumen */}
+      <div className="tarjeta-resumen-perfil">
+        <div className="avatar-perfil">{iniciales}</div>
+        <div className="info-resumen-perfil">
+          <h2 className="nombre-resumen-perfil">{user?.nombres} {user?.apellidos}</h2>
+          <p className="correo-resumen-perfil">{user?.email}</p>
+          <span className="chip-rol-perfil">{etiquetaRol[user?.rol] || user?.rol}</span>
+        </div>
+        {user?.rol !== ROLES.ADMIN && (
+          <div className="saldo-resumen-perfil">
+            <p className="etiqueta-saldo-perfil">Saldo en Mi Cuenta</p>
+            <p className="valor-saldo-perfil">{formatMoney(user?.saldoCuenta)}</p>
+          </div>
+        )}
+      </div>
 
-      <SeccionDatosPersonales
-        user={datosPersonales.user}
-        editando={datosPersonales.editando}
-        setEditando={datosPersonales.setEditando}
-        formDatos={datosPersonales.formDatos}
-        errorDatos={datosPersonales.errorDatos}
-        exitoDatos={datosPersonales.exitoDatos}
-        onChange={datosPersonales.handleChangeDatos}
-        onGuardar={datosPersonales.handleGuardarDatos}
-        onCancelar={datosPersonales.handleCancelarEdicion}
-      />
+      {/* Datos personales */}
+      <div className="tarjeta-seccion-perfil">
+        <div className="encabezado-seccion-perfil">
+          <h3 className="titulo-seccion-perfil">Datos personales</h3>
+          {!editando && (
+            <button className="boton-secundario-perfil" onClick={() => setEditando(true)}>
+              Editar
+            </button>
+          )}
+        </div>
 
+        {!editando ? (
+          <div className="lista-datos-perfil">
+            <div className="fila-dato-perfil">
+              <span className="etiqueta-dato-perfil">Nombre completo</span>
+              <span className="valor-dato-perfil">{user?.nombres} {user?.apellidos}</span>
+            </div>
+            <div className="fila-dato-perfil">
+              <span className="etiqueta-dato-perfil">Correo electrónico</span>
+              <span className="valor-dato-perfil">{user?.email}</span>
+            </div>
+            <div className="fila-dato-perfil">
+              <span className="etiqueta-dato-perfil">Tipo de cuenta</span>
+              <span className="valor-dato-perfil">{etiquetaRol[user?.rol] || user?.rol}</span>
+            </div>
+            <div className="fila-dato-perfil">
+              <span className="etiqueta-dato-perfil">Cliente desde</span>
+              <span className="valor-dato-perfil">{formatFecha(user?.createdAt)}</span>
+            </div>
+            {exitoDatos && <p className="mensaje-exito-perfil">{exitoDatos}</p>}
+          </div>
+        ) : (
+          <form className="formulario-perfil" onSubmit={handleGuardarDatos}>
+            <div className="grupo-campo">
+              <label className="etiqueta-campo">Nombres</label>
+              <input
+                className="campo-entrada"
+                type="text"
+                name="nombres"
+                value={formDatos.nombres}
+                onChange={handleChangeDatos}
+                required
+              />
+            </div>
+            <div className="grupo-campo">
+              <label className="etiqueta-campo">Apellidos</label>
+              <input
+                className="campo-entrada"
+                type="text"
+                name="apellidos"
+                value={formDatos.apellidos}
+                onChange={handleChangeDatos}
+                required
+              />
+            </div>
+            <div className="grupo-campo">
+              <label className="etiqueta-campo">Correo electrónico</label>
+              <input
+                className="campo-entrada"
+                type="email"
+                name="email"
+                value={formDatos.email}
+                onChange={handleChangeDatos}
+                required
+              />
+            </div>
+            {errorDatos && <p className="error-autenticacion">{errorDatos}</p>}
+            <div className="acciones-formulario-perfil">
+              <button type="submit" className="boton-principal-perfil">Guardar cambios</button>
+              <button type="button" className="boton-secundario-perfil" onClick={handleCancelarEdicion}>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      {/* Seguridad */}
       <div className="tarjeta-seccion-perfil">
         <div className="encabezado-seccion-perfil">
           <h3 className="titulo-seccion-perfil">Seguridad</h3>
@@ -40,22 +236,60 @@ const PerfilPage = () => {
             <span className="etiqueta-dato-perfil">Contraseña</span>
             <p className="descripcion-seguridad-perfil">Actualiza tu contraseña periódicamente para mantener tu cuenta segura.</p>
           </div>
-          <button className="boton-secundario-perfil" onClick={() => cambiarPassword.setModalPassword(true)}>
+          <button className="boton-secundario-perfil" onClick={() => setModalPassword(true)}>
             Cambiar contraseña
           </button>
         </div>
       </div>
 
-      <ModalCambiarPassword
-        open={cambiarPassword.modalPassword}
-        onClose={cambiarPassword.handleCerrarModalPassword}
-        formPassword={cambiarPassword.formPassword}
-        errorPassword={cambiarPassword.errorPassword}
-        exitoPassword={cambiarPassword.exitoPassword}
-        cargandoPassword={cambiarPassword.cargandoPassword}
-        onChange={cambiarPassword.handleChangePassword}
-        onGuardar={cambiarPassword.handleGuardarPassword}
-      />
+      {/* Modal cambiar contraseña */}
+      <Modal open={modalPassword} onClose={handleCerrarModalPassword} title="Cambiar contraseña">
+        <form className="formulario-perfil" onSubmit={handleGuardarPassword}>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Contraseña actual</label>
+            <input
+              className="campo-entrada"
+              type="password"
+              name="actual"
+              placeholder="••••••••"
+              value={formPassword.actual}
+              onChange={handleChangePassword}
+              required
+            />
+          </div>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Nueva contraseña</label>
+            <input
+              className="campo-entrada"
+              type="password"
+              name="nueva"
+              placeholder="••••••••"
+              value={formPassword.nueva}
+              onChange={handleChangePassword}
+              required
+            />
+          </div>
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">Confirmar nueva contraseña</label>
+            <input
+              className="campo-entrada"
+              type="password"
+              name="confirmar"
+              placeholder="••••••••"
+              value={formPassword.confirmar}
+              onChange={handleChangePassword}
+              required
+            />
+          </div>
+          {errorPassword && <p className="error-autenticacion">{errorPassword}</p>}
+          {exitoPassword && <p className="mensaje-exito-perfil">{exitoPassword}</p>}
+          <div className="acciones-formulario-perfil">
+            <button type="submit" className="boton-principal-perfil" disabled={cargandoPassword}>
+              {cargandoPassword ? 'Guardando...' : 'Actualizar contraseña'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

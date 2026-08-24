@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { bolsillosService } from '../services/bolsillosService';
-import { authService } from '../../auth/services/authService';
 
 export const useBolsillos = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const [bolsillos, setBolsillos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,30 +25,13 @@ export const useBolsillos = () => {
 
   const crear = async ({ nombre, descripcion, color, montoInicial }) => {
     const monto = parseFloat(montoInicial) || 0;
-    if (monto > user.saldoCuenta) throw new Error('Saldo insuficiente en Mi Cuenta.');
-
     const nuevo = await bolsillosService.crear({ nombre, descripcion, color, montoInicial: monto, userId: user.id });
-
-    // Descontar de Mi Cuenta
-    const nuevoSaldo = user.saldoCuenta - monto;
-    authService.actualizarSaldo(user.id, nuevoSaldo);
-    login({ ...user, saldoCuenta: nuevoSaldo });
-
     setBolsillos((prev) => [...prev, nuevo]);
     return nuevo;
   };
 
   const eliminar = async (id) => {
-    const bolsillo = bolsillos.find((b) => b.id === id);
     await bolsillosService.eliminar(id, user.id);
-
-    // Devolver saldo a Mi Cuenta
-    if (bolsillo && bolsillo.saldo > 0) {
-      const nuevoSaldo = user.saldoCuenta + bolsillo.saldo;
-      authService.actualizarSaldo(user.id, nuevoSaldo);
-      login({ ...user, saldoCuenta: nuevoSaldo });
-    }
-
     setBolsillos((prev) => prev.filter((b) => b.id !== id));
   };
 

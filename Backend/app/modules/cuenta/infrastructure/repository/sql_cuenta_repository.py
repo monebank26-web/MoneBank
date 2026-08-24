@@ -19,7 +19,14 @@ class SqlCuentaRepository(CuentaRepository):
     def get_all(self):
         return self.db.query(CuentaModel).all()
 
-    def get_by_id(self, id_cuenta):
+    def get_by_id(self, id_usuario):
+        return (
+            self.db.query(CuentaModel)
+            .filter(CuentaModel.id_usuario == id_usuario)
+            .first()
+        )
+
+    def get_by_id_cuenta(self, id_cuenta):
         return (
             self.db.query(CuentaModel)
             .filter(CuentaModel.id_cuenta == id_cuenta)
@@ -27,7 +34,7 @@ class SqlCuentaRepository(CuentaRepository):
         )
 
     def delete(self, id_cuenta):
-        cuenta = self.get_by_id(id_cuenta)
+        cuenta = self.get_by_id_cuenta(id_cuenta)
 
         if not cuenta:
             return None

@@ -1,7 +1,6 @@
 import logging
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.core.security.PasswordHasher import PasswordHasher
 from app.shared.exceptions.business_exceptions import UsuarioNotFoundException
 
 logger = logging.getLogger(__name__)
@@ -17,14 +16,6 @@ class ActualizarUsuarioUseCase:
         id_usuario,
         usuario_data
     ):
-        if "contrasena" in usuario_data:
-            if not usuario_data["contrasena"]:
-                usuario_data.pop("contrasena")
-            else:
-                usuario_data["contrasena"] = PasswordHasher.hash(
-                    usuario_data["contrasena"]
-                )
-
         try:
             usuario = self.repository.update(
                 id_usuario,

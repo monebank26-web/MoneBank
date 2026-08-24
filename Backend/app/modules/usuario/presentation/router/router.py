@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
@@ -18,8 +19,8 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioUpdate
 )
 
+
 from app.core.database.connection import get_db
-from sqlalchemy.orm import Session
 
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
@@ -99,7 +100,6 @@ def actualizar_usuario(
             status_code=500,
             detail=f"Error al actualizar usuario: {str(e)}"
         )
-
 
 @router.delete("/{id_usuario}")
 def eliminar_usuario(
