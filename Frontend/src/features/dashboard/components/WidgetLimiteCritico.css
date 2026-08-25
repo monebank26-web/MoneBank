@@ -1,0 +1,43 @@
+.tarjeta-saldo--limites {
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.valor-saldo--peligro {
+  color: var(--color-rojo-claro);
+}
+
+.valor-saldo--vacio {
+  font-size: 26px;
+  opacity: 0.85;
+}
+
+.barra-limite-tarjeta {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.relleno-limite-tarjeta {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.relleno-limite-tarjeta.uso-limite--ok {
+  background: var(--degradado-verde);
+}
+
+.relleno-limite-tarjeta.uso-limite--alerta {
+  background: var(--degradado-ambar);
+}
+
+.relleno-limite-tarjeta.uso-limite--superado {
+  background: var(--degradado-rojo);
+}

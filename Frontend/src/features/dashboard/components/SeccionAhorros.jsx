@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../../core/constants';
+import './SeccionAhorros.css';
 
 const aNumero = (v) => Number(v) || 0;
 
