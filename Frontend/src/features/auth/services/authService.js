@@ -74,15 +74,4 @@ export const authService = {
       ? { saldo: parseFloat(cuenta.saldo), id_cuenta: cuenta.id_cuenta }
       : { saldo: 0, id_cuenta: null };
   },
-
-  registrarGasto: async ({ monto, descripcion, id_cuenta, id_categoria = 3, id_tipo_transaccion = 1 }) => {
-    return apiClient.post('/transacciones/gastos', {
-      monto,
-      fecha: new Date().toISOString().split('T')[0],
-      descripcion: descripcion || null,
-      id_tipo_transaccion,
-      id_cuenta,
-      id_categoria,
-    });
-  },
 };
