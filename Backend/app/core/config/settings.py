@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     EMAIL_USER: str = ""
     EMAIL_PASSWORD: str = ""
     GOOGLE_AI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_MODEL: str = "gemini-3.7-flash"
 
     model_config = SettingsConfigDict(
         env_file=".env",

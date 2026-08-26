@@ -7,6 +7,9 @@ from app.core.security.auth import get_current_user
 from app.modules.analytics.application.use_cases.obtener_consejo_ia import (
     ObtenerConsejoIA
 )
+from app.modules.analytics.application.use_cases.obtener_consejo_previo import (
+    ObtenerConsejoPrevio
+)
 from app.modules.analytics.domain.interface.analytics_repository import (
     AnalyticsRepository
 )
@@ -18,6 +21,10 @@ from app.modules.analytics.infrastructure.repository.sql_analytics_repository im
     SqlAnalyticsRepository
 )
 from app.modules.analytics.presentation.schema.consejo_schema import ConsejoResponse
+from app.modules.analytics.presentation.schema.consejo_previo_schema import (
+    ConsejoPrevioRequest,
+    ConsejoPrevioResponse,
+)
 from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
 
 
@@ -62,6 +69,34 @@ def obtener_consejo_ia(
 
     return ConsejoResponse(
         id_transaccion=id_transaccion,
+        consejo=consejo,
+        generado_con_ia=generado_con_ia,
+    )
+
+
+@router.post(
+    "/consejo-previo",
+    response_model=ConsejoPrevioResponse,
+    status_code=200
+)
+def obtener_consejo_previo(
+    request: ConsejoPrevioRequest,
+    current_user: object = Depends(get_current_user),
+    repository: AnalyticsRepository = Depends(get_analytics_repository),
+    consejo_ia: ConsejoIAPort = Depends(get_consejo_ia_service),
+):
+    caso_uso = ObtenerConsejoPrevio(repository, consejo_ia)
+
+    try:
+        consejo = caso_uso.execute(
+            current_user.id_usuario, request.monto, request.id_categoria
+        )
+        generado_con_ia = True
+    except ConsejoIANoDisponible:
+        consejo = CONSEJO_GENERICO
+        generado_con_ia = False
+
+    return ConsejoPrevioResponse(
         consejo=consejo,
         generado_con_ia=generado_con_ia,
     )
