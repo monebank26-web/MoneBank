@@ -19,7 +19,10 @@ export const useAuthForm = (mode = 'login') => {
         user = await authService.login(formData);
       } else {
         await authService.register(formData);
-        user = await authService.login({ email: formData.email, password: formData.password });
+        user = await authService.login({ 
+          email: formData.email, 
+          password: formData.password 
+        });
       }
       login(user);
       navigate(ROUTES.DASHBOARD);

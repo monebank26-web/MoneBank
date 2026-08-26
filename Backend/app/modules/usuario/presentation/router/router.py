@@ -25,6 +25,7 @@ from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import S
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 
 
+
 router = APIRouter(
     prefix="/usuarios",
     tags=["Usuarios"]
@@ -109,3 +110,4 @@ def eliminar_usuario(
 ):
     caso_uso = EliminarUsuarioUseCase(repository)
     return caso_uso.execute(id_usuario)
+
