@@ -8,6 +8,9 @@ from app.modules.auth.presentation.router.router import (router as auth_router)
 from app.modules.transaccion.presentation.router.router import (
     router as transaccion_router
 )
+from app.modules.analytics.presentation.router.router import (
+    router as analitica_router
+)
 
 from app.shared.exceptions.handlers import register_all_exception_handlers
 
@@ -31,5 +34,6 @@ app.include_router(auth_router)
 app.include_router(ahorro_router)
 app.include_router(cuenta_router)
 app.include_router(transaccion_router)
+app.include_router(analitica_router)
 
 register_all_exception_handlers(app)

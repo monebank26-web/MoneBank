@@ -107,7 +107,11 @@ class SqlTransaccionesRepository(TransaccionRepository):
 
     def find_categorias(self):
         resultado = (
-            self.db.query(CategoriaModel.id_categoria, CategoriaModel.nombre_categoria)
+            self.db.query(
+                CategoriaModel.id_categoria,
+                CategoriaModel.nombre_categoria,
+                CategoriaModel.tipo_categoria,
+            )
             .order_by(CategoriaModel.nombre_categoria)
             .all()
         )

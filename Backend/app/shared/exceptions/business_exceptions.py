@@ -221,3 +221,12 @@ class SaldoInsuficiente(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class ConsejoIANoDisponible(Exception):
+    status_code = 503
+    description = "El servicio de consejos de IA no está disponible en este momento"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
