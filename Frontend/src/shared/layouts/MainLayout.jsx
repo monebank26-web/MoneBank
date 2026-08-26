@@ -22,6 +22,8 @@ const MainLayout = ({ children }) => {
   const elementosNav = [
     { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
     { to: ROUTES.BOLSILLOS, label: 'Bolsillos', icono: '◈', visible: !esAdmin },
+    { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
+    { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
     { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: '↕', visible: !esAdmin },
     {
       to: esPadre ? ROUTES.CONTROL_PARENTAL_PADRE : ROUTES.CONTROL_PARENTAL_HIJO,

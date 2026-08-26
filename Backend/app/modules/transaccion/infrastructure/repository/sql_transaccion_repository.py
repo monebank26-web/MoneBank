@@ -107,7 +107,11 @@ class SqlTransaccionesRepository(TransaccionRepository):
 
     def find_categorias(self):
         resultado = (
-            self.db.query(CategoriaModel.id_categoria, CategoriaModel.nombre_categoria)
+            self.db.query(
+                CategoriaModel.id_categoria,
+                CategoriaModel.nombre_categoria,
+                CategoriaModel.tipo_categoria,
+            )
             .order_by(CategoriaModel.nombre_categoria)
             .all()
         )
@@ -159,7 +163,19 @@ class SqlTransaccionesRepository(TransaccionRepository):
         self.db.commit()
         self.db.refresh(cuenta)
         return cuenta
+        
+    def aumentar_saldo(self, id_cuenta, monto):
+            cuenta = self.get_cuenta(id_cuenta)
+    
+            if not cuenta:
+                return None
+    
+            cuenta.saldo += monto
+            self.db.commit()
+            self.db.refresh(cuenta)
+            return cuenta
 
+    
     def get_tipo_ahorro(self, nombre):
         return (
             self.db.query(TipoAhorroModel)

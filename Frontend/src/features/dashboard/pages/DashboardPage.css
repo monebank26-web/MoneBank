@@ -1,6 +1,6 @@
 
 .pagina-inicio {
-  max-width: 860px;
+  max-width: 1150px;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -215,14 +215,19 @@
   flex-shrink: 0;
 }
 
-.icono-movimiento--transferencia {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+.icono-movimiento--gasto {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
-.icono-movimiento--deposito {
+.icono-movimiento--ingreso {
   background: var(--color-success-soft);
   color: var(--color-success);
+}
+
+.icono-movimiento--ahorro {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .informacion-movimiento {
@@ -246,14 +251,19 @@
   font-weight: 600;
 }
 
-.monto-movimiento--deposito {
+.monto-movimiento--gasto {
+  color: var(--color-danger);
+}
+
+.monto-movimiento--ingreso {
   color: var(--color-success);
 }
 
-.monto-movimiento--transferencia {
-  color: var(--color-text-soft);
+.monto-movimiento--ahorro {
+  color: var(--color-accent);
 }
 
+/* ── GRID 2 COLUMNAS ── */
 .tarjeta-saldos-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -268,12 +278,38 @@
   color: white;
 }
 
-.tarjeta-saldo--bolsillos {
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  color: white;
-  position: relative;
-  overflow: hidden;
+.cuerpo-inicio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.columna-contenido-inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.columna-ahorros-inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 901px) {
+  .columna-ahorros-inicio {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .cuerpo-inicio {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {

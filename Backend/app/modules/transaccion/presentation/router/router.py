@@ -10,6 +10,7 @@ from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import
     RegistrarAbonoAhorro
 )
 from app.modules.transaccion.application.use_cases.registrar_gasto import RegistrarGasto
+from app.modules.transaccion.application.use_cases.registrar_ingreso import RegistrarIngreso
 
 from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
 from app.modules.transaccion.infrastructure.repository.sql_transaccion_repository import SqlTransaccionesRepository
@@ -56,6 +57,22 @@ def registrar_gasto(
         current_user.id_usuario
     )
 
+@router.post(
+    "/ingresos",
+    response_model=GastoResponse,
+    status_code=201
+)
+def registrar_ingreso(
+    ingreso: GastoRequest,
+    current_user: object = Depends(get_current_user),
+    repository: TransaccionRepository = Depends(get_transaccion_repository),
+):
+    caso_uso = RegistrarIngreso(repository)
+
+    return caso_uso.execute(
+        ingreso.model_dump(),
+        current_user.id_usuario
+    )
 
 @router.get("/historial", response_model=HistorialPaginadoResponse, status_code=200)
 def obtener_historial(
@@ -83,7 +100,6 @@ def registrar_abono_ahorro(
         abono.model_dump(),
         current_user.id_usuario
     )
-
 
 @router.get("/categorias", response_model=List[CategoriaResponse], status_code=200)
 def obtener_categorias(
