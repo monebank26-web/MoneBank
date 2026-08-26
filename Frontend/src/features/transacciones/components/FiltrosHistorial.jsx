@@ -64,9 +64,9 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
           <label>Tipo
             <select value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
               <option value="">Todos</option>
-              <option value="1">Gasto</option>
-              <option value="2">Ingreso</option>
-              <option value="3">Ahorro</option>
+              <option value="1">Ahorro</option>
+              <option value="2">Gasto</option>
+              <option value="3">Ingreso</option>
             </select>
           </label>
           <label>Categoría

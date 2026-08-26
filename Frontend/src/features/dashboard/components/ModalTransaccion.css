@@ -156,7 +156,3 @@
   border: 1px solid rgba(var(--rgb-rojo), 0.45);
 }
 
-.formulario-modal .boton-principal:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}

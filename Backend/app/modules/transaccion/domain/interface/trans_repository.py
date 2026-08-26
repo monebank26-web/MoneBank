@@ -41,5 +41,9 @@ class TransaccionRepository(ABC):
         pass
 
     @abstractmethod
+    def aumentar_saldo(self, id_cuenta, monto):
+        pass
+    
+    @abstractmethod
     def get_tipo_ahorro(self, nombre):
         pass

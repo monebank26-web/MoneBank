@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '../../../shared/components/Modal';
 import { transaccionesService } from '../../transacciones/services/transaccionesService';
-import './ModalGastoDashboard.css';
+import '../../../shared/styles/transacciones-modal.css';
+import './ModalTransaccion.css';
 
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);

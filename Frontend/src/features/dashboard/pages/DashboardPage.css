@@ -215,14 +215,19 @@
   flex-shrink: 0;
 }
 
-.icono-movimiento--transferencia {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+.icono-movimiento--gasto {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
-.icono-movimiento--deposito {
+.icono-movimiento--ingreso {
   background: var(--color-success-soft);
   color: var(--color-success);
+}
+
+.icono-movimiento--ahorro {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .informacion-movimiento {
@@ -246,12 +251,16 @@
   font-weight: 600;
 }
 
-.monto-movimiento--deposito {
+.monto-movimiento--gasto {
+  color: var(--color-danger);
+}
+
+.monto-movimiento--ingreso {
   color: var(--color-success);
 }
 
-.monto-movimiento--transferencia {
-  color: var(--color-text-soft);
+.monto-movimiento--ahorro {
+  color: var(--color-accent);
 }
 
 /* ── GRID 2 COLUMNAS ── */
