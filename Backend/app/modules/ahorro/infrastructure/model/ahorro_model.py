@@ -23,7 +23,11 @@ class AhorroModel(Base):
     saldo_inicial = Column(Numeric(12, 2))
     saldo_actual = Column(Numeric(12, 2))
 
-    ahorro_automatico = Column(Boolean)
+    ahorro_automatico = Column(
+        Boolean,
+        nullable=False,
+        default=False
+    )
 
     fecha_creacion = Column(
         Date,
@@ -31,6 +35,12 @@ class AhorroModel(Base):
     )
 
     estado = Column(String(20))
+
+    fecha_objetivo = Column(Date, nullable=True)
+
+    periodo = Column(String(20), nullable=True)
+
+    fecha_finalizacion = Column(Date, nullable=True)
 
     id_tipo_ahorro = Column(Integer)
     id_categoria = Column(Integer)

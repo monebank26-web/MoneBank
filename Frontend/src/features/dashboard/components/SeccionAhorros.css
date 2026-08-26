@@ -1,0 +1,122 @@
+.tarjeta-acceso-ahorros {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.acceso-ahorros-vacio-texto {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.boton-llamada-accion--bloque {
+  display: block;
+  text-align: center;
+  margin-top: auto;
+}
+
+.lista-mini-limites,
+.lista-mini-metas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fila-mini-limite,
+.fila-mini-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fila-mini-enlace {
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  margin: -6px -8px;
+  transition: background 0.15s;
+}
+
+.fila-mini-enlace:hover {
+  background: var(--color-surface-2);
+}
+
+.info-mini-limite,
+.info-mini-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.nombre-mini-limite,
+.nombre-mini-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nombre-mini-limite--superado {
+  color: var(--color-danger);
+}
+
+.mini-barra-limite,
+.mini-barra-meta {
+  width: 100%;
+  height: 6px;
+  background: var(--color-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.mini-relleno-limite,
+.mini-relleno-meta {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.mini-relleno-limite.uso-limite--ok {
+  background: var(--degradado-verde);
+}
+
+.mini-relleno-limite.uso-limite--alerta {
+  background: var(--degradado-ambar);
+}
+
+.mini-relleno-limite.uso-limite--superado {
+  background: var(--degradado-rojo);
+}
+
+.mini-relleno-meta {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-claro));
+}
+
+.mini-relleno-meta--completo {
+  background: var(--degradado-verde);
+}
+
+.porcentaje-mini-limite,
+.porcentaje-mini-meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  min-width: 38px;
+  text-align: right;
+}
+
+.porcentaje-mini-limite.uso-limite--ok {
+  color: var(--color-success);
+}
+
+.porcentaje-mini-limite.uso-limite--alerta {
+  color: var(--color-ambar);
+}
+
+.porcentaje-mini-limite.uso-limite--superado {
+  color: var(--color-danger);
+}

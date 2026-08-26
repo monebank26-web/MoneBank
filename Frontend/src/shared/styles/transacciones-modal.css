@@ -1,0 +1,86 @@
+/* ── Formulario de transacciones (compartido por gasto e ingreso) ── */
+
+.formulario-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.etiqueta-campo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-soft);
+}
+
+.campo-entrada {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--color-text);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.campo-entrada:focus {
+  border-color: var(--color-accent);
+  background: rgba(201, 168, 76, 0.05);
+}
+
+.campo-entrada::placeholder {
+  color: var(--color-text-muted);
+}
+
+.campo-seleccion {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23c9a84c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+.campo-seleccion option {
+  background: #161616;
+  color: var(--color-text);
+}
+
+.campo-seleccion option[value=""] {
+  color: var(--color-text-muted);
+}
+
+.boton-principal {
+  background: var(--color-accent);
+  color: #080808;
+  border-radius: var(--radius-sm);
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.boton-principal:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.boton-principal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-formulario {
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+}

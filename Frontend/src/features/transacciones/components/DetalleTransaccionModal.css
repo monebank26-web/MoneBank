@@ -1,0 +1,104 @@
+.detalle-transaccion {
+  display: flex;
+  flex-direction: column;
+}
+
+.detalle-transaccion__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.detalle-transaccion__hero--gasto {
+  background: var(--color-danger-soft);
+}
+
+.detalle-transaccion__hero--ingreso {
+  background: var(--color-success-soft);
+}
+
+.detalle-transaccion__hero--ahorro,
+.detalle-transaccion__hero--movimiento_ahorro {
+  background: var(--color-accent-soft);
+}
+
+.detalle-transaccion__hero-icono {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.detalle-transaccion__hero--gasto .detalle-transaccion__hero-icono { color: var(--color-danger); }
+.detalle-transaccion__hero--ingreso .detalle-transaccion__hero-icono { color: var(--color-success); }
+.detalle-transaccion__hero--ahorro .detalle-transaccion__hero-icono,
+.detalle-transaccion__hero--movimiento_ahorro .detalle-transaccion__hero-icono { color: var(--color-accent); }
+
+.detalle-transaccion__hero-tipo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detalle-transaccion__hero-monto {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.detalle-transaccion__hero--gasto .detalle-transaccion__hero-monto { color: var(--color-danger); }
+.detalle-transaccion__hero--ingreso .detalle-transaccion__hero-monto { color: var(--color-success); }
+.detalle-transaccion__hero--ahorro .detalle-transaccion__hero-monto,
+.detalle-transaccion__hero--movimiento_ahorro .detalle-transaccion__hero-monto { color: var(--color-accent); }
+
+.detalle-transaccion__filas {
+  display: flex;
+  flex-direction: column;
+}
+
+.detalle-transaccion__fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detalle-transaccion__fila:last-child {
+  border-bottom: none;
+}
+
+.detalle-transaccion__fila-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.detalle-transaccion__fila-valor {
+  font-size: 14px;
+  color: var(--color-text);
+  font-weight: 500;
+  text-align: right;
+}
+
+.detalle-mensaje {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.detalle-mensaje--error {
+  color: var(--color-danger);
+}

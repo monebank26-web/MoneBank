@@ -1,0 +1,158 @@
+.preview-gasto {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titulo-preview-gasto {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.impacto-gasto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.encabezado-impacto-gasto {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.encabezado-impacto-gasto strong {
+  font-weight: 700;
+}
+
+.impacto-gasto--ok .encabezado-impacto-gasto span:first-child {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.impacto-gasto--alerta .encabezado-impacto-gasto span:first-child {
+  color: var(--color-ambar);
+  font-weight: 600;
+}
+
+.impacto-gasto--peligro .encabezado-impacto-gasto span:first-child,
+.mensaje-impacto-gasto {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.barra-impacto-gasto {
+  position: relative;
+  width: 100%;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.relleno-impacto-gasto {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.relleno-impacto-gasto--ok {
+  background: var(--degradado-verde);
+}
+
+.relleno-impacto-gasto--alerta {
+  background: var(--degradado-ambar);
+}
+
+.relleno-impacto-gasto--peligro {
+  background: var(--degradado-rojo);
+}
+
+.marca-uso-actual {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-text-soft);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.nota-impacto-gasto {
+  font-size: 12px;
+  color: var(--color-text-soft);
+}
+
+.nota-impacto-gasto--peligro {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.veredicto-gasto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.veredicto-gasto p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.icono-veredicto-gasto {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.veredicto-gasto--ok {
+  background: var(--color-success-soft);
+  border: 1px solid rgba(var(--rgb-verde-fuerte), 0.35);
+}
+
+.veredicto-gasto--ok .icono-veredicto-gasto {
+  background: rgba(var(--rgb-verde-fuerte), 0.18);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-verde-fuerte), 0.45);
+}
+
+.veredicto-gasto--alerta {
+  background: rgba(var(--rgb-ambar), 0.12);
+  border: 1px solid rgba(var(--rgb-ambar), 0.35);
+}
+
+.veredicto-gasto--alerta .icono-veredicto-gasto {
+  background: rgba(var(--rgb-ambar), 0.18);
+  color: var(--color-ambar);
+  border: 1px solid rgba(var(--rgb-ambar), 0.4);
+}
+
+.veredicto-gasto--peligro {
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(var(--rgb-rojo), 0.35);
+}
+
+.veredicto-gasto--peligro .icono-veredicto-gasto {
+  background: rgba(var(--rgb-rojo), 0.18);
+  color: var(--color-danger);
+  border: 1px solid rgba(var(--rgb-rojo), 0.45);
+}
+

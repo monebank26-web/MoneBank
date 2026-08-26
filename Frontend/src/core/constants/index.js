@@ -14,6 +14,8 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   BOLSILLOS: '/bolsillos',
   BOLSILLO_DETALLE: '/bolsillos/:id',
+  METAS: '/metas',
+  LIMITES: '/limites',
   TRANSACCIONES: '/transacciones',
   ADMIN: '/admin',
   CONTROL_PARENTAL_PADRE: '/control-parental/padre',
@@ -29,6 +31,8 @@ export const ROLES = {
 };
 
 export const CORREO_ADMIN = 'admin@monebank.com';
+
+export const PERIODOS_LIMITE = ['DIARIO', 'SEMANAL', 'MENSUAL'];
 
 export const COLORES_BOLSILLO = [
   '#3b82f6', // azul

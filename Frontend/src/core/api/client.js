@@ -1,13 +1,17 @@
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export const apiClient = {
-  get: async (endpoint) => {
-    const token = localStorage.getItem('mb_token');
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+  get: async (endpoint, params = {}) => {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  ).toString();
+  const url = query ? `${BASE_URL}${endpoint}?${query}` : `${BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('mb_token');
+  const res = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
     });
     if (!res.ok) {
       let msg;

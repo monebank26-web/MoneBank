@@ -1,20 +1,27 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.background import BackgroundTasks
 from sqlalchemy.orm import Session
 
+from app.core.security.auth import get_usuario_repository, get_current_user
 from app.core.database.connection import get_db
 from app.core.dependencies.email_service import EmailService
+
 from app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
 from app.modules.auth.application.use_cases.request_password_recovery import RequestPasswordRecoveryUseCase
 from app.modules.auth.application.use_cases.confirm_password_recovery import ConfirmPasswordRecoveryUseCase
+from app.modules.auth.application.use_cases.actualizar_contrasena import ActualizarContrasenaUseCase
+
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
 from app.modules.auth.infrastructure.repository.sql_auth_repository import SqlAuthRepository
+
+from app.modules.auth.presentation.schema.change_password_request import ContrasenaUpdateRequest
 from app.modules.auth.presentation.schema.login_request import LoginRequest
 from app.modules.auth.presentation.schema.login_response import LoginResponse
 from app.modules.auth.presentation.schema.password_recovery_request import ( PasswordRecoveryRequest, PasswordRecoveryConfirmRequest)
 from app.modules.auth.presentation.schema.password_recovery_response import PasswordRecoveryResponse
+
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.core.security.auth import get_usuario_repository
+
 
 from app.shared.exceptions.business_exceptions import (InvalidCredentialsException, AccountLockedException,EmailNotFoundException, InvalidOrExpiredTokenException)
 from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
@@ -85,6 +92,23 @@ def request_password_recovery(
     )
     result = use_case.execute(request.correo)
     return result
+
+@router.post(
+    "/cambiar-password",
+    response_model=PasswordRecoveryResponse,
+    summary="Cambiar contraseña",
+)
+def cambiar_contrasena(
+    request: ContrasenaUpdateRequest,
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    current_user: object = Depends(get_current_user),
+):
+    caso_uso = ActualizarContrasenaUseCase(repository)
+    return caso_uso.execute(
+        current_user.id_usuario,
+        request.contrasena_actual,
+        request.contrasena_nueva
+    )
 
 
 @router.post(

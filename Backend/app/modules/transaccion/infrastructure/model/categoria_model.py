@@ -17,12 +17,22 @@ class CategoriaModel(Base):
         index=True
     )
 
-    nombre = Column(
-        String(100),
+    nombre_categoria = Column(
+        String(60),
+        nullable=False
+    )
+
+    tipo_categoria = Column(
+        String(50),
         nullable=False
     )
 
     descripcion = Column(
         String(255),
         nullable=True
+    )
+
+    estado = Column(
+        String(20),
+        nullable=False
     )

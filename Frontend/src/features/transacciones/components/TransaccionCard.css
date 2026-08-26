@@ -1,0 +1,113 @@
+.transaccion-card {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.transaccion-card:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-accent);
+}
+
+.transaccion-card__icono {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.transaccion-card__icono--gasto {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.transaccion-card__icono--ingreso {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.transaccion-card__icono--ahorro {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.transaccion-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaccion-card__categoria {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaccion-card__descripcion {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaccion-card__fecha {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.transaccion-card__derecha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.transaccion-card__monto {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.transaccion-card__monto--gasto { color: var(--color-danger); }
+.transaccion-card__monto--ingreso { color: var(--color-success); }
+.transaccion-card__monto--ahorro { color: var(--color-accent); }
+
+.transaccion-card__etiqueta {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.transaccion-card__etiqueta--gasto {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.transaccion-card__etiqueta--ingreso {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.transaccion-card__etiqueta--ahorro {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
