@@ -1,13 +1,12 @@
 import json
+import logging
 
-import httpx
+from google import genai
 
 from app.modules.analytics.domain.interface.consejo_ia_port import ConsejoIAPort
-import logging
 from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
 
 
-GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 TIMEOUT_SEGUNDOS = 30
 
 PROMPT_BASE = (
@@ -30,6 +29,7 @@ class GeminiConsejoService(ConsejoIAPort):
     def __init__(self, api_key, modelo):
         self.api_key = api_key
         self.modelo = modelo
+        self.client = genai.Client(api_key=self.api_key)
 
     def generar_consejo(self, contexto, es_previo=False):
         if not self.api_key:
@@ -38,18 +38,10 @@ class GeminiConsejoService(ConsejoIAPort):
         prompt = PROMPT_PREVIO if es_previo else PROMPT_BASE
 
         try:
-            respuesta = httpx.post(
-                f"{GEMINI_URL_BASE}/{self.modelo}:generateContent",
-                headers={"x-goog-api-key": self.api_key},
-                json={
-                    "contents": [
-                        {"parts": [{"text": self._armar_prompt(contexto, prompt)}]}
-                    ],
-                    "generationConfig": {
-                        "maxOutputTokens": 200
-                    }
-                },
-                timeout=TIMEOUT_SEGUNDOS,
+            respuesta = self.client.models.generate_content(
+                model=self.modelo,
+                contents=self._armar_prompt(contexto, prompt),
+                config={"max_output_tokens": 200},
             )
             return self._extraer_texto(respuesta)
         except ConsejoIANoDisponible:
@@ -62,13 +54,7 @@ class GeminiConsejoService(ConsejoIAPort):
         return prompt_base + "\n" + json.dumps(contexto, ensure_ascii=False)
 
     def _extraer_texto(self, respuesta):
-        data = respuesta.json()
-        texto = (
-            data.get("candidates", [{}])[0]
-            .get("content", {})
-            .get("parts", [{}])[0]
-            .get("text")
-        )
+        texto = getattr(respuesta, "text", None)
 
         if not texto or not texto.strip():
             raise ConsejoIANoDisponible()
