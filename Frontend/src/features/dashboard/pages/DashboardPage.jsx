@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { useBolsillos } from '../../bolsillos/hooks/useBolsillos';
-import { useConsignarSaldo } from '../hooks/useConsignarSaldo';
+import { useIngreso } from '../hooks/useIngreso';
 import { useMovimientosRecientes } from '../hooks/useMovimientosRecientes';
 import { obtenerSaludoSegunHora } from '../../../core/utils/saludo';
 import { limitesService } from '../../limites/services/limitesService';
@@ -10,9 +10,9 @@ import { authService } from '../../auth/services/authService';
 import TarjetasSaldoInicio from '../components/TarjetasSaldoInicio';
 import SeccionBolsillosInicio from '../components/SeccionBolsillosInicio';
 import SeccionMovimientosInicio from '../components/SeccionMovimientosInicio';
-import ModalConsignar from '../components/ModalConsignar';
 import WidgetLimiteCritico from '../components/WidgetLimiteCritico';
 import SeccionAhorros from '../components/SeccionAhorros';
+import ModalIngresoDashboard from '../components/ModalIngresoDashboard';
 import ModalGastoDashboard from '../components/ModalGastoDashboard';
 import './DashboardPage.css';
 
@@ -21,8 +21,8 @@ const aNumero = (v) => Number(v) || 0;
 const DashboardPage = () => {
   const { user } = useAuth();
   const { bolsillos, loading, totalSaldo } = useBolsillos();
+  const ingreso = useIngreso();
   const { transacciones } = useMovimientosRecientes();
-  const consignar = useConsignarSaldo();
 
   const [saldoCuenta, setSaldoCuenta] = useState(0);
   const [limites, setLimites] = useState([]);
@@ -53,6 +53,11 @@ const DashboardPage = () => {
     if (nuevoSaldo !== undefined) setSaldoCuenta(nuevoSaldo);
   };
 
+  const handleIngresoCerrado = (nuevoSaldo) => {
+    ingreso.cerrarIngreso();
+    if (nuevoSaldo !== undefined) setSaldoCuenta(nuevoSaldo);
+  };
+
   return (
     <div className="pagina-inicio">
       <div className="encabezado-inicio">
@@ -65,7 +70,7 @@ const DashboardPage = () => {
       <div className="tarjeta-saldos-row">
         <TarjetasSaldoInicio
           saldoCuenta={saldoCuenta}
-          onConsignar={() => consignar.setModalConsignarAbierto(true)}
+          onIngreso={ingreso.abrirIngreso}
           onGasto={() => setModalGasto(true)}
         />
         <WidgetLimiteCritico limiteCritico={limiteCritico} />
@@ -85,14 +90,10 @@ const DashboardPage = () => {
         />
       </div>
 
-      <ModalConsignar
-        open={consignar.modalConsignarAbierto}
-        onClose={() => consignar.setModalConsignarAbierto(false)}
-        saldoActual={saldoCuenta}
-        monto={consignar.montoConsignar}
-        setMonto={consignar.setMontoConsignar}
-        error={consignar.errorConsignar}
-        onConsignar={consignar.handleConsignar}
+      <ModalIngresoDashboard
+        open={ingreso.modalIngresoAbierto}
+        onClose={handleIngresoCerrado}
+        saldoCuenta={saldoCuenta}
       />
 
       <ModalGastoDashboard

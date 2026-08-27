@@ -18,6 +18,15 @@ export const transaccionesService = {
       id_categoria,
     }),
 
+  registrarIngreso: ({ monto, descripcion, id_cuenta, id_categoria }) =>
+    apiClient.post('/transacciones/ingresos', {
+      monto,
+      fecha: new Date().toISOString().split('T')[0],
+      descripcion: descripcion || null,
+      id_cuenta,
+      id_categoria,
+    }),
+
      registrarAbonoAhorro: ({ monto, descripcion, id_cuenta, id_ahorro }) =>
     apiClient.post('/transacciones/ahorros', {
       monto,
