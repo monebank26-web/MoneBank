@@ -8,6 +8,7 @@
   /* Dorado - color de acento principal */
   --color-accent: #c9a84c;
   --color-accent-hover: #e0bc6a;
+  --color-accent-claro: #e2b93b;
   --color-accent-soft: rgba(201, 168, 76, 0.12);
   --color-accent-glow: rgba(201, 168, 76, 0.08);
 
@@ -21,6 +22,26 @@
 
   /* Amarillo - advertencia */
   --color-warning: #c9a84c;
+
+  /* Semáforo de barras y alertas (gastos y límites) */
+  /* Verde fuerte de las barras cuando todo va bien (distinto del verde de texto positivo) */
+  --color-verde-fuerte: #10b981;
+  --color-verde-fuerte-claro: #34d399;
+  /* Ámbar del semáforo (distinto del dorado --color-warning) */
+  --color-ambar: #f59e0b;
+  --color-ambar-claro: #fbbf24;
+  /* Versión clara del rojo de peligro */
+  --color-rojo-claro: #f87171;
+
+  /* Colores base en números, para usar con transparencia rgba(var(--rgb-...), 0.x) */
+  --rgb-verde-fuerte: 16, 185, 129;
+  --rgb-ambar: 245, 158, 11;
+  --rgb-rojo: 239, 68, 68;
+
+  /* Degradados listos para usar en barras */
+  --degradado-verde: linear-gradient(90deg, var(--color-verde-fuerte), var(--color-verde-fuerte-claro));
+  --degradado-ambar: linear-gradient(90deg, var(--color-ambar), var(--color-ambar-claro));
+  --degradado-rojo: linear-gradient(90deg, var(--color-danger), var(--color-rojo-claro));
 
   /* Colores de texto */
   --color-text: #f5f0e8;
@@ -36,6 +57,9 @@
   --radius-xl: 24px;
 
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* Controles nativos (selects, date pickers) en tema oscuro */
+  color-scheme: dark;
 }
 
 * {

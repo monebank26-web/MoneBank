@@ -4,7 +4,16 @@ from abc import ABC, abstractmethod
 class TransaccionRepository(ABC):
 
     @abstractmethod
-    def find_by_usuario(self, usuario_id):
+    def find_historial(self, usuario_id, filtros):
+        pass
+
+
+    @abstractmethod
+    def find_detalle(self, usuario_id, transaccion_id):
+        pass
+
+    @abstractmethod
+    def find_categorias(self):
         pass
 
     @abstractmethod
@@ -20,5 +29,25 @@ class TransaccionRepository(ABC):
         pass
 
     @abstractmethod
+    def get_tipo_transaccion(self, nombre):
+        pass
+
+    @abstractmethod
+    def get_ahorro(self, id_ahorro):
+        pass
+
+    @abstractmethod
     def descontar_saldo(self, id_cuenta, monto):
+        pass
+
+    @abstractmethod
+    def aumentar_saldo(self, id_cuenta, monto):
+        pass
+    
+    @abstractmethod
+    def get_tipo_ahorro(self, nombre):
+        pass
+
+    @abstractmethod
+    def sumar_saldo_ahorro(self, id_ahorro, monto):
         pass
