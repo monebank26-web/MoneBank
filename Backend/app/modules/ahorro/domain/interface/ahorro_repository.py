@@ -50,3 +50,7 @@ class AhorroRepository(ABC):
     @abstractmethod
     def get_by_cuenta(self, id_cuenta):
         pass
+
+    @abstractmethod
+    def descontar_saldo(self, id_cuenta, monto):
+        pass

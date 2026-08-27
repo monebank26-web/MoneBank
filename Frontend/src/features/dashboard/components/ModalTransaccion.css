@@ -1,3 +1,59 @@
+.formulario-gasto__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.formulario-gasto__campos {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.formulario-gasto__consejo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  animation: consejoSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.boton-secundario {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.boton-secundario:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.boton-cerrar-consejo {
+  width: 100%;
+  padding: 8px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.boton-cerrar-consejo:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
 .preview-gasto {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -156,3 +212,94 @@
   border: 1px solid rgba(var(--rgb-rojo), 0.45);
 }
 
+.boton-principal {
+  width: 100%;
+}
+
+.boton-principal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-gasto-expandido {
+  max-width: 820px !important;
+}
+
+@keyframes consejoSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .formulario-gasto__layout--con-consejo {
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .formulario-gasto__campos {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .formulario-gasto__consejo {
+    width: 320px;
+    flex-shrink: 0;
+    padding-top: 0;
+    position: sticky;
+    top: 0;
+    animation: consejoSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .formulario-gasto__consejo .card-consejo-ia {
+    position: relative;
+  }
+
+  @keyframes consejoSlideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .modal-gasto-expandido {
+    max-width: 440px !important;
+  }
+
+  .formulario-gasto__consejo {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 16px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    animation: consejoSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes consejoSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
