@@ -61,4 +61,9 @@ class CrearMeta:
         meta_data["id_tipo_ahorro"] = tipo_meta.id_tipo_ahorro
         meta_data["estado"] = Ahorro.ESTADO_ACTIVO
 
-        return self.repository.create(meta_data)
+        meta_creada = self.repository.create(meta_data)
+
+        if saldo_inicial > 0:
+            self.repository.descontar_saldo(cuenta.id_cuenta, saldo_inicial)
+
+        return meta_creada

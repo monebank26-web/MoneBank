@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { useBolsillos } from '../../bolsillos/hooks/useBolsillos';
 import { useIngreso } from '../hooks/useIngreso';
+import { useRegistrarGasto } from '../hooks/useRegistrarGasto';
 import { useMovimientosRecientes } from '../hooks/useMovimientosRecientes';
 import { obtenerSaludoSegunHora } from '../../../core/utils/saludo';
 import { limitesService } from '../../limites/services/limitesService';
@@ -20,7 +21,7 @@ const aNumero = (v) => Number(v) || 0;
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const { bolsillos, loading, totalSaldo } = useBolsillos();
+  const { bolsillos, loading } = useBolsillos();
   const ingreso = useIngreso();
   const { transacciones } = useMovimientosRecientes();
 
@@ -28,6 +29,7 @@ const DashboardPage = () => {
   const [limites, setLimites] = useState([]);
   const [metas, setMetas] = useState([]);
   const [modalGasto, setModalGasto] = useState(false);
+  const gasto = useRegistrarGasto({ open: modalGasto, onClose: () => setModalGasto(false), saldoCuenta, limites });
 
   useEffect(() => {
     authService.obtenerSaldo().then(({ saldo }) => {
@@ -36,6 +38,12 @@ const DashboardPage = () => {
     limitesService.listar().then((data) => setLimites(Array.isArray(data) ? data : [])).catch(() => {});
     metasService.listar().then((data) => setMetas(Array.isArray(data) ? data : [])).catch(() => {});
   }, [user]);
+
+  useEffect(() => {
+    if (!modalGasto) {
+      authService.obtenerSaldo().then(({ saldo }) => setSaldoCuenta(saldo)).catch(() => {});
+    }
+  }, [modalGasto]);
 
   const limitesCriticos = [...limites].sort(
     (a, b) => aNumero(b.porcentaje_usado) - aNumero(a.porcentaje_usado)
@@ -48,10 +56,6 @@ const DashboardPage = () => {
 
   const saludo = obtenerSaludoSegunHora();
 
-  const handleGastoCerrado = (nuevoSaldo) => {
-    setModalGasto(false);
-    if (nuevoSaldo !== undefined) setSaldoCuenta(nuevoSaldo);
-  };
 
   const handleIngresoCerrado = (nuevoSaldo) => {
     ingreso.cerrarIngreso();
@@ -98,9 +102,8 @@ const DashboardPage = () => {
 
       <ModalGastoDashboard
         open={modalGasto}
-        onClose={handleGastoCerrado}
         saldoCuenta={saldoCuenta}
-        limites={limites}
+        {...gasto}
       />
     </div>
   );

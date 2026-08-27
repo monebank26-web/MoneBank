@@ -182,3 +182,18 @@ class SqlTransaccionesRepository(TransaccionRepository):
             .filter(TipoAhorroModel.nombre_tipo_ahorro == nombre)
             .first()
         )
+
+    def sumar_saldo_ahorro(self, id_ahorro, monto):
+        ahorro = (
+            self.db.query(AhorroModel)
+            .filter(AhorroModel.id_ahorro == id_ahorro)
+            .first()
+        )
+
+        if not ahorro:
+            return None
+
+        ahorro.saldo_actual += monto
+        self.db.commit()
+        self.db.refresh(ahorro)
+        return ahorro
