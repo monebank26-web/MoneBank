@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from '../../../shared/components/Modal';
 import { formatMoney } from '../../../core/utils/format';
 import CardTransaccionIA from './CardTransaccionIA';
+import '../../../shared/styles/transacciones-modal.css';
 import './ModalTransaccion.css';
 
 const aNumero = (v) => Number(v) || 0;
