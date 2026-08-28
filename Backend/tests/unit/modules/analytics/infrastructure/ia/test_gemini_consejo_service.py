@@ -51,9 +51,24 @@ def test_generar_consejo_sin_api_key_falla_sin_llamar_red(monkeypatch):
         servicio.generar_consejo({"monto": 50000})
 
 
+def test_construir_servicio_con_key_vacia_no_lanza_excepcion(monkeypatch):
+    def client_falso(**kwargs):
+        raise AssertionError("No debe crear el cliente sin api key")
+
+    monkeypatch.setattr(genai, "Client", client_falso)
+
+    servicio = GeminiConsejoService("", "gemini-3.7-flash")
+
+    assert servicio.api_key == ""
+    assert servicio.modelo == "gemini-3.7-flash"
+
+
 def test_error_de_red_se_convierte_en_consejo_no_disponible(monkeypatch):
     from google.genai import errors
 
+    import time
+
+    monkeypatch.setattr(time, "sleep", lambda *a, **k: None)
     monkeypatch.setattr(
         genai,
         "Client",
