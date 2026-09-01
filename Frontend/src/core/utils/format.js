@@ -24,3 +24,5 @@ export const formatMoney = (val) =>
     currency: 'COP',
     maximumFractionDigits: 0,
   }).format(val || 0);
+
+export const aNumero = (v) => Number(v) || 0;
