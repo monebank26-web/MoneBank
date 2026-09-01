@@ -124,3 +124,27 @@ def test_saldo_inicial_mayor_al_saldo_lanza_saldo_insuficiente():
         CrearMeta(repository).execute(datos, 6)
 
     repository.create.assert_not_called()
+
+
+def test_con_saldo_inicial_descontar_saldo_de_cuenta():
+
+    repository = repository_mock()
+    datos = datos_validos()
+    datos["saldo_inicial"] = Decimal("50000.00")
+
+    resultado = CrearMeta(repository).execute(datos, 6)
+
+    repository.create.assert_called_once()
+    repository.descontar_saldo.assert_called_once_with(1, Decimal("50000.00"))
+    assert resultado == repository.create.return_value
+
+
+def test_sin_saldo_inicial_no_descuenta_saldo():
+
+    repository = repository_mock()
+
+    resultado = CrearMeta(repository).execute(datos_validos(), 6)
+
+    repository.create.assert_called_once()
+    repository.descontar_saldo.assert_not_called()
+    assert resultado == repository.create.return_value

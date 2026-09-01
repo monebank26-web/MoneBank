@@ -78,6 +78,7 @@ class HistorialPaginadoResponse(BaseModel):
 class CategoriaResponse(BaseModel):
     id_categoria: int
     nombre_categoria: str
+    tipo_categoria: str
 
 
 class GastoRequest(BaseModel):

@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     EMAIL_USER: str = ""
     EMAIL_PASSWORD: str = ""
+    GOOGLE_AI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.7-flash"
 
     model_config = SettingsConfigDict(
         env_file=".env",

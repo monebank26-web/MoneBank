@@ -139,3 +139,18 @@ class SqlAhorroRepository(AhorroRepository):
             .filter(AhorroModel.id_cuenta == id_cuenta)
             .all()
         )
+
+    def descontar_saldo(self, id_cuenta, monto):
+        cuenta = (
+            self.db.query(CuentaModel)
+            .filter(CuentaModel.id_cuenta == id_cuenta)
+            .first()
+        )
+
+        if not cuenta:
+            return None
+
+        cuenta.saldo -= monto
+        self.db.commit()
+        self.db.refresh(cuenta)
+        return cuenta
