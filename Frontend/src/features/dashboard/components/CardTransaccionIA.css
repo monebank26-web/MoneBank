@@ -7,137 +7,8 @@
   animation: cardConsejoEntrada 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card-consejo-ia__encabezado {
-  padding: 12px 16px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-consejo-ia__tabs {
-  display: flex;
-  background: var(--color-surface);
-  border-radius: 999px;
-  padding: 3px;
-  position: relative;
-  user-select: none;
-  width: 100%;
-}
-
-.card-consejo-ia__indicator {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  height: calc(100% - 6px);
-  width: calc(50% - 3px);
-  background: var(--color-accent);
-  border-radius: 999px;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-.card-consejo-ia__indicator--despacho {
-  transform: translateX(100%);
-}
-
-.card-consejo-ia__tab {
-  flex: 1;
-  text-align: center;
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1;
-  transition: color 0.3s;
-  border-radius: 999px;
-}
-
-.card-consejo-ia__tab--activo {
-  color: #fff;
-}
-
-.card-consejo-ia__contenido {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-consejo-ia__contenido-inner {
-  display: flex;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-consejo-ia__contenido-inner--despacho {
-  transform: translateX(-100%);
-}
-
 .card-consejo-ia__panel {
-  min-width: 100%;
-  padding: 16px;
-}
-
-.card-consejo-ia__transaccion-layout {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.card-consejo-ia__icono-categoria {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.card-consejo-ia__info-transaccion {
-  flex: 1;
-  min-width: 0;
-}
-
-.card-consejo-ia__nombre-categoria {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-consejo-ia__descripcion {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-consejo-ia__monto-fecha {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.card-consejo-ia__monto {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.card-consejo-ia__fecha {
-  font-size: 11px;
-  color: var(--color-text-muted);
+  padding: 4px 0;
 }
 
 .card-consejo-ia__consejo-texto {
@@ -177,10 +48,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 14px;
+  margin-top: 16px;
   padding: 5px 10px;
   background: var(--color-accent-soft);
   color: var(--color-accent);
+  border: 1px solid var(--color-accent);
   border-radius: 999px;
   font-size: 10px;
   font-weight: 600;

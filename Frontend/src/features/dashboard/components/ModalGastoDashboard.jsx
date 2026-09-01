@@ -1,11 +1,9 @@
 import React from 'react';
 import Modal from '../../../shared/components/Modal';
-import { formatMoney } from '../../../core/utils/format';
+import { formatMoney, aNumero } from '../../../core/utils/format';
 import CardTransaccionIA from './CardTransaccionIA';
 import '../../../shared/styles/transacciones-modal.css';
 import './ModalTransaccion.css';
-
-const aNumero = (v) => Number(v) || 0;
 
 const ModalGastoDashboard = ({
   open, handleClose, saldoCuenta,
@@ -117,6 +115,19 @@ const ModalGastoDashboard = ({
           </div>
         )}
         {errorGasto && <p className="error-formulario">{errorGasto}</p>}
+        {mostrandoConsejo && (
+          <div className="formulario-gasto__consejo">
+            <p className="formulario-gasto__consejo-titulo">Consejo IA</p>
+            <CardTransaccionIA
+              consejo={consejoIA}
+              generadoConIa={generadoConIa}
+              cargandoConsejo={cargandoConsejo}
+            />
+            <button className="boton-cerrar-consejo" onClick={handleCerrarConsejo}>
+              Cerrar sugerencia
+            </button>
+          </div>
+        )}
         {puedeVerConsejo && !mostrandoConsejo && (
           <button className="boton-secundario" onClick={handleVerConsejo}>
             Ver cómo afecta este gasto
@@ -127,19 +138,18 @@ const ModalGastoDashboard = ({
         </button>
       </div>
       {mostrandoConsejo && (
-        <div className="formulario-gasto__consejo">
-          <CardTransaccionIA
-            monto={montoPreview}
-            nombreCategoria={categoriaSeleccionada?.nombre_categoria || ''}
-            descripcion={descripcionGasto}
-            fecha={new Date().toISOString()}
-            consejo={consejoIA}
-            generadoConIa={generadoConIa}
-            cargandoConsejo={cargandoConsejo}
-          />
-          <button className="boton-cerrar-consejo" onClick={handleCerrarConsejo}>
-            Cerrar sugerencia
-          </button>
+        <div className="formulario-gasto__pc-consejo">
+          <div className="formulario-gasto__consejo">
+            <p className="formulario-gasto__consejo-titulo">Consejo IA</p>
+            <CardTransaccionIA
+              consejo={consejoIA}
+              generadoConIa={generadoConIa}
+              cargandoConsejo={cargandoConsejo}
+            />
+            <button className="boton-cerrar-consejo" onClick={handleCerrarConsejo}>
+              Cerrar sugerencia
+            </button>
+          </div>
         </div>
       )}
     </div>
