@@ -14,37 +14,43 @@ ESPERA_INICIAL_SEG = 1.0
 
 
 PROMPT_BASE = (
-    "Eres el asesor financiero de MoneBank. Analiza este gasto junto con las "
-    "estadísticas del mes del usuario y entrega un análisis extenso en 3 "
-    "párrafos (unas 13-15 líneas). Usa el contexto para calcular y citar "
-    "cifras y porcentajes que ayuden al usuario a dimensionar el impacto en "
-    "los próximos 3 meses, sin inventar datos. Estructura el consejo así:\n"
-    "1) Situación: cómo se compara este gasto/categoría con el promedio de 3 "
-    "meses y con el mes anterior (por ejemplo, el incremento porcentual vs el "
-    "mes pasado, y qué porcentaje de su gasto total representa).\n"
-    "2) Tendencia: la frecuencia de este tipo de gasto (número de transacciones "
-    "del mes y del anterior) y la proyección a 3 meses si mantiene este ritmo.\n"
-    "3) Acción: un consejo práctico, concreto y accionable para mantener el "
-    "control. Usa un tono cercano, directo y coloquial en español."
+    "Eres el asesor financiero de MoneBank. Analiza el gasto registrado junto "
+    "con el comportamiento financiero reciente del usuario y genera un análisis "
+    "claro, útil y conciso. Es OBLIGATORIO que la respuesta tenga EXACTAMENTE 2 "
+    "párrafos y una extensión estricta de entre 120 y 160 palabras. "
+    "Usa únicamente los datos proporcionados y no inventes cifras.\n\n"
+    "Prioriza los 2 o 3 hallazgos financieros más relevantes, por ejemplo: "
+    "variación frente al mes anterior, comparación con el promedio reciente, "
+    "peso de la categoría sobre los gastos, frecuencia de compras o posible "
+    "tendencia futura. Incluye siempre las cifras y datos numéricos explícitos. "
+    "Asegúrate de que la explicación sea lógicamente coherente sin cruzar "
+    "métricas que resulten contradictorias.\n\n"
+    "Explica qué significan esos datos para el bolsillo del usuario y finaliza "
+    "con una recomendación concreta y realista. Usa un lenguaje super sencillo "
+    "y cotidiano (evita 'desembolso', 'liquidez', 'dinámica', 'rubro' o 'traslados'; "
+    "prefiere 'gasto', 'categoría' o 'viajes'). Evita saludos, introducciones largas, "
+    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español."
 )
 
 PROMPT_PREVIO = (
-    "Eres el asesor financiero de MoneBank. El usuario va a registrar un gasto. "
-    "El modal YA le mostró cuánto dinero le queda y cómo afecta SIEMPRE los "
-    "porcentajes de saldo y de límite. Por eso NO repitas el porcentaje de "
-    "saldo que consume el gasto ni el porcentaje usado/proyectado del límite. "
-    "Entrega un análisis COMPLEMENTARIO extenso en 3 párrafos (unas 13-15 "
-    "líneas) con cifras y porcentajes que el modal NO muestra, usando el "
-    "contexto sin inventar datos. Estructúralo así:\n"
-    "1) Tendencias de la categoría: compara el gasto de este mes con el del "
-    "pasado (por ejemplo, el incremento porcentual mensual) y con su promedio "
-    "de 3 meses.\n"
-    "2) Impacto a 3 meses: qué porcentaje de su gasto total representa esta "
-    "categoría y la proyección del gasto en los próximos 3 meses si mantiene "
-    "este ritmo, considerando la frecuencia de compras (transacciones del mes "
-    "y del anterior).\n"
-    "3) Recomendación: un consejo práctico, concreto y accionable. Sé directo, "
-    "coloquial y motivador, en español."
+    "Eres el asesor financiero de MoneBank. El usuario está por registrar un "
+    "gasto. Genera un análisis financiero complementario, claro y conciso. "
+    "La respuesta debe tener OBLIGATORIO que la respuesta tenga EXACTAMENTE 2 párrafos "
+    "y una extensión estricta de entre 120 y 160 palabras. Usa únicamente los datos "
+    "proporcionados y no inventes cifras.\n\n"
+    "El modal ya muestra el saldo restante y el impacto sobre el saldo y el "
+    "límite, por lo que NO repitas esos porcentajes ni esa información. "
+    "Analiza los 2 o 3 aspectos más relevantes del comportamiento financiero "
+    "del usuario, como la variación frente al mes anterior, el promedio reciente, "
+    "la importancia de la categoría, la frecuencia de gasto o una tendencia "
+    "posible. Incluye siempre las cifras y datos numéricos explícitos. "
+    "Asegúrate de que la explicación sea lógicamente coherente sin cruzar "
+    "métricas que resulten contradictorias.\n\n"
+    "Explica qué implica este gasto dentro de sus hábitos actuales y termina "
+    "con una recomendación práctica y realista. Usa un lenguaje super sencillo "
+    "y cotidiano (evita 'desembolso', 'liquidez', 'dinámica', 'rubro' o 'traslados'; "
+    "prefiere 'gasto', 'categoría' o 'viajes'). Evita saludos, introducciones, "
+    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español."
 )
 
 
@@ -80,7 +86,7 @@ class GeminiConsejoService(ConsejoIAPort):
                 respuesta = cliente.models.generate_content(
                     model=self.modelo,
                     contents=self._armar_prompt(contexto, prompt),
-                    config=types.GenerateContentConfig(max_output_tokens=700),
+                    config=types.GenerateContentConfig(max_output_tokens=500),
                 )
                 return self._extraer_texto(respuesta)
             except ConsejoIANoDisponible:
