@@ -23,11 +23,12 @@ def limite_base():
 
 def repository_con(limites):
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     repository.get_by_cuenta_y_tipo.return_value = limites
 
@@ -35,22 +36,22 @@ def repository_con(limites):
     categoria.nombre_categoria = "Alimentación"
     repository.get_categoria.return_value = categoria
 
-    return repository
+    return repository, cuenta_repository
 
 
 def test_sin_limites_devuelve_lista_vacia():
-    repository = repository_con([])
+    repository, cuenta_repository = repository_con([])
 
-    resultado = ObtenerLimites(repository).execute(6)
+    resultado = ObtenerLimites(repository, cuenta_repository).execute(6)
 
     assert resultado == []
 
 
 def test_calcula_consumo_del_periodo_mensual():
-    repository = repository_con([limite_base()])
+    repository, cuenta_repository = repository_con([limite_base()])
     repository.get_gasto_periodo.return_value = Decimal("8500.00")
 
-    resultado = ObtenerLimites(repository).execute(6)
+    resultado = ObtenerLimites(repository, cuenta_repository).execute(6)
 
     assert len(resultado) == 1
     fila = resultado[0]
@@ -69,10 +70,10 @@ def test_calcula_consumo_del_periodo_mensual():
 def test_rango_semanal_arranca_el_lunes_de_esta_semana():
     limite = limite_base()
     limite.periodo = "SEMANAL"
-    repository = repository_con([limite])
+    repository, cuenta_repository = repository_con([limite])
     repository.get_gasto_periodo.return_value = Decimal("100.00")
 
-    ObtenerLimites(repository).execute(6)
+    ObtenerLimites(repository, cuenta_repository).execute(6)
 
     fecha_desde, _ = repository.get_gasto_periodo.call_args.args[2:]
     hoy = date.today()
@@ -82,17 +83,17 @@ def test_rango_semanal_arranca_el_lunes_de_esta_semana():
 def test_omite_filas_con_periodo_invalido():
     limite = limite_base()
     limite.periodo = "ANUAL"
-    repository = repository_con([limite])
+    repository, cuenta_repository = repository_con([limite])
 
-    resultado = ObtenerLimites(repository).execute(6)
+    resultado = ObtenerLimites(repository, cuenta_repository).execute(6)
 
     assert resultado == []
     repository.get_gasto_periodo.assert_not_called()
 
 
 def test_cuenta_no_existe():
-    repository = repository_con([])
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository = repository_con([])
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        ObtenerLimites(repository).execute(6)
+        ObtenerLimites(repository, cuenta_repository).execute(6)

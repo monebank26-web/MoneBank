@@ -22,12 +22,17 @@ from app.shared.exceptions.business_exceptions import (
 )
 
 
+def cuenta_repository_con(cuenta):
+    cuenta_repository = Mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
+    return cuenta_repository
+
+
 def repository_actualizar_mock():
     repository = Mock()
 
     cuenta = Mock()
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
 
     ahorro = Mock()
     ahorro.id_ahorro = 5
@@ -40,7 +45,7 @@ def repository_actualizar_mock():
     tipo_limite.id_tipo_ahorro = 3
     repository.get_tipo_ahorro.return_value = tipo_limite
 
-    return repository
+    return repository, cuenta_repository_con(cuenta)
 
 
 def test_listar_devuelve_solo_los_ahorros_de_la_cuenta_del_usuario():
@@ -48,10 +53,10 @@ def test_listar_devuelve_solo_los_ahorros_de_la_cuenta_del_usuario():
     repository = Mock()
     cuenta = Mock()
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository = cuenta_repository_con(cuenta)
     repository.get_by_cuenta.return_value = [Mock(), Mock()]
 
-    resultado = ObtenerAhorrosUseCase(repository).execute(12)
+    resultado = ObtenerAhorrosUseCase(repository, cuenta_repository).execute(12)
 
     repository.get_by_cuenta.assert_called_once_with(1)
     assert len(resultado) == 2
@@ -62,16 +67,16 @@ def test_obtener_ahorro_ajeno_lanza_ahorro_no_encontrado():
     repository = Mock()
     cuenta = Mock()
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository = cuenta_repository_con(cuenta)
     repository.get_by_id.return_value.id_cuenta = 2
 
     with pytest.raises(AhorroNoEncontrado):
-        ObtenerAhorroPorIdUseCase(repository).execute(5, 12)
+        ObtenerAhorroPorIdUseCase(repository, cuenta_repository).execute(5, 12)
 
 
 def test_actualizar_ignora_campos_fuera_de_la_whitelist():
 
-    repository = repository_actualizar_mock()
+    repository, cuenta_repository = repository_actualizar_mock()
     datos = {
         "nombre": "Presupuesto alimentacion",
         "estado": "PAUSADO",
@@ -83,7 +88,7 @@ def test_actualizar_ignora_campos_fuera_de_la_whitelist():
         "ahorro_automatico": True,
     }
 
-    ActualizarAhorroUseCase(repository).execute(5, datos, 12)
+    ActualizarAhorroUseCase(repository, cuenta_repository).execute(5, datos, 12)
 
     data_enviada = repository.update.call_args.args[1]
     assert set(data_enviada.keys()) == {"nombre", "estado"}
@@ -91,18 +96,18 @@ def test_actualizar_ignora_campos_fuera_de_la_whitelist():
 
 def test_actualizar_estado_invalido_lanza_estado_invalido():
 
-    repository = repository_actualizar_mock()
+    repository, cuenta_repository = repository_actualizar_mock()
     datos = {"nombre": "X", "estado": "CULMINADO"}
 
     with pytest.raises(EstadoInvalido):
-        ActualizarAhorroUseCase(repository).execute(5, datos, 12)
+        ActualizarAhorroUseCase(repository, cuenta_repository).execute(5, datos, 12)
 
     repository.update.assert_not_called()
 
 
 def test_actualizar_limite_a_periodo_duplicado_lanza_presupuesto_duplicado():
 
-    repository = repository_actualizar_mock()
+    repository, cuenta_repository = repository_actualizar_mock()
     repository.get_by_id.return_value.id_tipo_ahorro = 3
 
     otro_limite = Mock()
@@ -113,7 +118,7 @@ def test_actualizar_limite_a_periodo_duplicado_lanza_presupuesto_duplicado():
     repository.get_by_cuenta_y_tipo.return_value = [otro_limite]
 
     with pytest.raises(PresupuestoDuplicado):
-        ActualizarAhorroUseCase(repository).execute(
+        ActualizarAhorroUseCase(repository, cuenta_repository).execute(
             5, {"periodo": "MENSUAL"}, 12
         )
 
@@ -125,10 +130,10 @@ def test_eliminar_ahorro_ajeno_lanza_ahorro_no_encontrado():
     repository = Mock()
     cuenta = Mock()
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository = cuenta_repository_con(cuenta)
     repository.get_by_id.return_value.id_cuenta = 2
 
     with pytest.raises(AhorroNoEncontrado):
-        EliminarAhorroUseCase(repository).execute(5, 12)
+        EliminarAhorroUseCase(repository, cuenta_repository).execute(5, 12)
 
     repository.delete.assert_not_called()

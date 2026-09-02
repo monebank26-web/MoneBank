@@ -12,11 +12,19 @@ class CuentaRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id_usuario):
+    def get_cuenta_por_usuario(self, id_usuario):
         pass
 
     @abstractmethod
-    def get_by_id_cuenta(self, id_cuenta):
+    def get_cuenta_por_id(self, id_cuenta):
+        pass
+
+    @abstractmethod
+    def update(self, id_cuenta, cuenta_data):
+        pass
+
+    @abstractmethod
+    def actualizar_saldo(self, id_cuenta, monto):
         pass
 
     @abstractmethod

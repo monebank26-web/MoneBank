@@ -27,11 +27,12 @@ def datos_validos():
 
 def repository_mock():
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_cuenta = 1
     cuenta.saldo = Decimal("999999.00")
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     categoria = Mock()
     categoria.tipo_categoria = "AHORRO"
@@ -41,14 +42,14 @@ def repository_mock():
     tipo_meta.id_tipo_ahorro = 1
     repository.get_tipo_ahorro.return_value = tipo_meta
 
-    return repository
+    return repository, cuenta_repository
 
 
 def test_debe_crear_una_meta_con_datos_validos():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
 
-    resultado = CrearMeta(repository).execute(datos_validos(), 6)
+    resultado = CrearMeta(repository, cuenta_repository).execute(datos_validos(), 6)
 
     data_enviada = repository.create.call_args.args[0]
     assert data_enviada["id_cuenta"] == 1
@@ -59,92 +60,92 @@ def test_debe_crear_una_meta_con_datos_validos():
 
 def test_sin_cuenta_lanza_cuenta_no_encontrada():
 
-    repository = repository_mock()
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository = repository_mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_categoria_inexistente_lanza_categoria_no_existe():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     repository.get_categoria.return_value = None
 
     with pytest.raises(CategoriaNoExiste):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_categoria_gasto_lanza_categoria_no_compatible():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     repository.get_categoria.return_value.tipo_categoria = "GASTO"
 
     with pytest.raises(CategoriaNoCompatible):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_sin_fecha_objetivo_lanza_fecha_objetivo_requerida():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     datos = datos_validos()
     datos["fecha_objetivo"] = None
 
     with pytest.raises(FechaObjetivoRequerida):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository).execute(datos, 6)
 
     repository.create.assert_not_called()
 
 
 def test_fecha_objetivo_pasada_lanza_fecha_objetivo_pasada():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     datos = datos_validos()
     datos["fecha_objetivo"] = date.today() - timedelta(days=1)
 
     with pytest.raises(FechaObjetivoPasada):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository).execute(datos, 6)
 
     repository.create.assert_not_called()
 
 
 def test_saldo_inicial_mayor_al_saldo_lanza_saldo_insuficiente():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     datos = datos_validos()
     datos["saldo_inicial"] = Decimal("10000000.00")
 
     with pytest.raises(SaldoInsuficiente):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository).execute(datos, 6)
 
     repository.create.assert_not_called()
 
 
 def test_con_saldo_inicial_descontar_saldo_de_cuenta():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     datos = datos_validos()
     datos["saldo_inicial"] = Decimal("50000.00")
 
-    resultado = CrearMeta(repository).execute(datos, 6)
+    resultado = CrearMeta(repository, cuenta_repository).execute(datos, 6)
 
     repository.create.assert_called_once()
-    repository.descontar_saldo.assert_called_once_with(1, Decimal("50000.00"))
+    cuenta_repository.actualizar_saldo.assert_called_once_with(1, Decimal("50000.00"))
     assert resultado == repository.create.return_value
 
 
 def test_sin_saldo_inicial_no_descuenta_saldo():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
 
-    resultado = CrearMeta(repository).execute(datos_validos(), 6)
+    resultado = CrearMeta(repository, cuenta_repository).execute(datos_validos(), 6)
 
     repository.create.assert_called_once()
-    repository.descontar_saldo.assert_not_called()
+    cuenta_repository.actualizar_saldo.assert_not_called()
     assert resultado == repository.create.return_value

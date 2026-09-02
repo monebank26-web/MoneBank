@@ -22,30 +22,31 @@ def limite_base(estado="ACTIVO", monto=Decimal("10000.00"), periodo="MENSUAL"):
 
 def repository_con(limites, gasto):
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     repository.get_by_cuenta_y_tipo.return_value = limites
     repository.get_gasto_periodo.return_value = gasto
 
-    return repository
+    return repository, cuenta_repository
 
 
 def test_sin_cruces_de_umbral_no_genera_alertas():
-    repository = repository_con([limite_base()], Decimal("7999.00"))
+    repository, cuenta_repository = repository_con([limite_base()], Decimal("7999.00"))
 
-    alertas = ObtenerAlertasPresupuesto(repository).execute(6)
+    alertas = ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
 
     assert alertas == []
 
 
 def test_alerta_preventiva_al_alcanzar_el_80_por_ciento():
-    repository = repository_con([limite_base()], Decimal("8000.00"))
+    repository, cuenta_repository = repository_con([limite_base()], Decimal("8000.00"))
 
-    alertas = ObtenerAlertasPresupuesto(repository).execute(6)
+    alertas = ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
 
     assert len(alertas) == 1
     assert alertas[0]["tipo_alerta"] == "PREVENTIVA"
@@ -55,35 +56,35 @@ def test_alerta_preventiva_al_alcanzar_el_80_por_ciento():
 
 
 def test_alerta_limite_superado_por_encima_del_100_por_ciento():
-    repository = repository_con([limite_base()], Decimal("12500.00"))
+    repository, cuenta_repository = repository_con([limite_base()], Decimal("12500.00"))
 
-    alertas = ObtenerAlertasPresupuesto(repository).execute(6)
+    alertas = ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
 
     assert len(alertas) == 1
     assert alertas[0]["tipo_alerta"] == "LIMITE_SUPERADO"
 
 
 def test_limites_pausados_no_generan_alertas():
-    repository = repository_con(
+    repository, cuenta_repository = repository_con(
         [limite_base(estado="PAUSADO")], Decimal("9000.00")
     )
 
-    alertas = ObtenerAlertasPresupuesto(repository).execute(6)
+    alertas = ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
 
     assert alertas == []
 
 
 def test_sin_monto_objetivo_no_genera_alertas():
-    repository = repository_con([limite_base(monto=None)], Decimal("500.00"))
+    repository, cuenta_repository = repository_con([limite_base(monto=None)], Decimal("500.00"))
 
-    alertas = ObtenerAlertasPresupuesto(repository).execute(6)
+    alertas = ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
 
     assert alertas == []
 
 
 def test_cuenta_no_existe():
-    repository = repository_con([], Decimal("0"))
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository = repository_con([], Decimal("0"))
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        ObtenerAlertasPresupuesto(repository).execute(6)
+        ObtenerAlertasPresupuesto(repository, cuenta_repository).execute(6)
