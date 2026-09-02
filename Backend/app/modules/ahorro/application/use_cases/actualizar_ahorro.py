@@ -12,12 +12,13 @@ CAMPOS_PERMITIDOS = ("nombre", "monto_objetivo", "estado", "fecha_objetivo", "pe
 
 class ActualizarAhorroUseCase:
 
-    def __init__(self, repository):
+    def __init__(self, repository, cuenta_repository):
         self.repository = repository
+        self.cuenta_repository = cuenta_repository
 
     def execute(self, id_ahorro, data, id_usuario):
 
-        cuenta = self.repository.get_cuenta_por_usuario(id_usuario)
+        cuenta = self.cuenta_repository.get_cuenta_por_usuario(id_usuario)
 
         if not cuenta:
             raise CuentaNoEncontrada()

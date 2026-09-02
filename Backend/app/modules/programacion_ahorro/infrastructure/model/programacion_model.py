@@ -6,8 +6,6 @@ from sqlalchemy import (
     Date
 )
 
-from datetime import date
-
 from app.core.database.base import Base
 
 
@@ -17,7 +15,7 @@ class ProgramacionModel(Base):
 
     id_programacion_ahorro = Column(Integer, primary_key=True, index=True)
     monto_periodico = Column(Numeric(12, 2))
-    dia_cobro = Column(Integer)
+    fecha_cobro = Column(Date)
     frecuencia = Column(String(20))
     fecha_inicio = Column(Date)
     fecha_fin = Column(Date)

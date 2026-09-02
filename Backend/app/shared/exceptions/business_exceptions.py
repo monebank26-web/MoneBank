@@ -230,3 +230,21 @@ class ConsejoIANoDisponible(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class FrecuenciaInvalida(Exception):
+    status_code = 400
+    description = "La frecuencia debe ser DIARIA, SEMANAL, QUINCENAL, MENSUAL, TRIMESTRAL, SEMESTRAL o ANUAL"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class RangoFechasInvalido(Exception):
+    status_code = 400
+    description = "fecha_fin debe ser mayor o igual a fecha_inicio"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)

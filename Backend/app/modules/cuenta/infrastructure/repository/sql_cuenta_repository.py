@@ -19,22 +19,46 @@ class SqlCuentaRepository(CuentaRepository):
     def get_all(self):
         return self.db.query(CuentaModel).all()
 
-    def get_by_id(self, id_usuario):
+    def get_cuenta_por_usuario(self, id_usuario):
         return (
             self.db.query(CuentaModel)
             .filter(CuentaModel.id_usuario == id_usuario)
             .first()
         )
 
-    def get_by_id_cuenta(self, id_cuenta):
+    def get_cuenta_por_id(self, id_cuenta):
         return (
             self.db.query(CuentaModel)
             .filter(CuentaModel.id_cuenta == id_cuenta)
             .first()
         )
 
+    def update(self, id_cuenta, cuenta_data):
+        cuenta = self.get_cuenta_por_id(id_cuenta)
+
+        if not cuenta:
+            return None
+
+        for key, value in cuenta_data.items():
+            setattr(cuenta, key, value)
+
+        self.db.commit()
+        self.db.refresh(cuenta)
+        return cuenta
+
+    def actualizar_saldo(self, id_cuenta, monto):
+        cuenta = self.get_cuenta_por_id(id_cuenta)
+
+        if not cuenta:
+            return None
+
+        cuenta.saldo -= monto
+        self.db.commit()
+        self.db.refresh(cuenta)
+        return cuenta
+
     def delete(self, id_cuenta):
-        cuenta = self.get_by_id_cuenta(id_cuenta)
+        cuenta = self.get_cuenta_por_id(id_cuenta)
 
         if not cuenta:
             return None

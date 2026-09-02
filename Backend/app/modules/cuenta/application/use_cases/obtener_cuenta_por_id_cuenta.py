@@ -2,7 +2,7 @@ from app.modules.cuenta.domain.interface.cuenta_repository import CuentaReposito
 from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
 
 
-class EliminarCuentaUseCase:
+class ObtenerCuentaPorIdUseCase:
 
     def __init__(self, repository: CuentaRepository):
         self.repository = repository
@@ -13,4 +13,4 @@ class EliminarCuentaUseCase:
         if not cuenta:
             raise CuentaNoEncontrada()
 
-        return self.repository.delete(id_cuenta)
+        return cuenta

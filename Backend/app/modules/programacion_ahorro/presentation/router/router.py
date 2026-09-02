@@ -1,51 +1,46 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.security.auth import get_usuario_repository, get_current_user
 from app.core.database.connection import get_db
+from app.core.security.auth import get_current_user
 
-from app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
-from app.modules.auth.application.use_cases.request_password_recovery import RequestPasswordRecoveryUseCase
-from app.modules.auth.application.use_cases.confirm_password_recovery import ConfirmPasswordRecoveryUseCase
-from app.modules.auth.application.use_cases.actualizar_contrasena import ActualizarContrasenaUseCase
+from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
+from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
+from app.modules.programacion_ahorro.infrastructure.repository.sql_programacion_repository import SqlProgramacionRepository
+from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
+    ProgramacionCreate,
+    ProgramacionResponse,
+)
 
-from app.modules.auth.domain.interface.auth_repository import AuthRepository
-from app.modules.auth.infrastructure.repository.sql_auth_repository import SqlAuthRepository
-
-
-from app.shared.exceptions.business_exceptions import (InvalidCredentialsException, AccountLockedException,EmailNotFoundException, InvalidOrExpiredTokenException)
-from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
+from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
+from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
 
 
 router = APIRouter(
-    prefix="/ProgramacionAhorro",
-    tags=["ProgramacionAhorro"]
+    prefix="/programacion-ahorro",
+    tags=["ProgramacionAhorro"],
+    dependencies=[Depends(get_current_user)],
 )
 
 
-def get_auth_repository(
+def get_programacion_repository(
     db: Session = Depends(get_db),
-    programacion_repository: ProgramacionRepository = Depends(get_usuario_repository)
-) -> AuthRepository:
-    return SqlProgramacionRepository(db, programacion_repository)
+) -> ProgramacionAhorroRepository:
+    return SqlProgramacionRepository(db)
 
 
-@router.post(
-    "/login",
-    response_model=LoginResponse,
-    summary="Iniciar sesión",
-    description="Autentica un usuario mediante correo y contraseña.",
-    responses = {
-    200: {"description": "Login exitoso, devuelve token JWT"},
-    InvalidCredentialsException.status_code: {"description": InvalidCredentialsException.description},
-    AccountLockedException.status_code: {"description": AccountLockedException.description},
-    ValidationException.status_code: {"description": ValidationException.description},
-    InternalServerException.status_code: {"description": InternalServerException.description},
-}
-)
-def login(
-    request: LoginRequest,
-    repository: AuthRepository = Depends(get_auth_repository)
+def get_cuenta_repository(
+    db: Session = Depends(get_db),
+) -> CuentaRepository:
+    return SqlCuentaRepository(db)
+
+
+@router.post("/", response_model=ProgramacionResponse, status_code=201)
+def crear_programacion(
+    programacion: ProgramacionCreate,
+    current_user: object = Depends(get_current_user),
+    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    use_case = LoginUsuarioUseCase(repository)
-    return use_case.execute(request.correo, request.contrasena)
+    caso_uso = CrearProgramacion(repository, cuenta_repository)
+    return caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
