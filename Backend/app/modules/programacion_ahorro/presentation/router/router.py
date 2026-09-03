@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.modules.programacion_ahorro.application.actualizar_estado import ActualizarEstadoUseCase
 from app.core.database.connection import get_db
 from app.core.security.auth import get_current_user
 
@@ -10,6 +11,7 @@ from app.modules.programacion_ahorro.infrastructure.repository.sql_programacion_
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
     ProgramacionCreate,
     ProgramacionResponse,
+    ProgramacionUpdate,
 )
 
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
@@ -44,3 +46,17 @@ def crear_programacion(
 ):
     caso_uso = CrearProgramacion(repository, cuenta_repository)
     return caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
+
+@router.put("/", response_model=ProgramacionResponse, status_code=200)
+def actualizar_estado(
+    programacion: ProgramacionUpdate,
+    current_user: object = Depends(get_current_user),
+    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+):
+    caso_uso = ActualizarEstadoUseCase(repository, cuenta_repository)
+    return caso_uso.execute(
+        current_user.id_usuario,
+        programacion.id_programacion_ahorro,
+        programacion.estado,
+    )

@@ -17,3 +17,19 @@ class SqlProgramacionRepository(ProgramacionAhorroRepository):
         self.db.commit()
         self.db.refresh(programacion)
         return programacion
+
+    def update_estado(self, programacion_id, nuevo_estado):
+            programacion = (
+                self.db.query(ProgramacionModel)
+                .filter(ProgramacionModel.id_programacion == programacion_id)
+                .first()
+            )
+    
+            if not programacion:
+                return None
+    
+            programacion.Estado = nuevo_estado
+    
+            self.db.commit()
+            self.db.refresh(programacion)
+            return programacion
