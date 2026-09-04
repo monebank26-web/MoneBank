@@ -11,7 +11,6 @@ from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 from app.modules.ahorro.infrastructure.model.tipo_ahorro_model import (
     TipoAhorroModel
 )
-from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.infrastructure.model.categoria_model import (
     CategoriaModel
@@ -73,27 +72,6 @@ class SqlAnalyticsRepository(AnalyticsRepository):
                 for fila in top_categorias
             ],
         }
-
-    def get_saldo_cuenta(self, id_cuenta):
-        cuenta = (
-            self.db.query(CuentaModel.saldo)
-            .filter(CuentaModel.id_cuenta == id_cuenta)
-            .first()
-        )
-        return cuenta[0] if cuenta else 0
-
-    def get_cuenta_usuario(self, id_usuario):
-        cuenta = (
-            self.db.query(CuentaModel)
-            .filter(
-                CuentaModel.id_usuario == id_usuario,
-                CuentaModel.estado == "ACTIVA",
-            )
-            .first()
-        )
-        if not cuenta:
-            return None
-        return {"id_cuenta": cuenta.id_cuenta, "saldo": cuenta.saldo}
 
     def get_categoria_nombre(self, id_categoria):
         cat = (
@@ -160,11 +138,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             "transacciones_recientes": transacciones_recientes,
         }
 
-    def get_limite_categoria(self, id_usuario, id_categoria):
-        cuenta = self.get_cuenta_usuario(id_usuario)
-        if not cuenta:
-            return None
-
+    def get_limite_categoria(self, id_cuenta, id_categoria):
         tipo_limite = (
             self.db.query(TipoAhorroModel)
             .filter(
@@ -180,7 +154,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             .filter(
                 AhorroModel.id_tipo_ahorro == tipo_limite.id_tipo_ahorro,
                 AhorroModel.id_categoria == id_categoria,
-                AhorroModel.id_cuenta == cuenta["id_cuenta"],
+                AhorroModel.id_cuenta == id_cuenta,
                 AhorroModel.estado == "ACTIVO",
             )
             .first()
@@ -200,7 +174,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             ),
             {
                 "id_categoria": id_categoria,
-                "id_cuenta": cuenta["id_cuenta"],
+                "id_cuenta": id_cuenta,
                 "fecha_desde": fecha_desde,
                 "fecha_hasta": fecha_hasta,
             },

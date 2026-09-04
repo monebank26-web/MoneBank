@@ -12,6 +12,9 @@ from app.shared.exceptions.handlers.transaccion_handlers import (
 from app.shared.exceptions.handlers.ahorro_handlers import (
     register_ahorro_exception_handlers,
 )
+from app.shared.exceptions.handlers.chat_ia_handlers import (
+    register_chat_ia_exception_handlers,
+)
 from app.shared.exceptions.handlers.global_handlers import (
     register_global_exception_handlers,
 )
@@ -22,4 +25,5 @@ def register_all_exception_handlers(app: FastAPI):
     register_usuario_exception_handlers(app)
     register_transaccion_exception_handlers(app)
     register_ahorro_exception_handlers(app)
+    register_chat_ia_exception_handlers(app)
     register_global_exception_handlers(app)

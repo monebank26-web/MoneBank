@@ -12,14 +12,6 @@ class AnalyticsRepository(ABC):
         pass
 
     @abstractmethod
-    def get_saldo_cuenta(self, id_cuenta):
-        pass
-
-    @abstractmethod
-    def get_cuenta_usuario(self, id_usuario):
-        pass
-
-    @abstractmethod
     def get_categoria_nombre(self, id_categoria):
         pass
 
@@ -28,5 +20,5 @@ class AnalyticsRepository(ABC):
         pass
 
     @abstractmethod
-    def get_limite_categoria(self, id_usuario, id_categoria):
+    def get_limite_categoria(self, id_cuenta, id_categoria):
         pass

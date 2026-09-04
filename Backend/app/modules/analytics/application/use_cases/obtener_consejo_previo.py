@@ -6,12 +6,13 @@ from app.shared.exceptions.business_exceptions import (
 
 class ObtenerConsejoPrevio:
 
-    def __init__(self, analytics_repository, consejo_ia_port):
+    def __init__(self, analytics_repository, cuenta_repository, consejo_ia_port):
         self.analytics_repository = analytics_repository
+        self.cuenta_repository = cuenta_repository
         self.consejo_ia_port = consejo_ia_port
 
     def execute(self, id_usuario, monto, id_categoria):
-        cuenta = self.analytics_repository.get_cuenta_usuario(id_usuario)
+        cuenta = self.cuenta_repository.get_cuenta_por_usuario(id_usuario)
         if not cuenta:
             raise CuentaNoEncontrada()
 
@@ -24,14 +25,14 @@ class ObtenerConsejoPrevio:
             id_usuario, id_categoria
         )
         limite = self.analytics_repository.get_limite_categoria(
-            id_usuario, id_categoria
+            cuenta.id_cuenta, id_categoria
         )
 
         contexto = {
             "monto": round(float(monto)),
             "categoria": nombre_categoria,
-            "saldo_actual": round(float(cuenta["saldo"] or 0)),
-            "saldo_proyectado": round(float(cuenta["saldo"] or 0) - float(monto)),
+            "saldo_actual": round(float(cuenta.saldo or 0)),
+            "saldo_proyectado": round(float(cuenta.saldo or 0) - float(monto)),
             "historial_categoria": {
                 "gasto_actual_mes": round(float(resumen_cat["gasto_mes"] or 0)),
                 "gasto_mes_anterior": round(

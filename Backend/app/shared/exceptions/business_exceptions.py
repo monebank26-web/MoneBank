@@ -248,3 +248,12 @@ class RangoFechasInvalido(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class ChatInvalido(Exception):
+    status_code = 400
+    description = "El historial del chat contiene turnos inválidos"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
