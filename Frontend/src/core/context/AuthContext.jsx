@@ -27,6 +27,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    if (user?.id) {
+      localStorage.removeItem(`${STORAGE_KEYS.CHAT_HISTORIAL}_${user.id}`);
+    }
     localStorage.removeItem(STORAGE_KEYS.USER);
     localStorage.removeItem(STORAGE_KEYS.TOKEN);
     setUser(null);

@@ -6,8 +6,7 @@ import { ROUTES, ROLES } from '../constants';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
-import BolsillosPage from '../../features/bolsillos/pages/BolsillosPage';
-import BolsilloDetallePage from '../../features/bolsillos/pages/BolsilloDetallePage';
+import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
 import LimitesPage from '../../features/limites/pages/LimitesPage';
 import TransaccionesPage from '../../features/transacciones/pages/TransaccionesPage';
@@ -72,8 +71,7 @@ const AppRouter = () => (
 
       {/* Privadas generales */}
       <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
-      <Route path="/bolsillos" element={<RutaPrivada><BolsillosPage /></RutaPrivada>} />
-      <Route path="/bolsillos/:id" element={<RutaPrivada><BolsilloDetallePage /></RutaPrivada>} />
+      <Route path="/chat" element={<RutaPrivada><ChatPage /></RutaPrivada>} />
       <Route path="/metas" element={<RutaPrivada><MetasPage /></RutaPrivada>} />
       <Route path="/limites" element={<RutaPrivada><LimitesPage /></RutaPrivada>} />
       <Route path="/transacciones" element={<RutaPrivada><TransaccionesPage /></RutaPrivada>} />

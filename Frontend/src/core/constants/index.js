@@ -2,7 +2,7 @@
 export const STORAGE_KEYS = {
   USER: 'mb_user',
   TOKEN: 'mb_token',
-  BOLSILLOS: 'mb_bolsillos',
+  CHAT_HISTORIAL: 'mb_chat_historial',
   TRANSACCIONES: 'mb_transacciones',
   USERS: 'mb_users',
   VINCULOS: 'mb_vinculos',
@@ -12,8 +12,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
-  BOLSILLOS: '/bolsillos',
-  BOLSILLO_DETALLE: '/bolsillos/:id',
+  CHAT: '/chat',
   METAS: '/metas',
   LIMITES: '/limites',
   TRANSACCIONES: '/transacciones',
@@ -33,14 +32,3 @@ export const ROLES = {
 export const CORREO_ADMIN = 'admin@monebank.com';
 
 export const PERIODOS_LIMITE = ['DIARIO', 'SEMANAL', 'MENSUAL'];
-
-export const COLORES_BOLSILLO = [
-  '#3b82f6', // azul
-  '#10b981', // verde
-  '#f59e0b', // amarillo
-  '#ef4444', // rojo
-  '#8b5cf6', // morado
-  '#06b6d4', // cyan
-  '#f97316', // naranja
-  '#ec4899', // rosa
-];
