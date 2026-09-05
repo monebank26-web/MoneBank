@@ -33,6 +33,9 @@
   /* Versión clara del rojo de peligro */
   --color-rojo-claro: #f87171;
 
+  /* Violeta - identidad visual del Asesor IA */
+  --color-violeta: #7c3aed;
+
   /* Colores base en números, para usar con transparencia rgba(var(--rgb-...), 0.x) */
   --rgb-verde-fuerte: 16, 185, 129;
   --rgb-ambar: 245, 158, 11;
@@ -47,6 +50,9 @@
   --color-text: #f5f0e8;
   --color-text-muted: #6b6045;
   --color-text-soft: #a89060;
+
+  /* Blanco - texto sobre superficies de acento */
+  --color-blanco: #ffffff;
 
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -91,4 +97,37 @@ button {
 input {
   font-family: var(--font-body);
   outline: none;
+}
+
+/* Estado de carga de páginas */
+.cargando-pagina {
+  text-align: center;
+  padding: 48px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* Botón de reintentar errores */
+.boton-reintentar {
+  margin-left: 12px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.boton-principal-pequeno {
+  background: var(--color-accent);
+  color: #080808;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.boton-principal-pequeno:hover {
+  background: var(--color-accent-hover);
 }

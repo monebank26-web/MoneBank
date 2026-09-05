@@ -1,4 +1,5 @@
 import React from 'react';
+import './ListaAlertas.css';
 
 const ListaAlertas = ({ alertas }) => {
   if (!alertas || alertas.length === 0) return null;

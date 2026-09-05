@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import BadgeIA from '../../../shared/components/BadgeIA';
 import { ROUTES } from '../../../core/constants';
 
 const SeccionChatInicio = () => {
@@ -7,10 +8,7 @@ const SeccionChatInicio = () => {
     <section className="seccion-inicio">
       <div className="encabezado-seccion-inicio">
         <h3>Asesor IA</h3>
-        <span className="badge-ia-chat badge-ia-chat--mini">
-          <span className="badge-ia-chat__punto" />
-          IA
-        </span>
+        <BadgeIA mini />
       </div>
 
       <div className="chat-inicio">
