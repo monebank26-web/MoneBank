@@ -16,6 +16,9 @@ import ControlParentalPadrePage from '../../features/controlParental/pages/Contr
 import ControlParentalHijoPage from '../../features/controlParental/pages/ControlParentalHijoPage';
 import PerfilPage from '../../features/perfil/pages/PerfilPage';
 import MainLayout from '../../shared/layouts/MainLayout';
+import { GraficasPage } from '../../features/analytics/pages/GraficasPage';
+import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemanalPage';
+import { ReportesPage } from '../../features/analytics/pages/ReportesPage';
 
 const RutaPrivada = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -81,6 +84,10 @@ const AppRouter = () => (
       <Route path="/control-parental/padre" element={<RutaPadre><ControlParentalPadrePage /></RutaPadre>} />
       <Route path="/control-parental/hijo" element={<RutaHijo><ControlParentalHijoPage /></RutaHijo>} />
       <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
+      <Route path="/analitica/graficas" element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
+      <Route path="/analitica/resumen-semanal" element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
+      <Route path="/analitica/reportes" element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
+      
 
       {/* Solo admin */}
       <Route path="/admin" element={<RutaAdmin><AdminPage /></RutaAdmin>} />

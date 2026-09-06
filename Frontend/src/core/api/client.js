@@ -73,4 +73,23 @@ export const apiClient = {
     }
     return res.json();
   },
+
+getBlob: async (endpoint, params = {}) => {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  ).toString();
+  const url = query ? `${BASE_URL}${endpoint}?${query}` : `${BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('mb_token');
+  const res = await fetch(url, {
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!res.ok) {
+    let msg;
+    try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
+    throw new Error(msg);
+  }
+  return res.blob();
+},
 };
