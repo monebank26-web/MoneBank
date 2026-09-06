@@ -19,7 +19,20 @@ const FormularioChat = ({ valor, onChange, onEnviar, cargando }) => {
         disabled={cargando}
       />
       <button className="boton-enviar-chat" type="submit" disabled={cargando || !valor.trim()}>
-        Enviar
+        <svg
+          className="boton-enviar-chat__icono"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M22 2 11 13" />
+          <path d="m22 2-7 20-4-9-9-4Z" />
+        </svg>
+        <span>Enviar</span>
       </button>
     </form>
   );

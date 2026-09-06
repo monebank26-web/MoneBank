@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BadgeIA from '../../../shared/components/BadgeIA';
+import IconoIA from '../../../shared/components/IconoIA';
 import { ROUTES } from '../../../core/constants';
 
 const SeccionChatInicio = () => {
@@ -12,7 +13,9 @@ const SeccionChatInicio = () => {
       </div>
 
       <div className="chat-inicio">
-        <div className="chat-inicio__avatar">◈</div>
+        <div className="chat-inicio__avatar">
+          <IconoIA />
+        </div>
         <div className="chat-inicio__contenido">
           <p className="chat-inicio__texto">
             ¿Quieres saber cómo ahorrar este mes o qué gastaste en supermercado?

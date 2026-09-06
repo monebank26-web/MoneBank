@@ -2,8 +2,18 @@ import React from 'react';
 import Modal from '../../../shared/components/Modal';
 import { formatMoney, aNumero } from '../../../core/utils/format';
 import CardTransaccionIA from './CardTransaccionIA';
+import IconoIA from '../../../shared/components/IconoIA';
 import '../../../shared/styles/transacciones-modal.css';
 import './ModalTransaccion.css';
+
+const TituloConsejoIA = () => (
+  <div className="formulario-gasto__consejo-titulo-row">
+    <div className="formulario-gasto__consejo-avatar">
+      <IconoIA />
+    </div>
+    <p className="formulario-gasto__consejo-titulo">Consejo IA</p>
+  </div>
+);
 
 const ModalGastoDashboard = ({
   open, handleClose, saldoCuenta,
@@ -117,7 +127,7 @@ const ModalGastoDashboard = ({
         {errorGasto && <p className="error-formulario">{errorGasto}</p>}
         {mostrandoConsejo && (
           <div className="formulario-gasto__consejo">
-            <p className="formulario-gasto__consejo-titulo">Consejo IA</p>
+            <TituloConsejoIA />
             <CardTransaccionIA
               consejo={consejoIA}
               generadoConIa={generadoConIa}
@@ -140,7 +150,7 @@ const ModalGastoDashboard = ({
       {mostrandoConsejo && (
         <div className="formulario-gasto__pc-consejo">
           <div className="formulario-gasto__consejo">
-            <p className="formulario-gasto__consejo-titulo">Consejo IA</p>
+            <TituloConsejoIA />
             <CardTransaccionIA
               consejo={consejoIA}
               generadoConIa={generadoConIa}

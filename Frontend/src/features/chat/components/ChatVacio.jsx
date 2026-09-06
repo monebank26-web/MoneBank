@@ -1,4 +1,5 @@
 import React from 'react';
+import IconoIA from '../../../shared/components/IconoIA';
 import './ChatVacio.css';
 
 const SUGERENCIAS = [
@@ -9,7 +10,9 @@ const SUGERENCIAS = [
 
 const ChatVacio = ({ onSugerencia }) => (
   <div className="chat-vacio">
-    <div className="chat-vacio__avatar">◈</div>
+    <div className="chat-vacio__avatar">
+      <IconoIA />
+    </div>
     <h3 className="chat-vacio__titulo">¡Hola! Soy tu asesor financiero</h3>
     <p className="chat-vacio__texto">
       Pregúntame sobre tus finanzas: cómo ahorrar, qué has gastado este mes,

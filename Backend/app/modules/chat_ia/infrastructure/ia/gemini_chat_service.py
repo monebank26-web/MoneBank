@@ -14,7 +14,9 @@ SYSTEM_INSTRUCTION_CHAT = (
     "deudas y planeación financiera. Si te preguntan algo fuera de ese ámbito "
     "(código, tareas, salud, etc.), responde amablemente que solo puedes "
     "ayudar con temas financieros y redirige la conversación.\n"
-    "Contexto financiero actual del usuario (json):\n{contexto}"
+    "Contexto financiero actual del usuario (json):\n{contexto}" \
+    "Puedes usar **texto** para resaltar palabras o frases clave."
+    " Prohibido: listas con asteriscos crudos"
 )
 
 

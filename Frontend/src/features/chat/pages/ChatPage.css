@@ -9,14 +9,59 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  background: var(--color-surface-2);
+  background:
+    radial-gradient(1100px 380px at 50% -120px, var(--color-accent-glow), transparent 70%),
+    var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.panel-conversacion::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-conversacion::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-conversacion::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+.panel-conversacion::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
 }
 
 .error-chat {
   color: var(--color-warning);
   font-size: 13px;
   margin: 0;
+}
+
+@media (max-width: 720px) {
+  .panel-conversacion {
+    padding: 14px;
+  }
+
+  .burbuja {
+    max-width: 92%;
+  }
+}
+
+@media (max-width: 560px) {
+  .pagina-chat {
+    gap: 12px;
+  }
+
+  .logo-chat {
+    display: none;
+  }
+
+  .boton-enviar-chat {
+    padding: 12px 14px;
+  }
 }

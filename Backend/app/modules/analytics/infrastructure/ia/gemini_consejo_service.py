@@ -24,12 +24,15 @@ PROMPT_BASE = (
     "peso de la categoría sobre los gastos, frecuencia de compras o posible "
     "tendencia futura. Incluye siempre las cifras y datos numéricos explícitos. "
     "Asegúrate de que la explicación sea lógicamente coherente sin cruzar "
-    "métricas que resulten contradictorias.\n\n"
+    "métricas que resulten contradictorias.Escribe las cifras de dinero como precios: con"
+    "signo $ y separador de miles con punto, sin decimales (ej.: $20.000, $1.000.000).\n\n"
     "Explica qué significan esos datos para el bolsillo del usuario y finaliza "
     "con una recomendación concreta y realista. Usa un lenguaje super sencillo "
     "y cotidiano (evita 'desembolso', 'liquidez', 'dinámica', 'rubro' o 'traslados'; "
     "prefiere 'gasto', 'categoría' o 'viajes'). Evita saludos, introducciones largas, "
-    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español."
+    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español." \
+    "Puedes usar **texto** para resaltar palabras o frases clave."
+    " Prohibido: listas con asteriscos crudos"
 )
 
 PROMPT_PREVIO = (
@@ -45,12 +48,15 @@ PROMPT_PREVIO = (
     "la importancia de la categoría, la frecuencia de gasto o una tendencia "
     "posible. Incluye siempre las cifras y datos numéricos explícitos. "
     "Asegúrate de que la explicación sea lógicamente coherente sin cruzar "
-    "métricas que resulten contradictorias.\n\n"
+    "métricas que resulten contradictorias.Escribe las cifras de dinero como precios: con"
+    "signo $ y separador de miles con punto, sin decimales (ej.: $20.000, $1.000.000).\n\n"
     "Explica qué implica este gasto dentro de sus hábitos actuales y termina "
     "con una recomendación práctica y realista. Usa un lenguaje super sencillo "
     "y cotidiano (evita 'desembolso', 'liquidez', 'dinámica', 'rubro' o 'traslados'; "
     "prefiere 'gasto', 'categoría' o 'viajes'). Evita saludos, introducciones, "
-    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español."
+    "repeticiones y frases genéricas. Usa un tono cercano, directo y educativo en español." \
+    "Puedes usar **texto** para resaltar palabras o frases clave."
+    " Prohibido: listas con asteriscos crudos"
 )
 
 

@@ -11,10 +11,13 @@
   --color-accent-claro: #e2b93b;
   --color-accent-soft: rgba(201, 168, 76, 0.12);
   --color-accent-glow: rgba(201, 168, 76, 0.08);
+  --color-accent-ring: rgba(201, 168, 76, 0.30);
+  --color-accent-brillo: rgba(201, 168, 76, 0.25);
 
   /* Verde - exito y valores positivos */
   --color-success: #4ade80;
   --color-success-soft: rgba(74, 222, 128, 0.10);
+  --color-success-borde: rgba(74, 222, 128, 0.25);
 
   /* Rojo - peligro y errores */
   --color-danger: #ef4444;
@@ -35,6 +38,7 @@
 
   /* Violeta - identidad visual del Asesor IA */
   --color-violeta: #7c3aed;
+  --color-violeta-glow: rgba(124, 58, 237, 0.30);
 
   /* Colores base en números, para usar con transparencia rgba(var(--rgb-...), 0.x) */
   --rgb-verde-fuerte: 16, 185, 129;
@@ -50,6 +54,7 @@
   --color-text: #f5f0e8;
   --color-text-muted: #6b6045;
   --color-text-soft: #a89060;
+  --color-text-resaltado: #f7f0e2;
 
   /* Blanco - texto sobre superficies de acento */
   --color-blanco: #ffffff;

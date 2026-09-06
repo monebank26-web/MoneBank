@@ -2,6 +2,7 @@
   display: flex;
   gap: 10px;
   max-width: 78%;
+  animation: entrada-burbuja 0.28s ease-out both;
 }
 
 .burbuja--user {
@@ -11,6 +12,11 @@
 
 .burbuja--model {
   align-self: flex-start;
+}
+
+@keyframes entrada-burbuja {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .burbuja__avatar {
@@ -24,6 +30,7 @@
   font-size: 15px;
   color: var(--color-blanco);
   background: linear-gradient(135deg, var(--color-accent), var(--color-violeta));
+  box-shadow: 0 0 0 1px var(--color-accent-ring), 0 0 14px var(--color-violeta-glow);
 }
 
 .burbuja__texto {
@@ -31,11 +38,10 @@
   border-radius: var(--radius-md);
   font-size: 14px;
   line-height: 1.5;
-  white-space: pre-wrap;
 }
 
 .burbuja--user .burbuja__texto {
-  background: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
   color: var(--color-blanco);
   border-bottom-right-radius: 4px;
 }
@@ -45,6 +51,7 @@
   border: 1px solid var(--color-border);
   color: var(--color-text);
   border-bottom-left-radius: 4px;
+  min-width: 60px;
 }
 
 .burbuja__texto--escribiendo {
@@ -62,8 +69,19 @@
   animation: rebote-punto 1.2s infinite ease-in-out;
 }
 
-.punto-escribiendo:nth-child(2) { animation-delay: 0.15s; }
-.punto-escribiendo:nth-child(3) { animation-delay: 0.3s; }
+.punto-escribiendo:nth-child(1) {
+  background: var(--color-accent);
+}
+
+.punto-escribiendo:nth-child(2) {
+  background: var(--color-violeta);
+  animation-delay: 0.15s;
+}
+
+.punto-escribiendo:nth-child(3) {
+  background: var(--color-accent);
+  animation-delay: 0.3s;
+}
 
 @keyframes rebote-punto {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
