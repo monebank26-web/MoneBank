@@ -7,11 +7,16 @@ from app.core.security.roles import ROL_ADMIN
 
 from app.modules.cuenta.presentation.schema.cuenta_schema import (
     CuentaCreate,
+    CuentaUpdate,
     CuentaResponse
 )
 
 from app.modules.cuenta.application.use_cases.crear_cuenta import CrearCuenta
-from app.modules.cuenta.application.use_cases.obtener_cuenta_por_id import ObtenerCuentaPorIdUseCase
+from app.modules.cuenta.application.use_cases.obtener_cuenta import ObtenerCuentasUseCase
+from app.modules.cuenta.application.use_cases.obtener_cuenta_por_usuario import ObtenerCuentaPorUsuarioUseCase
+from app.modules.cuenta.application.use_cases.obtener_cuenta_por_id_cuenta import ObtenerCuentaPorIdUseCase
+from app.modules.cuenta.application.use_cases.actualizar_cuenta import ActualizarCuentaUseCase
+from app.modules.cuenta.application.use_cases.eliminar_cuenta import EliminarCuentaUseCase
 
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
@@ -30,7 +35,7 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
-@router.post("/", response_model=CuentaResponse)
+@router.post("/", response_model=CuentaResponse, status_code=201)
 def crear_cuenta(
     cuenta: CuentaCreate,
     repository: CuentaRepository = Depends(get_cuenta_repository),
@@ -39,7 +44,7 @@ def crear_cuenta(
     return caso_uso.execute(cuenta.model_dump())
 
 
-@router.get("/")
+@router.get("/", response_model=list[CuentaResponse])
 def obtener_cuentas(
     usuario_id: int = None,
     repository: CuentaRepository = Depends(get_cuenta_repository),
@@ -47,18 +52,45 @@ def obtener_cuentas(
 ):
     if current_user.id_rol == ROL_ADMIN:
         if usuario_id:
-            caso_uso = ObtenerCuentaPorIdUseCase(repository)
-            resultado = caso_uso.execute(usuario_id)
-            if not resultado["success"]:
-                raise HTTPException(status_code=404, detail="Cuenta no encontrada")
-            return [resultado["cuenta"]]
-        return repository.get_all()
-    else:
-        caso_uso = ObtenerCuentaPorIdUseCase(repository)
-        resultado = caso_uso.execute(current_user.id_usuario)
-        if not resultado["success"]:
-            raise HTTPException(status_code=404, detail="Cuenta no encontrada")
-        return [resultado["cuenta"]]
+            caso_uso = ObtenerCuentaPorUsuarioUseCase(repository)
+            return [caso_uso.execute(usuario_id)]
+        caso_uso = ObtenerCuentasUseCase(repository)
+        return caso_uso.execute()
+
+    caso_uso = ObtenerCuentaPorUsuarioUseCase(repository)
+    return [caso_uso.execute(current_user.id_usuario)]
+
+
+@router.get("/{id_cuenta}", response_model=CuentaResponse)
+def obtener_cuenta_por_id(
+    id_cuenta: int,
+    repository: CuentaRepository = Depends(get_cuenta_repository),
+    current_user: object = Depends(get_current_user),
+):
+    caso_uso = ObtenerCuentaPorIdUseCase(repository)
+    cuenta = caso_uso.execute(id_cuenta)
+
+    if current_user.id_rol != ROL_ADMIN and cuenta.id_usuario != current_user.id_usuario:
+        raise HTTPException(status_code=403, detail="No puedes consultar esta cuenta")
+
+    return cuenta
+
+
+@router.put("/{id_cuenta}", response_model=CuentaResponse)
+def actualizar_cuenta(
+    id_cuenta: int,
+    cuenta: CuentaUpdate,
+    repository: CuentaRepository = Depends(get_cuenta_repository),
+    current_user: object = Depends(get_current_user),
+):
+    cuenta_existente = repository.get_cuenta_por_id(id_cuenta)
+    if not cuenta_existente:
+        raise HTTPException(status_code=404, detail="Cuenta no encontrada")
+    if current_user.id_rol != ROL_ADMIN and cuenta_existente.id_usuario != current_user.id_usuario:
+        raise HTTPException(status_code=403, detail="No puedes modificar esta cuenta")
+
+    caso_uso = ActualizarCuentaUseCase(repository)
+    return caso_uso.execute(id_cuenta, cuenta.model_dump(exclude_unset=True))
 
 
 @router.delete("/{id_cuenta}")
@@ -67,9 +99,11 @@ def eliminar_cuenta(
     repository: CuentaRepository = Depends(get_cuenta_repository),
     current_user: object = Depends(get_current_user),
 ):
-    cuenta = repository.get_by_id_cuenta(id_cuenta)
+    cuenta = repository.get_cuenta_por_id(id_cuenta)
     if not cuenta:
         raise HTTPException(status_code=404, detail="Cuenta no encontrada")
     if current_user.id_rol != ROL_ADMIN and cuenta.id_usuario != current_user.id_usuario:
         raise HTTPException(status_code=403, detail="No puedes eliminar esta cuenta")
-    return repository.delete(id_cuenta)
+
+    caso_uso = EliminarCuentaUseCase(repository)
+    return caso_uso.execute(id_cuenta)

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './Modal.css';
 
-const Modal = ({ open, onClose, title, children }) => {
+const Modal = ({ open, onClose, title, children, className }) => {
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
     if (open) document.addEventListener('keydown', handleKey);
@@ -12,7 +12,7 @@ const Modal = ({ open, onClose, title, children }) => {
 
   return (
     <div className="fondo-modal" onClick={onClose}>
-      <div className="caja-modal" onClick={(e) => e.stopPropagation()}>
+      <div className={`caja-modal${className ? ` ${className}` : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="encabezado-modal">
           <h3 className="titulo-modal">{title}</h3>
           <button className="boton-cerrar-modal" onClick={onClose}>✕</button>

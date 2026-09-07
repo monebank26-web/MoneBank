@@ -66,7 +66,7 @@ class RegistrarAbonoAhorro:
         if transaccion_data["monto"] > cuenta.saldo:
             raise SaldoInsuficiente()
 
-        return self.repository.create({
+        abono_creado = self.repository.create({
             "monto": transaccion_data["monto"],
             "fecha": transaccion_data["fecha"],
             "descripcion": transaccion_data.get("descripcion"),
@@ -75,3 +75,8 @@ class RegistrarAbonoAhorro:
             "id_categoria": ahorro.id_categoria,
             "id_ahorro": ahorro.id_ahorro,
         })
+
+        self.repository.descontar_saldo(cuenta.id_cuenta, transaccion_data["monto"])
+        self.repository.sumar_saldo_ahorro(ahorro.id_ahorro, transaccion_data["monto"])
+
+        return abono_creado

@@ -53,7 +53,7 @@ def repository_base():
     return repository
 
 
-def test_registrar_abono_exitoso_inserta_y_no_descuenta_saldo():
+def test_registrar_abono_exitoso_inserta_y_descuenta_saldo():
 
     repository = repository_base()
 
@@ -73,7 +73,8 @@ def test_registrar_abono_exitoso_inserta_y_no_descuenta_saldo():
     assert data_enviada["id_ahorro"] == 47
     assert data_enviada["id_categoria"] == 17
 
-    repository.descontar_saldo.assert_not_called()
+    repository.descontar_saldo.assert_called_once_with(1, Decimal("20000.00"))
+    repository.sumar_saldo_ahorro.assert_called_once_with(47, Decimal("20000.00"))
 
     assert resultado == abono_creado
 

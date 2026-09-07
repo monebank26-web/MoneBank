@@ -1,11 +1,77 @@
+.formulario-gasto__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formulario-gasto__campos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.formulario-gasto__consejo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.formulario-gasto__consejo-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.boton-secundario {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.boton-secundario:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.boton-cerrar-consejo {
+  width: 100%;
+  padding: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.boton-cerrar-consejo:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
 .preview-gasto {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-2);
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .titulo-preview-gasto {
@@ -156,3 +222,48 @@
   border: 1px solid rgba(var(--rgb-rojo), 0.45);
 }
 
+.boton-principal {
+  width: 100%;
+}
+
+.boton-principal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.formulario-gasto__pc-consejo {
+  display: none;
+}
+
+.modal-gasto-expandido {
+  max-width: 820px !important;
+}
+
+@media (max-width: 767px) {
+  .modal-gasto-expandido {
+    max-width: 440px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .formulario-gasto__campos .formulario-gasto__consejo {
+    display: none;
+  }
+
+  .formulario-gasto__layout--con-consejo {
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .formulario-gasto__pc-consejo {
+    display: block;
+    width: 340px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    max-height: 480px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+  }
+}

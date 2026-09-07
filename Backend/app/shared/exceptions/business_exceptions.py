@@ -198,7 +198,16 @@ class PresupuestoDuplicado(Exception):
 
 class EstadoInvalido(Exception):
     status_code = 400
-    description = "El estado debe ser ACTIVO, PAUSADO o FINALIZADO"
+    description = "El estado debe ser ACTIVA, PAUSADA o FINALIZADA"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class ProgramacionNoEncontrada(Exception):
+    status_code = 404
+    description = "Programación de ahorro no encontrada"
 
     def __init__(self, message: str = None):
         self.message = message or self.description
@@ -226,6 +235,24 @@ class SaldoInsuficiente(Exception):
 class ConsejoIANoDisponible(Exception):
     status_code = 503
     description = "El servicio de consejos de IA no está disponible en este momento"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class FrecuenciaInvalida(Exception):
+    status_code = 400
+    description = "La frecuencia debe ser DIARIA, SEMANAL, QUINCENAL, MENSUAL, TRIMESTRAL, SEMESTRAL o ANUAL"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class RangoFechasInvalido(Exception):
+    status_code = 400
+    description = "fecha_fin debe ser mayor o igual a fecha_inicio"
 
     def __init__(self, message: str = None):
         self.message = message or self.description

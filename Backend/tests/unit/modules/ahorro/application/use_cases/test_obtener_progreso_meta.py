@@ -15,10 +15,11 @@ from app.shared.exceptions.business_exceptions import (
 
 def repository_mock():
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     ahorro = Mock()
     ahorro.id_ahorro = 46
@@ -38,14 +39,14 @@ def repository_mock():
         "monto_faltante": Decimal("2500000.00"),
     }
 
-    return repository
+    return repository, cuenta_repository
 
 
 def test_debe_retornar_el_progreso_de_la_meta():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
 
-    resultado = ObtenerProgresoMeta(repository).execute(46, 6)
+    resultado = ObtenerProgresoMeta(repository, cuenta_repository).execute(46, 6)
 
     assert resultado["id_meta"] == 46
     assert resultado["nombre"] == "Viaje"
@@ -57,35 +58,35 @@ def test_debe_retornar_el_progreso_de_la_meta():
 
 def test_meta_inexistente_lanza_meta_no_encontrada():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     repository.get_by_id.return_value = None
 
     with pytest.raises(MetaNoEncontrada):
-        ObtenerProgresoMeta(repository).execute(999, 6)
+        ObtenerProgresoMeta(repository, cuenta_repository).execute(999, 6)
 
 
 def test_meta_de_otro_usuario_lanza_meta_no_encontrada():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     repository.get_by_id.return_value.id_cuenta = 99
 
     with pytest.raises(MetaNoEncontrada):
-        ObtenerProgresoMeta(repository).execute(46, 6)
+        ObtenerProgresoMeta(repository, cuenta_repository).execute(46, 6)
 
 
 def test_ahorro_que_no_es_meta_lanza_meta_no_encontrada():
 
-    repository = repository_mock()
+    repository, cuenta_repository = repository_mock()
     repository.get_tipo_ahorro.return_value.id_tipo_ahorro = 3
 
     with pytest.raises(MetaNoEncontrada):
-        ObtenerProgresoMeta(repository).execute(46, 6)
+        ObtenerProgresoMeta(repository, cuenta_repository).execute(46, 6)
 
 
 def test_sin_cuenta_lanza_cuenta_no_encontrada():
 
-    repository = repository_mock()
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository = repository_mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        ObtenerProgresoMeta(repository).execute(46, 6)
+        ObtenerProgresoMeta(repository, cuenta_repository).execute(46, 6)

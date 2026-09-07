@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
 from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 from app.modules.ahorro.infrastructure.model.tipo_ahorro_model import TipoAhorroModel
-from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 from app.modules.transaccion.infrastructure.model.categoria_model import CategoriaModel
 
 
@@ -61,13 +60,6 @@ class SqlAhorroRepository(AhorroRepository):
         self.db.commit()
 
         return {"mensaje": "Ahorro eliminado"}
-
-    def get_cuenta_por_usuario(self, id_usuario):
-        return (
-            self.db.query(CuentaModel)
-            .filter(CuentaModel.id_usuario == id_usuario)
-            .first()
-        )
 
     def get_tipo_ahorro(self, nombre):
         return (
