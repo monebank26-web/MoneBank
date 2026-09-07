@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17
+    image: postgres:18
     container_name: monebank-db
 
     restart: always
@@ -8,11 +8,20 @@ services:
     env_file:
       - ./backend/.env
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d monebank"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+      - ./backend/scripts/monebank.backup:/docker-entrypoint-initdb.d/monebank.backup:ro
+      - ./backend/scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
 
   backend:
     build:
@@ -25,8 +34,13 @@ services:
     env_file:
       - ./backend/.env
 
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
     ports:
       - "8000:8000"
@@ -39,6 +53,10 @@ services:
       context: ./frontend
 
     container_name: monebank-frontend
+
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
     depends_on:
       - backend
