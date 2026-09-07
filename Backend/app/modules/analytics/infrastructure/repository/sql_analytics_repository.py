@@ -212,6 +212,54 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             "periodo": limite.periodo,
         }
 
+    def obtener_datos_grafica(self, id_usuario, periodo=None):
+        filtros = [
+            HistorialTransaccionModel.id_usuario == id_usuario,
+        ]
+
+        series_temporales = (
+            self.db.query(
+                HistorialTransaccionModel.fecha,
+                HistorialTransaccionModel.tipo_transaccion,
+                func.sum(HistorialTransaccionModel.monto).label("total")
+            )
+            .filter(*filtros)
+            .group_by(HistorialTransaccionModel.fecha, HistorialTransaccionModel.tipo_transaccion)
+            .order_by(HistorialTransaccionModel.fecha.asc())
+            .all()
+        )
+
+        totales_por_categoria = (
+            self.db.query(
+                HistorialTransaccionModel.nombre_categoria.label("nombre_categoria"),
+                HistorialTransaccionModel.tipo_transaccion,
+                func.sum(HistorialTransaccionModel.monto).label("total")
+            )
+            .filter(*filtros)
+            .group_by(HistorialTransaccionModel.nombre_categoria, HistorialTransaccionModel.tipo_transaccion)
+            .order_by(func.sum(HistorialTransaccionModel.monto).desc())
+            .all()
+        )
+
+        return {
+            "series": [
+                {
+                    "fecha": row.fecha.isoformat() if hasattr(row.fecha, "isoformat") else str(row.fecha),
+                    "tipo_transaccion": row.tipo_transaccion,
+                    "total": row.total
+                }
+                for row in series_temporales
+            ],
+            "totales_por_categoria": [
+                {
+                    "nombre_categoria": row.nombre_categoria,
+                    "tipo_transaccion": row.tipo_transaccion,
+                    "total": row.total
+                }
+                for row in totales_por_categoria
+            ]
+        }
+
     def _sumar_transacciones_categoria(
         self, id_usuario, id_categoria, fecha_desde, fecha_hasta
     ):
@@ -247,3 +295,51 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             .scalar()
             or 0
         )
+    def obtener_movimientos_periodo(self, id_usuario, fecha_inicio, fecha_fin):
+        filtros = [
+            HistorialTransaccionModel.id_usuario == id_usuario,
+            HistorialTransaccionModel.fecha >= fecha_inicio,
+            HistorialTransaccionModel.fecha <= fecha_fin,
+        ]
+
+        resultados = (
+            self.db.query(
+                HistorialTransaccionModel.tipo_transaccion,
+                func.sum(HistorialTransaccionModel.monto).label("total")
+            )
+            .filter(*filtros)
+            .group_by(HistorialTransaccionModel.tipo_transaccion)
+            .all()
+        )
+
+        return [
+            {"tipo_transaccion": row.tipo_transaccion, "total": row.total}
+            for row in resultados
+        ]
+    def obtener_reporte_periodo(self, id_usuario, fecha_inicio, fecha_fin):
+        filtros = [
+            HistorialTransaccionModel.id_usuario == id_usuario,
+            HistorialTransaccionModel.fecha >= fecha_inicio,
+            HistorialTransaccionModel.fecha <= fecha_fin,
+        ]
+
+        resultados = (
+            self.db.query(
+                HistorialTransaccionModel.nombre_categoria.label("nombre_categoria"),
+                HistorialTransaccionModel.tipo_transaccion,
+                func.sum(HistorialTransaccionModel.monto).label("total")
+            )
+            .filter(*filtros)
+            .group_by(HistorialTransaccionModel.nombre_categoria, HistorialTransaccionModel.tipo_transaccion)
+            .order_by(func.sum(HistorialTransaccionModel.monto).desc())
+            .all()
+        )
+
+        return [
+            {
+                "nombre_categoria": row.nombre_categoria,
+                "tipo_transaccion": row.tipo_transaccion,
+                "total": row.total,
+            }
+            for row in resultados
+        ]

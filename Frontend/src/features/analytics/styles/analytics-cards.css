@@ -1,0 +1,120 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  font-family: var(--font-display);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.card .periodo {
+  color: var(--color-text-soft);
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+.card p {
+  color: var(--color-text-muted);
+}
+
+/* Grid de totales (ingresos / gastos / balance) */
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.resumen-item {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resumen-item span {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.resumen-item strong {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.resumen-item.ingreso strong {
+  color: var(--color-verde-fuerte);
+}
+
+.resumen-item.gasto strong {
+  color: var(--color-danger);
+}
+
+.resumen-item.balance.positivo strong {
+  color: var(--color-accent);
+}
+
+.resumen-item.balance.negativo strong {
+  color: var(--color-danger);
+}
+
+/* Tabla de detalle por categoría */
+.tabla-detalle {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.tabla-detalle thead th {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabla-detalle tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.tabla-detalle tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-detalle tbody tr:hover {
+  background-color: var(--color-surface-2);
+}
+
+.tabla-detalle tr.fila-ingreso td:nth-child(2) {
+  color: var(--color-verde-fuerte);
+  font-weight: 600;
+}
+
+.tabla-detalle tr.fila-gasto td:nth-child(2) {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .resumen-grid {
+    grid-template-columns: 1fr;
+  }
+}
