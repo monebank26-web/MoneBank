@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { CORREO_ADMIN, ROLES } from '../../../core/constants';
 import './Auth.css';
+import CampoContrasena from '../../../shared/components/CampoContrasena';
 
 const evaluarSeguridadPassword = (password) => {
   if (!password) {

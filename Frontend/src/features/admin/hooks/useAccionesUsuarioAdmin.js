@@ -6,7 +6,9 @@ export const useAccionesUsuarioAdmin = ({ cargarUsuarios }) => {
   const [modalDetalleAbierto, setModalDetalleAbierto] = useState(false);
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false);
+  const [modalBloquearAbierto, setModalBloquearAbierto] = useState(false);
   const [formularioEdicion, setFormularioEdicion] = useState({});
+  const [motivoBloqueo, setMotivoBloqueo] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const mostrarMensaje = (texto) => {
@@ -30,6 +32,12 @@ export const useAccionesUsuarioAdmin = ({ cargarUsuarios }) => {
     setModalEliminarAbierto(true);
   };
 
+  const abrirBloquear = (usuario) => {
+    setUsuarioSeleccionado(usuario);
+    setMotivoBloqueo('');
+    setModalBloquearAbierto(true);
+  };
+
   const guardarEdicion = () => {
     authService.actualizarUsuario(usuarioSeleccionado.id, {
       nombre: formularioEdicion.nombre,
@@ -49,6 +57,18 @@ export const useAccionesUsuarioAdmin = ({ cargarUsuarios }) => {
     cargarUsuarios();
   };
 
+  const confirmarBloqueo = () => {
+    if (!motivoBloqueo.trim() || motivoBloqueo.trim().length < 5) {
+      mostrarMensaje('El motivo debe tener al menos 5 caracteres.');
+      return;
+    }
+
+    authService.bloquearUsuario(usuarioSeleccionado.id, motivoBloqueo.trim());
+    mostrarMensaje('✓ Cuenta bloqueada correctamente.');
+    setModalBloquearAbierto(false);
+    cargarUsuarios();
+  };
+
   return {
     usuarioSeleccionado,
     modalDetalleAbierto,
@@ -57,13 +77,19 @@ export const useAccionesUsuarioAdmin = ({ cargarUsuarios }) => {
     setModalEditarAbierto,
     modalEliminarAbierto,
     setModalEliminarAbierto,
+    modalBloquearAbierto,
+    setModalBloquearAbierto,
     formularioEdicion,
     setFormularioEdicion,
+    motivoBloqueo,
+    setMotivoBloqueo,
     mensaje,
     abrirDetalle,
     abrirEditar,
     abrirEliminar,
+    abrirBloquear,
     guardarEdicion,
     eliminarUsuario,
+    confirmarBloqueo,
   };
 };

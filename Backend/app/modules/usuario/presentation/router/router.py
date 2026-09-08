@@ -10,13 +10,16 @@ from app.modules.usuario.application.use_cases.obtener_usuario import ObtenerUsu
 from app.modules.usuario.application.use_cases.obtener_usuario_por_id import ObtenerUsuarioPorIdUseCase
 from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
 from app.modules.usuario.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
+from app.modules.usuario.application.use_cases.bloquear_usuario import BloquearUsuario
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 
 from app.modules.usuario.presentation.schema.usuario_schema import (
     UsuarioCreate,
     UsuarioResponse,
-    UsuarioUpdate
+    UsuarioUpdate,
+    BloqueoUsuarioRequest,
+    BloqueoUsuarioResponse,
 )
 
 
@@ -111,3 +114,13 @@ def eliminar_usuario(
     caso_uso = EliminarUsuarioUseCase(repository)
     return caso_uso.execute(id_usuario)
 
+
+@router.put("/{id_usuario}/bloquear", response_model=BloqueoUsuarioResponse)
+def bloquear_usuario(
+    id_usuario: int,
+    datos: BloqueoUsuarioRequest,
+    repository: UsuarioRepository = Depends(get_usuario_repository),
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
+):
+    caso_uso = BloquearUsuario(repository)
+    return caso_uso.execute(id_usuario, datos.motivo)
