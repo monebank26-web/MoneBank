@@ -6,9 +6,11 @@ export const STORAGE_KEYS = {
   TRANSACCIONES: 'mb_transacciones',
   USERS: 'mb_users',
   VINCULOS: 'mb_vinculos',
+  THEME: 'mb_theme',
 };
 
 export const ROUTES = {
+  HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
