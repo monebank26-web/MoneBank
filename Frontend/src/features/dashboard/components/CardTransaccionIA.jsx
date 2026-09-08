@@ -1,4 +1,5 @@
 import React from 'react';
+import MensajeIA from '../../../shared/components/MensajeIA';
 import './CardTransaccionIA.css';
 
 const CardTransaccionIA = ({ consejo, generadoConIa, cargandoConsejo }) => (
@@ -11,7 +12,7 @@ const CardTransaccionIA = ({ consejo, generadoConIa, cargandoConsejo }) => (
         </div>
       ) : consejo ? (
         <>
-          <p className="card-consejo-ia__consejo-texto">{consejo}</p>
+          <MensajeIA texto={consejo} />
           {generadoConIa && (
             <div className="card-consejo-ia__badge">
               <span className="card-consejo-ia__badge-punto" />

@@ -9,9 +9,6 @@
 
 .card-consejo-ia__panel {
   padding: 4px 0;
-}
-
-.card-consejo-ia__consejo-texto {
   font-size: 13px;
   line-height: 1.6;
   color: var(--color-text);

@@ -1,0 +1,23 @@
+.badge-ia-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-violeta));
+  color: var(--color-blanco);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.badge-ia-chat__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-blanco);
+}
+
+.badge-ia-chat--mini {
+  font-size: 11px;
+  padding: 3px 8px;
+}

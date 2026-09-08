@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
 import { ROUTES, ROLES } from '../../core/constants';
 import { controlParentalService } from '../../features/controlParental/services/controlParentalServices';
@@ -10,8 +9,10 @@ import './MainLayout.css';
 const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [analiticaAbierta, setAnaliticaAbierta] = useState(false);
   const [relacionesParentales, setRelacionesParentales] = useState([]);
 
   const esAdmin = user?.rol === ROLES.ADMIN;
@@ -24,9 +25,7 @@ const MainLayout = ({ children }) => {
       }
 
       try {
-        const relaciones =
-          await controlParentalService.obtenerVinculaciones();
-
+        const relaciones = await controlParentalService.obtenerVinculaciones();
         setRelacionesParentales(
           Array.isArray(relaciones) ? relaciones : []
         );
@@ -35,7 +34,6 @@ const MainLayout = ({ children }) => {
           'No se pudieron cargar las relaciones parentales:',
           error
         );
-
         setRelacionesParentales([]);
       }
     };
@@ -43,15 +41,12 @@ const MainLayout = ({ children }) => {
     cargarRelacionesParentales();
   }, [user, esAdmin]);
 
-  
   const esHijoVinculado = relacionesParentales.some(
     (relacion) =>
-      Number(relacion.id_usuario_dependiente) ===
-      Number(user?.id)
+      Number(relacion.id_usuario_dependiente) === Number(user?.id)
   );
 
-  const puedeVerControlParental =
-    !esAdmin && !esHijoVinculado;
+  const puedeVerControlParental = !esAdmin && !esHijoVinculado;
 
   const handleLogout = () => {
     logout();
@@ -59,55 +54,24 @@ const MainLayout = ({ children }) => {
   };
 
   const elementosNav = [
-    {
-      to: ROUTES.DASHBOARD,
-      label: 'Inicio',
-      icono: '⊞',
-      visible: true,
-    },
-
-    {
-      to: ROUTES.BOLSILLOS,
-      label: 'Bolsillos',
-      icono: '◈',
-      visible: !esAdmin,
-    },
-
-    {
-      to: ROUTES.METAS,
-      label: 'Metas',
-      icono: '◆',
-      visible: !esAdmin,
-    },
-
-    {
-      to: ROUTES.LIMITES,
-      label: 'Límites',
-      icono: '▲',
-      visible: !esAdmin,
-    },
-
-    {
-      to: ROUTES.TRANSACCIONES,
-      label: 'Movimientos',
-      icono: '↕',
-      visible: !esAdmin,
-    },
-
+    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
+    { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
+    { to: ROUTES.BOLSILLOS, label: 'Bolsillos', icono: '◈', visible: !esAdmin },
+    { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
+    { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
+    { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: '↕', visible: !esAdmin },
     {
       to: ROUTES.CONTROL_PARENTAL,
       label: 'Control parental',
       icono: '𖥤',
       visible: puedeVerControlParental,
     },
-
     {
       to: ROUTES.ADMIN,
       label: 'Administrador',
       icono: '👑',
       visible: esAdmin,
     },
-
     {
       to: ROUTES.PERFIL,
       label: 'Mi perfil',
@@ -115,6 +79,13 @@ const MainLayout = ({ children }) => {
       visible: true,
     },
   ].filter((elemento) => elemento.visible);
+
+  const submenuAnalitica = [
+    { to: ROUTES.GRAFICAS, label: 'Gráficas' },
+    { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
+    { to: ROUTES.REPORTES, label: 'Reportes' },
+  ];
+  const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 
   const etiquetaRol = {
     administrador: 'Administrador',
@@ -131,13 +102,8 @@ const MainLayout = ({ children }) => {
         }`}
       >
         <div className="marca-barra-lateral">
-          <span className="logo-barra-lateral">
-            MB
-          </span>
-
-          <span className="nombre-barra-lateral">
-            MoneBank
-          </span>
+          <span className="logo-barra-lateral">MB</span>
+          <span className="nombre-barra-lateral">MoneBank</span>
         </div>
 
         <nav className="navegacion-barra-lateral">
@@ -147,22 +113,59 @@ const MainLayout = ({ children }) => {
               to={item.to}
               className={({ isActive }) =>
                 `elemento-navegacion ${
-                  isActive
-                    ? 'elemento-navegacion--activo'
-                    : ''
+                  isActive ? 'elemento-navegacion--activo' : ''
                 }`
               }
               onClick={() => setMenuOpen(false)}
             >
-              <span className="icono-navegacion">
-                {item.icono}
-              </span>
-
-              <span className="etiqueta-navegacion">
-                {item.label}
-              </span>
+              <span className="icono-navegacion">{item.icono}</span>
+              <span className="etiqueta-navegacion">{item.label}</span>
             </NavLink>
           ))}
+
+          {!esAdmin && (
+            <div className="grupo-submenu">
+              <button
+                type="button"
+                className={`elemento-navegacion submenu-toggle ${
+                  analiticaActiva ? 'elemento-navegacion--activo' : ''
+                }`}
+                onClick={() => setAnaliticaAbierta(!analiticaAbierta)}
+                aria-expanded={analiticaAbierta}
+              >
+                <span className="icono-navegacion">▦</span>
+                <span className="etiqueta-navegacion">Analítica</span>
+                <span
+                  className={`caret-submenu ${
+                    analiticaAbierta ? 'caret-submenu--abierta' : ''
+                  }`}
+                >
+                  ▾
+                </span>
+              </button>
+
+              {analiticaAbierta && (
+                <div className="submenu-list">
+                  {submenuAnalitica.map((sub) => (
+                    <NavLink
+                      key={sub.to}
+                      to={sub.to}
+                      className={({ isActive }) =>
+                        `elemento-navegacion submenu-item ${
+                          isActive ? 'elemento-navegacion--activo' : ''
+                        }`
+                      }
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <span className="etiqueta-navegacion">
+                        {sub.label}
+                      </span>
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         <div className="pie-barra-lateral">
@@ -177,13 +180,9 @@ const MainLayout = ({ children }) => {
               </p>
 
               {etiquetaRol ? (
-                <p className="rol-usuario">
-                  {etiquetaRol}
-                </p>
+                <p className="rol-usuario">{etiquetaRol}</p>
               ) : (
-                <p className="correo-usuario">
-                  {user?.email}
-                </p>
+                <p className="correo-usuario">{user?.email}</p>
               )}
             </div>
           </div>
@@ -213,14 +212,10 @@ const MainLayout = ({ children }) => {
             ☰
           </button>
 
-          <span className="marca-encabezado-movil">
-            MoneBank
-          </span>
+          <span className="marca-encabezado-movil">MoneBank</span>
         </header>
 
-        <div className="area-contenido">
-          {children}
-        </div>
+        <div className="area-contenido">{children}</div>
       </main>
     </div>
   );

@@ -14,6 +14,9 @@ from app.modules.analytics.presentation.router.router import (
 from app.modules.programacion_ahorro.presentation.router.router import (
     router as programacion_ahorro_router
 )
+from app.modules.chat_ia.presentation.router.router import (
+    router as chat_ia_router
+)
 
 from app.shared.exceptions.handlers import register_all_exception_handlers
 
@@ -56,5 +59,6 @@ app.include_router(control_parental_router)
 app.include_router(mesada_parental_router)
 app.include_router(ejecucion_mesada_router)
 app.include_router(gestionar_mesada_router)
+app.include_router(chat_ia_router)
 
 register_all_exception_handlers(app)

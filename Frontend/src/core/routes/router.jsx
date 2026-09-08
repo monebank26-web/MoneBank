@@ -6,8 +6,7 @@ import { ROUTES, ROLES } from '../constants';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
-import BolsillosPage from '../../features/bolsillos/pages/BolsillosPage';
-import BolsilloDetallePage from '../../features/bolsillos/pages/BolsilloDetallePage';
+import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
 import LimitesPage from '../../features/limites/pages/LimitesPage';
 import TransaccionesPage from '../../features/transacciones/pages/TransaccionesPage';
@@ -16,6 +15,9 @@ import PerfilPage from '../../features/perfil/pages/PerfilPage';
 import MainLayout from '../../shared/layouts/MainLayout';
 import ControlParentalDashboardPage from '../../features/controlParental/pages/ControlParentalDashboardPage';
 
+import { GraficasPage } from '../../features/analytics/pages/GraficasPage';
+import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemanalPage';
+import { ReportesPage } from '../../features/analytics/pages/ReportesPage';
 
 const RutaPrivada = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -49,14 +51,17 @@ const AppRouter = () => (
 
       {/* Privadas generales */}
       <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
-      <Route path="/bolsillos" element={<RutaPrivada><BolsillosPage /></RutaPrivada>} />
-      <Route path="/bolsillos/:id" element={<RutaPrivada><BolsilloDetallePage /></RutaPrivada>} />
+      <Route path="/chat" element={<RutaPrivada><ChatPage /></RutaPrivada>} />
       <Route path="/metas" element={<RutaPrivada><MetasPage /></RutaPrivada>} />
       <Route path="/limites" element={<RutaPrivada><LimitesPage /></RutaPrivada>} />
       <Route path="/transacciones" element={<RutaPrivada><TransaccionesPage /></RutaPrivada>} />
       <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
       <Route path="/control-parental"element={<RutaPrivada><ControlParentalDashboardPage /></RutaPrivada>}/>
 
+      <Route path={ROUTES.GRAFICAS} element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
+      <Route path={ROUTES.RESUMEN_SEMANAL} element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
+      <Route path={ROUTES.REPORTES} element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
+      
 
       {/* Solo admin */}
       <Route path="/admin" element={<RutaAdmin><AdminPage /></RutaAdmin>} />
