@@ -39,4 +39,5 @@ class LoginUsuarioUseCase:
             "nombres": usuario.nombres,
             "apellidos": usuario.apellidos,
             "correo": usuario.correo,
+            "fecha_creacion": usuario.fecha_creacion,
         }

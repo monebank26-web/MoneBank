@@ -1,41 +1,84 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
 import { ROUTES, ROLES } from '../../core/constants';
+import { controlParentalService } from '../../features/controlParental/services/controlParentalServices';
+
 import './MainLayout.css';
 
 const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [analiticaAbierta, setAnaliticaAbierta] = useState(false);
+  const [relacionesParentales, setRelacionesParentales] = useState([]);
+
+  const esAdmin = user?.rol === ROLES.ADMIN;
+
+  useEffect(() => {
+    const cargarRelacionesParentales = async () => {
+      if (!user || esAdmin) {
+        setRelacionesParentales([]);
+        return;
+      }
+
+      try {
+        const relaciones = await controlParentalService.obtenerVinculaciones();
+        setRelacionesParentales(
+          Array.isArray(relaciones) ? relaciones : []
+        );
+      } catch (error) {
+        console.error(
+          'No se pudieron cargar las relaciones parentales:',
+          error
+        );
+        setRelacionesParentales([]);
+      }
+    };
+
+    cargarRelacionesParentales();
+  }, [user, esAdmin]);
+
+  const esHijoVinculado = relacionesParentales.some(
+    (relacion) =>
+      Number(relacion.id_usuario_dependiente) === Number(user?.id)
+  );
+
+  const puedeVerControlParental = !esAdmin && !esHijoVinculado;
 
   const handleLogout = () => {
     logout();
     navigate(ROUTES.LOGIN);
   };
 
-  const esAdmin = user?.rol === ROLES.ADMIN;
-  const esPadre = user?.rol === ROLES.PADRE;
-  const esHijo = user?.rol === ROLES.HIJO;
-  const tienControlParental = esPadre || esHijo;
-
   const elementosNav = [
     { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
     { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
+    { to: ROUTES.BOLSILLOS, label: 'Bolsillos', icono: '◈', visible: !esAdmin },
     { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
     { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
     { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: '↕', visible: !esAdmin },
     {
-      to: esPadre ? ROUTES.CONTROL_PARENTAL_PADRE : ROUTES.CONTROL_PARENTAL_HIJO,
+      to: ROUTES.CONTROL_PARENTAL,
       label: 'Control parental',
-      icono: '👨‍👧',
-      visible: tienControlParental,
+      icono: '𖥤',
+      visible: puedeVerControlParental,
     },
-    { to: ROUTES.ADMIN, label: 'Administrador', icono: '👑', visible: esAdmin },
-    { to: ROUTES.PERFIL, label: 'Mi perfil', icono: '⚙', visible: true },
-  ].filter((e) => e.visible);
+    {
+      to: ROUTES.ADMIN,
+      label: 'Administrador',
+      icono: '👑',
+      visible: esAdmin,
+    },
+    {
+      to: ROUTES.PERFIL,
+      label: 'Mi perfil',
+      icono: '⚙',
+      visible: true,
+    },
+  ].filter((elemento) => elemento.visible);
 
   const submenuAnalitica = [
     { to: ROUTES.GRAFICAS, label: 'Gráficas' },
@@ -45,16 +88,19 @@ const MainLayout = ({ children }) => {
   const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 
   const etiquetaRol = {
-    administrador: '👑 Administrador',
-    padre: '👨‍👧 Padre/Madre',
-    hijo: '🧒 Hijo/Hija',
+    administrador: 'Administrador',
+    padre: 'Padre/Madre',
+    hijo: 'Hijo/Hija',
     normal: '',
   }[user?.rol] || '';
 
   return (
     <div className="raiz-estructura">
-      {/* Sidebar */}
-      <aside className={`barra-lateral ${menuOpen ? 'barra-lateral--abierta' : ''}`}>
+      <aside
+        className={`barra-lateral ${
+          menuOpen ? 'barra-lateral--abierta' : ''
+        }`}
+      >
         <div className="marca-barra-lateral">
           <span className="logo-barra-lateral">MB</span>
           <span className="nombre-barra-lateral">MoneBank</span>
@@ -66,7 +112,9 @@ const MainLayout = ({ children }) => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `elemento-navegacion ${isActive ? 'elemento-navegacion--activo' : ''}`
+                `elemento-navegacion ${
+                  isActive ? 'elemento-navegacion--activo' : ''
+                }`
               }
               onClick={() => setMenuOpen(false)}
             >
@@ -79,13 +127,21 @@ const MainLayout = ({ children }) => {
             <div className="grupo-submenu">
               <button
                 type="button"
-                className={`elemento-navegacion submenu-toggle ${analiticaActiva ? 'elemento-navegacion--activo' : ''}`}
+                className={`elemento-navegacion submenu-toggle ${
+                  analiticaActiva ? 'elemento-navegacion--activo' : ''
+                }`}
                 onClick={() => setAnaliticaAbierta(!analiticaAbierta)}
                 aria-expanded={analiticaAbierta}
               >
                 <span className="icono-navegacion">▦</span>
                 <span className="etiqueta-navegacion">Analítica</span>
-                <span className={`caret-submenu ${analiticaAbierta ? 'caret-submenu--abierta' : ''}`}>▾</span>
+                <span
+                  className={`caret-submenu ${
+                    analiticaAbierta ? 'caret-submenu--abierta' : ''
+                  }`}
+                >
+                  ▾
+                </span>
               </button>
 
               {analiticaAbierta && (
@@ -95,11 +151,15 @@ const MainLayout = ({ children }) => {
                       key={sub.to}
                       to={sub.to}
                       className={({ isActive }) =>
-                        `elemento-navegacion submenu-item ${isActive ? 'elemento-navegacion--activo' : ''}`
+                        `elemento-navegacion submenu-item ${
+                          isActive ? 'elemento-navegacion--activo' : ''
+                        }`
                       }
                       onClick={() => setMenuOpen(false)}
                     >
-                      <span className="etiqueta-navegacion">{sub.label}</span>
+                      <span className="etiqueta-navegacion">
+                        {sub.label}
+                      </span>
                     </NavLink>
                   ))}
                 </div>
@@ -113,31 +173,45 @@ const MainLayout = ({ children }) => {
             <div className="avatar-usuario">
               {user?.nombres?.charAt(0).toUpperCase() || 'U'}
             </div>
+
             <div className="informacion-usuario">
-              <p className="nombre-usuario">{user?.nombres} {user?.apellidos}</p>
-              {etiquetaRol
-                ? <p className="rol-usuario">{etiquetaRol}</p>
-                : <p className="correo-usuario">{user?.email}</p>
-              }
+              <p className="nombre-usuario">
+                {user?.nombres} {user?.apellidos}
+              </p>
+
+              {etiquetaRol ? (
+                <p className="rol-usuario">{etiquetaRol}</p>
+              ) : (
+                <p className="correo-usuario">{user?.email}</p>
+              )}
             </div>
           </div>
-          <button className="boton-cerrar-sesion" onClick={handleLogout}>
+
+          <button
+            className="boton-cerrar-sesion"
+            onClick={handleLogout}
+          >
             Cerrar sesión
           </button>
         </div>
       </aside>
 
-      {/* Overlay móvil */}
       {menuOpen && (
-        <div className="capa-fondo-movil" onClick={() => setMenuOpen(false)} />
+        <div
+          className="capa-fondo-movil"
+          onClick={() => setMenuOpen(false)}
+        />
       )}
 
-      {/* Contenido */}
       <main className="contenido-principal">
         <header className="encabezado-movil">
-          <button className="boton-menu-hamburguesa" onClick={() => setMenuOpen(!menuOpen)}>
+          <button
+            className="boton-menu-hamburguesa"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             ☰
           </button>
+
           <span className="marca-encabezado-movil">MoneBank</span>
         </header>
 
