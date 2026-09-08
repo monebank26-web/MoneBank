@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { CORREO_ADMIN, ROLES } from '../../../core/constants';
 import './Auth.css';
+import CampoContrasena from '../../../shared/components/CampoContrasena';
 
 const RegisterPage = () => {
   const { submit, loading, error } = useAuthForm('register');
@@ -109,13 +110,11 @@ const RegisterPage = () => {
             </div>
             <div className="grupo-campo">
               <label className="etiqueta-campo">Contraseña</label>
-              <input className="campo-entrada" type="password" name="password"
-                placeholder="••••••••" value={form.password} onChange={handleChange} required />
+              <CampoContrasena name="password" placeholder="••••••••" value={form.password} onChange={handleChange} required/>
             </div>
             <div className="grupo-campo">
               <label className="etiqueta-campo">Confirmar contraseña</label>
-              <input className="campo-entrada" type="password" name="confirmar"
-                placeholder="••••••••" value={form.confirmar} onChange={handleChange} required />
+              <CampoContrasena name="confirmar" placeholder="••••••••" value={form.confirmar} onChange={handleChange} required/>
             </div>
             <div className="grupo-campo">
               <label className="etiqueta-campo">Saldo inicial de Mi Cuenta (COP)</label>

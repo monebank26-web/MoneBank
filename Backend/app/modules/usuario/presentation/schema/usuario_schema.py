@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.security.password_policy import validate_password
 
@@ -28,6 +29,20 @@ class UsuarioResponse(BaseModel):
     nombres: str
     apellidos: str
     correo: EmailStr
+
+    class Config:
+        from_attributes = True
+
+
+class BloqueoUsuarioRequest(BaseModel):
+    motivo: str = Field(..., min_length=5, max_length=255)
+
+
+class BloqueoUsuarioResponse(BaseModel):
+    id_usuario: int
+    estado: str
+    motivo_bloqueo: str
+    fecha_bloqueo: datetime
 
     class Config:
         from_attributes = True

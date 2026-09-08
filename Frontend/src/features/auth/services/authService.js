@@ -8,6 +8,7 @@ const toFrontend = (u) => ({
   apellidos: u.apellidos,
   email: u.correo,
   rol: ROLES_MAP[u.id_rol] || 'normal',
+  estado: u.estado,
 });
 
 export const authService = {
@@ -57,6 +58,13 @@ export const authService = {
     if (datos.email !== undefined) payload.correo = datos.email;
     const data = await apiClient.put(`/usuarios/${id}`, payload);
     return toFrontend(data);
+  },
+
+  // ---------------------------------------------------------------------
+  // NUEVO - HU-0037 (Bloqueo Temporal de Cuentas)
+  // ---------------------------------------------------------------------
+  bloquearUsuario: async (id, motivo) => {
+    return apiClient.put(`/usuarios/${id}/bloquear`, { motivo });
   },
 
   cambiarPassword: async (contrasenaActual, contrasenaNueva) => {

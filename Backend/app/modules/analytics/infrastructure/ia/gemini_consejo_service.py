@@ -80,7 +80,7 @@ class GeminiConsejoService(ConsejoIAPort):
                 respuesta = cliente.models.generate_content(
                     model=self.modelo,
                     contents=self._armar_prompt(contexto, prompt),
-                    config=types.GenerateContentConfig(max_output_tokens=700),
+                    config=types.GenerateContentConfig(max_output_tokens=600),
                 )
                 return self._extraer_texto(respuesta)
             except ConsejoIANoDisponible:

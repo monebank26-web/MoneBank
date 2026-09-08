@@ -230,3 +230,21 @@ class ConsejoIANoDisponible(Exception):
     def __init__(self, message: str = None):
         self.message = message or self.description
         super().__init__(self.message)
+
+
+class CuentaYaBloqueadaException(Exception):
+    status_code = 409
+    description = "La cuenta ya se encuentra bloqueada"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
+class MotivoBloqueoRequeridoException(Exception):
+    status_code = 422
+    description = "El motivo del bloqueo es obligatorio"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
