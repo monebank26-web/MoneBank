@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
-import { useBolsillos } from '../../bolsillos/hooks/useBolsillos';
 import { useIngreso } from '../hooks/useIngreso';
 import { useRegistrarGasto } from '../hooks/useRegistrarGasto';
 import { useMovimientosRecientes } from '../hooks/useMovimientosRecientes';
@@ -9,7 +8,7 @@ import { limitesService } from '../../limites/services/limitesService';
 import { metasService } from '../../metas/services/metasService';
 import { authService } from '../../auth/services/authService';
 import TarjetasSaldoInicio from '../components/TarjetasSaldoInicio';
-import SeccionBolsillosInicio from '../components/SeccionBolsillosInicio';
+import SeccionChatInicio from '../components/SeccionChatInicio';
 import SeccionMovimientosInicio from '../components/SeccionMovimientosInicio';
 import WidgetLimiteCritico from '../components/WidgetLimiteCritico';
 import SeccionAhorros from '../components/SeccionAhorros';
@@ -21,7 +20,6 @@ const aNumero = (v) => Number(v) || 0;
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const { bolsillos, loading } = useBolsillos();
   const ingreso = useIngreso();
   const { transacciones } = useMovimientosRecientes();
 
@@ -81,7 +79,7 @@ const DashboardPage = () => {
 
       <div className="cuerpo-inicio">
         <div className="columna-contenido-inicio">
-          <SeccionBolsillosInicio bolsillos={bolsillos} cargando={loading} />
+          <SeccionChatInicio />
           <SeccionMovimientosInicio transacciones={transacciones} />
         </div>
 

@@ -233,3 +233,154 @@
     gap: 8px;
   }
 }
+.seccion-desvincular-padre {
+  border: 1px solid #f1caca;
+  background: linear-gradient(135deg, #fffafa 0%, #fff 100%);
+}
+
+.formulario-desvincular-padre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formulario-desvincular-padre label {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fila-formulario-desvincular-padre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fila-formulario-desvincular-padre input {
+  min-width: 230px;
+  flex: 1;
+  height: 42px;
+  padding: 0 13px;
+  color: #111111;
+  font-size: 14px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  outline: none;
+}
+
+.fila-formulario-desvincular-padre input:focus {
+  border-color: #d6ad45;
+  box-shadow: 0 0 0 4px rgba(214, 173, 69, 0.14);
+}
+
+.fila-formulario-desvincular-padre button {
+  min-height: 42px;
+  padding: 0 16px;
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+  background: #e5c66d;
+  border: 1px solid #c99d35;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.fila-formulario-desvincular-padre button:hover {
+  background: #d6ad45;
+}
+
+.fila-formulario-desvincular-padre button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.boton-cambiar-correo-desvincular {
+  align-self: flex-start;
+  padding: 0;
+  color: #6b7280;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.boton-cambiar-correo-desvincular:hover {
+  color: #111827;
+  text-decoration: underline;
+}
+
+.mensaje-desvincular-padre {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.mensaje-desvincular-padre--ok {
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.mensaje-desvincular-padre--error {
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 600px) {
+  .fila-formulario-desvincular-padre {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fila-formulario-desvincular-padre input,
+  .fila-formulario-desvincular-padre button {
+    width: 100%;
+  }
+}
+.chip-tipo-cuenta-perfil {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 6px 12px;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+}
+
+.chip-tipo-cuenta-perfil--normal {
+  color: #111111;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+}
+
+.chip-tipo-cuenta-perfil--padre {
+  color: #111111;
+  background: #f5df99;
+  border: 1px solid #d6ad45;
+}
+
+.chip-tipo-cuenta-perfil--hijo {
+  color: #111111;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+}
+
+.chip-tipo-cuenta-perfil--mixta {
+  color: #111111;
+  background: #e9d5ff;
+  border: 1px solid #c084fc;
+}
+
+.chip-tipo-cuenta-perfil--administrador {
+  color: #ffffff;
+  background: #374151;
+  border: 1px solid #1f2937;
+}

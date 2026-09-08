@@ -27,12 +27,13 @@ def armar_fila_limite(limite, gasto_actual, nombre_categoria=None):
 
 class ObtenerLimites:
 
-    def __init__(self, repository):
+    def __init__(self, repository, cuenta_repository):
         self.repository = repository
+        self.cuenta_repository = cuenta_repository
 
     def execute(self, id_usuario):
 
-        cuenta = self.repository.get_cuenta_por_usuario(id_usuario)
+        cuenta = self.cuenta_repository.get_cuenta_por_usuario(id_usuario)
 
         if not cuenta:
             raise CuentaNoEncontrada()

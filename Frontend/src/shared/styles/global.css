@@ -11,10 +11,13 @@
   --color-accent-claro: #e2b93b;
   --color-accent-soft: rgba(201, 168, 76, 0.12);
   --color-accent-glow: rgba(201, 168, 76, 0.08);
+  --color-accent-ring: rgba(201, 168, 76, 0.30);
+  --color-accent-brillo: rgba(201, 168, 76, 0.25);
 
   /* Verde - exito y valores positivos */
   --color-success: #4ade80;
   --color-success-soft: rgba(74, 222, 128, 0.10);
+  --color-success-borde: rgba(74, 222, 128, 0.25);
 
   /* Rojo - peligro y errores */
   --color-danger: #ef4444;
@@ -33,6 +36,10 @@
   /* Versión clara del rojo de peligro */
   --color-rojo-claro: #f87171;
 
+  /* Violeta - identidad visual del Asesor IA */
+  --color-violeta: #7c3aed;
+  --color-violeta-glow: rgba(124, 58, 237, 0.30);
+
   /* Colores base en números, para usar con transparencia rgba(var(--rgb-...), 0.x) */
   --rgb-verde-fuerte: 16, 185, 129;
   --rgb-ambar: 245, 158, 11;
@@ -47,6 +54,10 @@
   --color-text: #f5f0e8;
   --color-text-muted: #6b6045;
   --color-text-soft: #a89060;
+  --color-text-resaltado: #f7f0e2;
+
+  /* Blanco - texto sobre superficies de acento */
+  --color-blanco: #ffffff;
 
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -91,4 +102,37 @@ button {
 input {
   font-family: var(--font-body);
   outline: none;
+}
+
+/* Estado de carga de páginas */
+.cargando-pagina {
+  text-align: center;
+  padding: 48px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* Botón de reintentar errores */
+.boton-reintentar {
+  margin-left: 12px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.boton-principal-pequeno {
+  background: var(--color-accent);
+  color: #080808;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.boton-principal-pequeno:hover {
+  background: var(--color-accent-hover);
 }

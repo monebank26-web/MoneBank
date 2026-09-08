@@ -8,6 +8,7 @@ from app.shared.exceptions.business_exceptions import (
     MetaNoEncontrada,
     PresupuestoDuplicado,
     PresupuestoNoEncontrado,
+    ProgramacionNoEncontrada,
     PeriodoInvalido,
     CategoriaNoExiste,
     CategoriaNoCompatible,
@@ -85,5 +86,12 @@ def register_ahorro_exception_handlers(app: FastAPI):
     async def ahorro_no_encontrado_handler(request: Request, exc: AhorroNoEncontrado):
         return JSONResponse(
             status_code=AhorroNoEncontrado.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(ProgramacionNoEncontrada)
+    async def programacion_no_encontrada_handler(request: Request, exc: ProgramacionNoEncontrada):
+        return JSONResponse(
+            status_code=ProgramacionNoEncontrada.status_code,
             content=ErrorResponse(message=exc.message).model_dump()
         )

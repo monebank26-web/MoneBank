@@ -4,7 +4,6 @@ from datetime import date, timedelta
 class Ahorro:
 
     TIPO_META = "META"
-    TIPO_BOLSILLO = "BOLSILLO"
     TIPO_LIMITE = "LIMITE"
 
     PERIODO_DIARIO = "DIARIO"

@@ -1,4 +1,5 @@
 import React from 'react';
+import './TarjetaLimite.css';
 
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(val) || 0);

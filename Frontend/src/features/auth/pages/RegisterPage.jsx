@@ -4,191 +4,466 @@ import { useAuthForm } from '../hooks/useAuthForm';
 import { CORREO_ADMIN, ROLES } from '../../../core/constants';
 import './Auth.css';
 
+const evaluarSeguridadPassword = (password) => {
+  if (!password) {
+    return {
+      nivel: '',
+      texto: '',
+      porcentaje: 0,
+    };
+  }
+
+  let puntos = 0;
+
+  if (password.length >= 8) puntos += 1;
+  if (password.length >= 12) puntos += 1;
+  if (/[A-Z]/.test(password)) puntos += 1;
+  if (/[a-z]/.test(password)) puntos += 1;
+  if (/[0-9]/.test(password)) puntos += 1;
+  if (/[^A-Za-z0-9]/.test(password)) puntos += 1;
+
+  if (puntos <= 2) {
+    return {
+      nivel: 'debil',
+      texto: 'Contraseña débil',
+      porcentaje: 25,
+    };
+  }
+
+  if (puntos <= 4) {
+    return {
+      nivel: 'media',
+      texto: 'Contraseña media',
+      porcentaje: 55,
+    };
+  }
+
+  if (puntos === 5) {
+    return {
+      nivel: 'fuerte',
+      texto: 'Contraseña fuerte',
+      porcentaje: 80,
+    };
+  }
+
+  return {
+    nivel: 'muy-fuerte',
+    texto: 'Contraseña muy segura',
+    porcentaje: 100,
+  };
+};
+
+const IconoOjo = ({ cerrado = false }) => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    className="icono-ojo"
+  >
+    {cerrado ? (
+      <>
+        <path
+          d="M3 3l18 18"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M10.6 10.6a2 2 0 0 0 2.8 2.8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5.2 0 8.8 5 9.5 7-.3.8-1.3 2.5-2.9 3.9M6.2 6.2C4.2 7.6 2.9 9.8 2.5 12c.7 2 4.3 7 9.5 7 1.1 0 2.1-.2 3-.6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </>
+    ) : (
+      <>
+        <path
+          d="M2.5 12S6.3 5 12 5s9.5 7 9.5 7-3.8 7-9.5 7-9.5-7-9.5-7Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="2.8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+      </>
+    )}
+  </svg>
+);
+
 const RegisterPage = () => {
-  const { submit, loading, error } = useAuthForm('register');
+  const { submit, loading, error } =
+    useAuthForm('register');
+
   const [form, setForm] = useState({
     nombres: '',
     apellidos: '',
     email: '',
     password: '',
     confirmar: '',
-    saldoInicial: '',
   });
-  const [localError, setLocalError] = useState('');
-  const [paso, setPaso] = useState(1); // 1 = datos básicos, 2 = tipo de cuenta
-  const [tipoCuenta, setTipoCuenta] = useState(null); // 'padre', 'hijo', 'normal'
-  const [esMenor, setEsMenor] = useState(null);
+
+  const [mostrarPassword, setMostrarPassword] =
+    useState(false);
+
+  const [
+    mostrarConfirmar,
+    setMostrarConfirmar,
+  ] = useState(false);
+
+  const [localError, setLocalError] =
+    useState('');
 
   const esAdmin = form.email === CORREO_ADMIN;
 
+  const seguridadPassword =
+    evaluarSeguridadPassword(form.password);
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSiguiente = (e) => {
-    e.preventDefault();
-    setLocalError('');
-    if (!form.nombres || !form.apellidos || !form.email || !form.password || !form.confirmar || !form.saldoInicial) {
-      setLocalError('Por favor completa todos los campos.');
-      return;
-    }
-    if (form.password !== form.confirmar) {
-      setLocalError('Las contraseñas no coinciden.');
-      return;
-    }
-    if (esAdmin) {
-      // El admin no necesita elegir tipo de cuenta
-      enviarRegistro(ROLES.ADMIN, false);
-      return;
-    }
-    setPaso(2);
-  };
-
-  const enviarRegistro = (rol, menor) => {
-    submit({
-      nombres: form.nombres,
-      apellidos: form.apellidos,
-      email: form.email,
-      password: form.password,
-      saldoInicial: parseInt(form.saldoInicial, 10) || 0,
-      rol: rol,
-      esMenor: menor,
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleElegirTipo = (tipo) => {
-    setTipoCuenta(tipo);
-    if (tipo === 'normal') {
-      enviarRegistro(ROLES.NORMAL, false);
-    } else if (tipo === 'padre') {
-      enviarRegistro(ROLES.PADRE, false);
-    }
-    // Si es hijo, preguntamos si es menor
-  };
+  const handleRegistro = (e) => {
+    e.preventDefault();
+    setLocalError('');
 
-  const handleConfirmarHijo = () => {
-    if (esMenor === null) {
-      setLocalError('Por favor indica si eres menor de edad.');
+    if (
+      !form.nombres.trim() ||
+      !form.apellidos.trim() ||
+      !form.email.trim() ||
+      !form.password ||
+      !form.confirmar
+    ) {
+      setLocalError(
+        'Por favor completa todos los campos.'
+      );
       return;
     }
-    enviarRegistro(ROLES.HIJO, esMenor);
+
+    if (form.password !== form.confirmar) {
+      setLocalError(
+        'Las contraseñas no coinciden.'
+      );
+      return;
+    }
+
+    submit({
+      nombres: form.nombres.trim(),
+      apellidos: form.apellidos.trim(),
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+      rol: esAdmin
+        ? ROLES.ADMIN
+        : ROLES.INDEPENDIENTE,
+      esMenor: false,
+    });
   };
 
   return (
     <div className="contenedor-autenticacion">
-      <video id="video-fondo-pantalla" autoPlay muted loop>
-        <source src="/video.mp4" type="video/mp4" />
+      <video
+        id="video-fondo-pantalla"
+        autoPlay
+        muted
+        loop
+      >
+        <source
+          src="/video.mp4"
+          type="video/mp4"
+        />
       </video>
+
       <div className="capa-oscura-video" />
+
       <div className="tarjeta-autenticacion">
         <div className="marca-autenticacion">
-          <img src="/logo.png" alt="MoneBank logo" className="imagen-logo-autenticacion" />
-          <h1 className="titulo-autenticacion">MoneBank</h1>
+          <img
+            src="/logo.png"
+            alt="MoneBank logo"
+            className="imagen-logo-autenticacion"
+          />
+
+          <h1 className="titulo-autenticacion">
+            MoneBank
+          </h1>
+
           <p className="subtitulo-autenticacion">
-            {paso === 1 ? 'Crea tu cuenta' : 'Tipo de cuenta'}
+            Crea tu cuenta
           </p>
         </div>
 
-        {/* Paso 1: datos básicos */}
-        {paso === 1 && (
-          <form onSubmit={handleSiguiente} className="formulario-autenticacion">
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Nombres</label>
-              <input className="campo-entrada" type="text" name="nombres"
-                placeholder="Tus nombres" value={form.nombres} onChange={handleChange} required />
-            </div>
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Apellidos</label>
-              <input className="campo-entrada" type="text" name="apellidos"
-                placeholder="Tus apellidos" value={form.apellidos} onChange={handleChange} required />
-            </div>
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Correo electrónico</label>
-              <input className="campo-entrada" type="email" name="email"
-                placeholder="tu@correo.com" value={form.email} onChange={handleChange} required />
-            </div>
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Contraseña</label>
-              <input className="campo-entrada" type="password" name="password"
-                placeholder="••••••••" value={form.password} onChange={handleChange} required />
-            </div>
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Confirmar contraseña</label>
-              <input className="campo-entrada" type="password" name="confirmar"
-                placeholder="••••••••" value={form.confirmar} onChange={handleChange} required />
-            </div>
-            <div className="grupo-campo">
-              <label className="etiqueta-campo">Saldo inicial de Mi Cuenta (COP)</label>
-              <input className="campo-entrada" type="number" name="saldoInicial"
-                placeholder="Ej: 500000" min="0" value={form.saldoInicial} onChange={handleChange} required />
-            </div>
-            {(error || localError) && <p className="error-autenticacion">{localError || error}</p>}
-            <button className="boton-principal" type="submit" disabled={loading}>
-              {loading ? 'Creando cuenta...' : esAdmin ? 'Crear cuenta de administrador' : 'Siguiente'}
-            </button>
-          </form>
-        )}
+        <form
+          onSubmit={handleRegistro}
+          className="formulario-autenticacion"
+        >
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">
+              Nombres
+            </label>
 
-        {/* Paso 2: tipo de cuenta */}
-        {paso === 2 && !tipoCuenta && (
-          <div className="formulario-autenticacion">
-            <p className="subtexto-tipo-cuenta">¿Cómo vas a usar tu cuenta?</p>
-            <div className="opciones-tipo-cuenta">
-              <button className="opcion-tipo-cuenta" onClick={() => handleElegirTipo('normal')}>
-                <span className="icono-tipo-cuenta">👤</span>
-                <span className="nombre-tipo-cuenta">Cuenta normal</span>
-                <span className="descripcion-tipo-cuenta">Solo yo manejo mi dinero</span>
-              </button>
-              <button className="opcion-tipo-cuenta" onClick={() => handleElegirTipo('padre')}>
-                <span className="icono-tipo-cuenta">👨‍👧</span>
-                <span className="nombre-tipo-cuenta">Soy padre o madre</span>
-                <span className="descripcion-tipo-cuenta">Quiero vincular la cuenta de mi hijo</span>
-              </button>
-              <button className="opcion-tipo-cuenta" onClick={() => setTipoCuenta('hijo')}>
-                <span className="icono-tipo-cuenta">🧒</span>
-                <span className="nombre-tipo-cuenta">Soy hijo o hija</span>
-                <span className="descripcion-tipo-cuenta">Quiero vincularme a la cuenta de mis padres</span>
-              </button>
-            </div>
-            {localError && <p className="error-autenticacion">{localError}</p>}
-            <button className="boton-secundario" onClick={() => setPaso(1)}>← Volver</button>
+            <input
+              className="campo-entrada"
+              type="text"
+              name="nombres"
+              placeholder="Tus nombres"
+              value={form.nombres}
+              onChange={handleChange}
+              required
+            />
           </div>
-        )}
 
-        {/* Paso 2b: si es hijo, preguntar edad */}
-        {paso === 2 && tipoCuenta === 'hijo' && (
-          <div className="formulario-autenticacion">
-            <p className="subtexto-tipo-cuenta">¿Cuántos años tienes?</p>
-            <div className="opciones-tipo-cuenta">
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">
+              Apellidos
+            </label>
+
+            <input
+              className="campo-entrada"
+              type="text"
+              name="apellidos"
+              placeholder="Tus apellidos"
+              value={form.apellidos}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">
+              Correo electrónico
+            </label>
+
+            <input
+              className="campo-entrada"
+              type="email"
+              name="email"
+              placeholder="tu@correo.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">
+              Contraseña
+            </label>
+
+            <div className="campo-password-wrapper">
+              <input
+                className="campo-entrada campo-password"
+                type={
+                  mostrarPassword
+                    ? 'text'
+                    : 'password'
+                }
+                name="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+
               <button
-                className={`opcion-tipo-cuenta ${esMenor === true ? 'opcion-tipo-cuenta--seleccionada' : ''}`}
-                onClick={() => setEsMenor(true)}
+                type="button"
+                className="boton-mostrar-password"
+                onClick={() =>
+                  setMostrarPassword(
+                    (visible) => !visible
+                  )
+                }
+                aria-label={
+                  mostrarPassword
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+                }
+                title={
+                  mostrarPassword
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+                }
               >
-                <span className="icono-tipo-cuenta">🔒</span>
-                <span className="nombre-tipo-cuenta">Soy menor de 18 años</span>
-                <span className="descripcion-tipo-cuenta">Mis padres tendrán acceso a mi cuenta</span>
-              </button>
-              <button
-                className={`opcion-tipo-cuenta ${esMenor === false ? 'opcion-tipo-cuenta--seleccionada' : ''}`}
-                onClick={() => setEsMenor(false)}
-              >
-                <span className="icono-tipo-cuenta">✅</span>
-                <span className="nombre-tipo-cuenta">Tengo 18 años o más</span>
-                <span className="descripcion-tipo-cuenta">Acepto vincularme voluntariamente</span>
+                <IconoOjo
+                  cerrado={!mostrarPassword}
+                />
               </button>
             </div>
-            {localError && <p className="error-autenticacion">{localError}</p>}
-            {error && <p className="error-autenticacion">{error}</p>}
-            <button className="boton-principal" onClick={handleConfirmarHijo} disabled={loading}>
-              {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-            </button>
-            <button className="boton-secundario" onClick={() => setTipoCuenta(null)}>← Volver</button>
+
+            {form.password && (
+              <div
+                className="indicador-password"
+                aria-live="polite"
+              >
+                <div className="termometro-password">
+                  <span
+                    className={`termometro-password-fill ${seguridadPassword.nivel}`}
+                    style={{
+                      width: `${seguridadPassword.porcentaje}%`,
+                    }}
+                  />
+                </div>
+
+                <span
+                  className={`texto-seguridad-password ${seguridadPassword.nivel}`}
+                >
+                  {seguridadPassword.texto}
+                </span>
+
+                <ul className="requisitos-password">
+                  <li
+                    className={
+                      form.password.length >= 8
+                        ? 'cumplido'
+                        : ''
+                    }
+                  >
+                    Mínimo 8 caracteres
+                  </li>
+
+                  <li
+                    className={
+                      /[A-Z]/.test(form.password)
+                        ? 'cumplido'
+                        : ''
+                    }
+                  >
+                    Una letra mayúscula
+                  </li>
+
+                  <li
+                    className={
+                      /[a-z]/.test(form.password)
+                        ? 'cumplido'
+                        : ''
+                    }
+                  >
+                    Una letra minúscula
+                  </li>
+
+                  <li
+                    className={
+                      /[0-9]/.test(form.password)
+                        ? 'cumplido'
+                        : ''
+                    }
+                  >
+                    Un número
+                  </li>
+
+                  <li
+                    className={
+                      /[^A-Za-z0-9]/.test(
+                        form.password
+                      )
+                        ? 'cumplido'
+                        : ''
+                    }
+                  >
+                    Un símbolo
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
-        )}
+
+          <div className="grupo-campo">
+            <label className="etiqueta-campo">
+              Confirmar contraseña
+            </label>
+
+            <div className="campo-password-wrapper">
+              <input
+                className="campo-entrada campo-password"
+                type={
+                  mostrarConfirmar
+                    ? 'text'
+                    : 'password'
+                }
+                name="confirmar"
+                placeholder="••••••••"
+                value={form.confirmar}
+                onChange={handleChange}
+                required
+              />
+
+              <button
+                type="button"
+                className="boton-mostrar-password"
+                onClick={() =>
+                  setMostrarConfirmar(
+                    (visible) => !visible
+                  )
+                }
+                aria-label={
+                  mostrarConfirmar
+                    ? 'Ocultar confirmación'
+                    : 'Mostrar confirmación'
+                }
+                title={
+                  mostrarConfirmar
+                    ? 'Ocultar confirmación'
+                    : 'Mostrar confirmación'
+                }
+              >
+                <IconoOjo
+                  cerrado={!mostrarConfirmar}
+                />
+              </button>
+            </div>
+
+            {form.confirmar &&
+              form.password !== form.confirmar && (
+                <small className="mensaje-password-no-coincide">
+                  Las contraseñas no coinciden.
+                </small>
+              )}
+          </div>
+
+          {(error || localError) && (
+            <p className="error-autenticacion">
+              {localError || error}
+            </p>
+          )}
+
+          <button
+            className="boton-principal"
+            type="submit"
+            disabled={loading}
+          >
+            {loading
+              ? 'Creando cuenta...'
+              : esAdmin
+                ? 'Crear cuenta de administrador'
+                : 'Crear cuenta'}
+          </button>
+        </form>
 
         <p className="texto-cambio-autenticacion">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="enlace-autenticacion">Ingresar</Link>
+          <Link
+            to="/login"
+            className="enlace-autenticacion"
+          >
+            Ingresar
+          </Link>
         </p>
       </div>
     </div>

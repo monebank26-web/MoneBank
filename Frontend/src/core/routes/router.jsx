@@ -6,16 +6,15 @@ import { ROUTES, ROLES } from '../constants';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
-import BolsillosPage from '../../features/bolsillos/pages/BolsillosPage';
-import BolsilloDetallePage from '../../features/bolsillos/pages/BolsilloDetallePage';
+import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
 import LimitesPage from '../../features/limites/pages/LimitesPage';
 import TransaccionesPage from '../../features/transacciones/pages/TransaccionesPage';
 import AdminPage from '../../features/admin/pages/AdminPage';
-import ControlParentalPadrePage from '../../features/controlParental/pages/ControlParentalPadrePage';
-import ControlParentalHijoPage from '../../features/controlParental/pages/ControlParentalHijoPage';
 import PerfilPage from '../../features/perfil/pages/PerfilPage';
 import MainLayout from '../../shared/layouts/MainLayout';
+import ControlParentalDashboardPage from '../../features/controlParental/pages/ControlParentalDashboardPage';
+
 import { GraficasPage } from '../../features/analytics/pages/GraficasPage';
 import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemanalPage';
 import { ReportesPage } from '../../features/analytics/pages/ReportesPage';
@@ -36,29 +35,6 @@ const RutaAdmin = ({ children }) => {
   return <MainLayout>{children}</MainLayout>;
 };
 
-const RutaPadre = ({ children }) => {
-  const { isAuthenticated, user, loading } = useAuth();
-  if (loading) return <div style={{ color: 'white', padding: 40 }}>Cargando...</div>;
-  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
-  if (user?.rol !== ROLES.PADRE) return <Navigate to={ROUTES.DASHBOARD} replace />;
-  return <MainLayout>{children}</MainLayout>;
-};
-
-const RutaHijo = ({ children }) => {
-  const { isAuthenticated, user, loading } = useAuth();
-  if (loading) return <div style={{ color: 'white', padding: 40 }}>Cargando...</div>;
-  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
-  if (user?.rol !== ROLES.HIJO) return <Navigate to={ROUTES.DASHBOARD} replace />;
-  return <MainLayout>{children}</MainLayout>;
-};
-
-const ControlParentalRedirect = () => {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (user?.rol === ROLES.PADRE) return <Navigate to={ROUTES.CONTROL_PARENTAL_PADRE} replace />;
-  if (user?.rol === ROLES.HIJO) return <Navigate to={ROUTES.CONTROL_PARENTAL_HIJO} replace />;
-  return <Navigate to={ROUTES.DASHBOARD} replace />;
-};
 
 const RutaPublica = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -75,18 +51,16 @@ const AppRouter = () => (
 
       {/* Privadas generales */}
       <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
-      <Route path="/bolsillos" element={<RutaPrivada><BolsillosPage /></RutaPrivada>} />
-      <Route path="/bolsillos/:id" element={<RutaPrivada><BolsilloDetallePage /></RutaPrivada>} />
+      <Route path="/chat" element={<RutaPrivada><ChatPage /></RutaPrivada>} />
       <Route path="/metas" element={<RutaPrivada><MetasPage /></RutaPrivada>} />
       <Route path="/limites" element={<RutaPrivada><LimitesPage /></RutaPrivada>} />
       <Route path="/transacciones" element={<RutaPrivada><TransaccionesPage /></RutaPrivada>} />
-      <Route path="/control-parental" element={<RutaPrivada><ControlParentalRedirect /></RutaPrivada>} />
-      <Route path="/control-parental/padre" element={<RutaPadre><ControlParentalPadrePage /></RutaPadre>} />
-      <Route path="/control-parental/hijo" element={<RutaHijo><ControlParentalHijoPage /></RutaHijo>} />
       <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
-      <Route path="/analitica/graficas" element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
-      <Route path="/analitica/resumen-semanal" element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
-      <Route path="/analitica/reportes" element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
+      <Route path="/control-parental"element={<RutaPrivada><ControlParentalDashboardPage /></RutaPrivada>}/>
+
+      <Route path={ROUTES.GRAFICAS} element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
+      <Route path={ROUTES.RESUMEN_SEMANAL} element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
+      <Route path={ROUTES.REPORTES} element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
       
 
       {/* Solo admin */}

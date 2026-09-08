@@ -11,11 +11,12 @@ from app.shared.exceptions.business_exceptions import PeriodoInvalido
 
 def test_actualizar_limite_rechaza_periodo_fuera_del_catalogo():
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     ahorro = Mock()
     ahorro.id_ahorro = 43
@@ -29,7 +30,7 @@ def test_actualizar_limite_rechaza_periodo_fuera_del_catalogo():
     repository.get_tipo_ahorro.return_value = tipo_limite
 
     with pytest.raises(PeriodoInvalido):
-        ActualizarAhorroUseCase(repository).execute(
+        ActualizarAhorroUseCase(repository, cuenta_repository).execute(
             43, {"periodo": "ANUAL"}, 6
         )
 

@@ -26,11 +26,12 @@ def datos_validos():
 
 def repository_base():
     repository = Mock()
+    cuenta_repository = Mock()
 
     cuenta = Mock()
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     categoria = Mock()
     categoria.id_categoria = 8
@@ -48,13 +49,13 @@ def repository_base():
     creado.id_ahorro = 99
     repository.create.return_value = creado
 
-    return repository
+    return repository, cuenta_repository
 
 
 def test_crea_limite_con_nombre_autogenerado():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
 
-    resultado = CrearLimite(repository).execute(datos_validos(), 6)
+    resultado = CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
     assert resultado.id_ahorro == 99
 
@@ -71,60 +72,60 @@ def test_crea_limite_con_nombre_autogenerado():
 
 
 def test_respeta_nombre_personalizado():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
     datos = datos_validos()
     datos["nombre"] = "Presupuesto de mercado"
 
-    CrearLimite(repository).execute(datos, 6)
+    CrearLimite(repository, cuenta_repository).execute(datos, 6)
 
     data_enviada = repository.create.call_args.args[0]
     assert data_enviada["nombre"] == "Presupuesto de mercado"
 
 
 def test_cuenta_no_existe():
-    repository = repository_base()
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository = repository_base()
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        CrearLimite(repository).execute(datos_validos(), 6)
+        CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
 
 def test_categoria_no_existe():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
     repository.get_categoria.return_value = None
 
     with pytest.raises(CategoriaNoExiste):
-        CrearLimite(repository).execute(datos_validos(), 6)
+        CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
 
 def test_categoria_debe_ser_de_gastos():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
     repository.get_categoria.return_value.tipo_categoria = "AHORRO"
 
     with pytest.raises(CategoriaNoCompatible):
-        CrearLimite(repository).execute(datos_validos(), 6)
+        CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
 
 def test_monto_debe_ser_positivo():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
     datos = datos_validos()
     datos["monto_limite"] = Decimal("0")
 
     with pytest.raises(MontoInvalido):
-        CrearLimite(repository).execute(datos, 6)
+        CrearLimite(repository, cuenta_repository).execute(datos, 6)
 
 
 def test_periodo_invalido_fuera_del_catalogo():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
     datos = datos_validos()
     datos["periodo"] = "ANUAL"
 
     with pytest.raises(PeriodoInvalido):
-        CrearLimite(repository).execute(datos, 6)
+        CrearLimite(repository, cuenta_repository).execute(datos, 6)
 
 
 def test_rechaza_duplicado_misma_categoria_y_periodo_activos():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
 
     existente = Mock()
     existente.id_categoria = 8
@@ -133,11 +134,11 @@ def test_rechaza_duplicado_misma_categoria_y_periodo_activos():
     repository.get_by_cuenta_y_tipo.return_value = [existente]
 
     with pytest.raises(PresupuestoDuplicado):
-        CrearLimite(repository).execute(datos_validos(), 6)
+        CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
 
 def test_permite_mismo_periodo_en_distinta_categoria():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
 
     existente = Mock()
     existente.id_categoria = 12
@@ -145,13 +146,13 @@ def test_permite_mismo_periodo_en_distinta_categoria():
     existente.estado = "ACTIVO"
     repository.get_by_cuenta_y_tipo.return_value = [existente]
 
-    resultado = CrearLimite(repository).execute(datos_validos(), 6)
+    resultado = CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
     assert resultado.id_ahorro == 99
 
 
 def test_permite_duplicado_si_el_anterior_no_esta_activo():
-    repository = repository_base()
+    repository, cuenta_repository = repository_base()
 
     pausado = Mock()
     pausado.id_categoria = 8
@@ -159,6 +160,6 @@ def test_permite_duplicado_si_el_anterior_no_esta_activo():
     pausado.estado = "PAUSADO"
     repository.get_by_cuenta_y_tipo.return_value = [pausado]
 
-    resultado = CrearLimite(repository).execute(datos_validos(), 6)
+    resultado = CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
     assert resultado.id_ahorro == 99

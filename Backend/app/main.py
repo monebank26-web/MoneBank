@@ -11,8 +11,27 @@ from app.modules.transaccion.presentation.router.router import (
 from app.modules.analytics.presentation.router.router import (
     router as analitica_router
 )
+from app.modules.programacion_ahorro.presentation.router.router import (
+    router as programacion_ahorro_router
+)
+from app.modules.chat_ia.presentation.router.router import (
+    router as chat_ia_router
+)
 
 from app.shared.exceptions.handlers import register_all_exception_handlers
+
+from app.modules.control_parental.presentation.router.router import router as control_parental_router
+from app.modules.control_parental.presentation.router.mesada_router import (
+    router as mesada_parental_router,
+)
+
+from app.modules.control_parental.presentation.router.ejecucion_mesada_router import (
+    router as ejecucion_mesada_router,
+)
+
+from app.modules.control_parental.presentation.router.gestionar_mesada_router import (
+    router as gestionar_mesada_router,
+)
 
 app = FastAPI(title="MoneBank API")
 
@@ -35,5 +54,11 @@ app.include_router(ahorro_router)
 app.include_router(cuenta_router)
 app.include_router(transaccion_router)
 app.include_router(analitica_router)
+app.include_router(programacion_ahorro_router)
+app.include_router(control_parental_router)
+app.include_router(mesada_parental_router)
+app.include_router(ejecucion_mesada_router)
+app.include_router(gestionar_mesada_router)
+app.include_router(chat_ia_router)
 
 register_all_exception_handlers(app)

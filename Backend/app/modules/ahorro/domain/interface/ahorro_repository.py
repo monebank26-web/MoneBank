@@ -20,10 +20,6 @@ class AhorroRepository(ABC):
         pass
 
     @abstractmethod
-    def get_cuenta_por_usuario(self, id_usuario):
-        pass
-
-    @abstractmethod
     def get_tipo_ahorro(self, nombre):
         pass
 
@@ -49,8 +45,4 @@ class AhorroRepository(ABC):
 
     @abstractmethod
     def get_by_cuenta(self, id_cuenta):
-        pass
-
-    @abstractmethod
-    def descontar_saldo(self, id_cuenta, monto):
         pass

@@ -17,6 +17,9 @@ from app.modules.ahorro.application.use_cases.obtener_ahorro_por_id import Obten
 from app.modules.ahorro.application.use_cases.actualizar_ahorro import ActualizarAhorroUseCase
 from app.modules.ahorro.application.use_cases.eliminar_ahorro import EliminarAhorroUseCase
 
+from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
+from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
+
 from app.modules.ahorro.presentation.schema.ahorro_schema import (
     AhorroCreate,
     AhorroResponse,
@@ -42,13 +45,20 @@ def get_ahorro_repository(
     return SqlAhorroRepository(db)
 
 
+def get_cuenta_repository(
+    db: Session = Depends(get_db)
+) -> CuentaRepository:
+    return SqlCuentaRepository(db)
+
+
 @router.post("/metas", response_model=MetaResponse, status_code=201)
 def crear_meta(
     meta: MetaCreate,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = CrearMeta(repository)
+    caso_uso = CrearMeta(repository, cuenta_repository)
     return caso_uso.execute(meta.model_dump(), current_user.id_usuario)
 
 
@@ -56,8 +66,9 @@ def crear_meta(
 def obtener_metas(
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerMetas(repository)
+    caso_uso = ObtenerMetas(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 
@@ -74,8 +85,9 @@ def obtener_progreso_meta(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerProgresoMeta(repository)
+    caso_uso = ObtenerProgresoMeta(repository, cuenta_repository)
     return caso_uso.execute(id_ahorro, current_user.id_usuario)
 
 
@@ -84,8 +96,9 @@ def crear_limite(
     limite: LimiteCreate,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = CrearLimite(repository)
+    caso_uso = CrearLimite(repository, cuenta_repository)
     return caso_uso.execute(limite.model_dump(), current_user.id_usuario)
 
 
@@ -93,8 +106,9 @@ def crear_limite(
 def obtener_limites(
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerLimites(repository)
+    caso_uso = ObtenerLimites(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 
@@ -102,8 +116,9 @@ def obtener_limites(
 def obtener_alertas_presupuesto(
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerAlertasPresupuesto(repository)
+    caso_uso = ObtenerAlertasPresupuesto(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 
@@ -111,8 +126,9 @@ def obtener_alertas_presupuesto(
 def obtener_ahorros(
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerAhorrosUseCase(repository)
+    caso_uso = ObtenerAhorrosUseCase(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 
@@ -121,8 +137,9 @@ def obtener_ahorro_por_id(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ObtenerAhorroPorIdUseCase(repository)
+    caso_uso = ObtenerAhorroPorIdUseCase(repository, cuenta_repository)
     return caso_uso.execute(id_ahorro, current_user.id_usuario)
 
 
@@ -132,8 +149,9 @@ def actualizar_ahorro(
     ahorro: AhorroCreate,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = ActualizarAhorroUseCase(repository)
+    caso_uso = ActualizarAhorroUseCase(repository, cuenta_repository)
     return caso_uso.execute(id_ahorro, ahorro.model_dump(), current_user.id_usuario)
 
 
@@ -142,6 +160,7 @@ def eliminar_ahorro(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
-    caso_uso = EliminarAhorroUseCase(repository)
+    caso_uso = EliminarAhorroUseCase(repository, cuenta_repository)
     return caso_uso.execute(id_ahorro, current_user.id_usuario)

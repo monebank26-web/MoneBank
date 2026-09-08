@@ -33,6 +33,10 @@ from app.modules.analytics.presentation.schema.consejo_previo_schema import (
     ConsejoPrevioRequest,
     ConsejoPrevioResponse,
 )
+from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
+from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
+    SqlCuentaRepository
+)
 from app.modules.analytics.presentation.schema.grafica_schema import GraficaResponse
 from app.modules.analytics.presentation.schema.resumen_semanal_schema import (
     ResumenSemanalResponse
@@ -61,6 +65,10 @@ def get_analytics_repository(db: Session = Depends(get_db)) -> AnalyticsReposito
     return SqlAnalyticsRepository(db)
 
 
+def get_cuenta_repository(db: Session = Depends(get_db)) -> CuentaRepository:
+    return SqlCuentaRepository(db)
+
+
 def get_consejo_ia_service() -> ConsejoIAPort:
     return GeminiConsejoService(settings.GOOGLE_AI_API_KEY, settings.GEMINI_MODEL)
 
@@ -74,9 +82,10 @@ def obtener_consejo_ia(
     id_transaccion: int,
     current_user: object = Depends(get_current_user),
     repository: AnalyticsRepository = Depends(get_analytics_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
     consejo_ia: ConsejoIAPort = Depends(get_consejo_ia_service),
 ):
-    caso_uso = ObtenerConsejoIA(repository, consejo_ia)
+    caso_uso = ObtenerConsejoIA(repository, cuenta_repository, consejo_ia)
 
     try:
         consejo = caso_uso.execute(current_user.id_usuario, id_transaccion)
@@ -101,9 +110,10 @@ def obtener_consejo_previo(
     request: ConsejoPrevioRequest,
     current_user: object = Depends(get_current_user),
     repository: AnalyticsRepository = Depends(get_analytics_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
     consejo_ia: ConsejoIAPort = Depends(get_consejo_ia_service),
 ):
-    caso_uso = ObtenerConsejoPrevio(repository, consejo_ia)
+    caso_uso = ObtenerConsejoPrevio(repository, cuenta_repository, consejo_ia)
 
     try:
         consejo = caso_uso.execute(

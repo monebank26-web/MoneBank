@@ -13,10 +13,6 @@ from app.shared.exceptions.business_exceptions import (
 
 def crear_repository_con_datos():
     repository = Mock()
-    repository.get_cuenta_usuario.return_value = {
-        "id_cuenta": 1,
-        "saldo": 250000,
-    }
     repository.get_categoria_nombre.return_value = "Alimentación"
     repository.calcular_stats_mes.return_value = {
         "total_gastado_mes": 450000,
@@ -43,12 +39,21 @@ def crear_repository_con_datos():
     return repository
 
 
+def crear_cuenta_repository(saldo=250000):
+    cuenta_repository = Mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = Mock(saldo=saldo)
+    return cuenta_repository
+
+
 def test_consejo_previo_generado_devuelve_el_texto():
     repository = crear_repository_con_datos()
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo previo financiero."
 
-    resultado = ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    resultado = ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     assert resultado == "Consejo previo financiero."
     consejo_ia_port.generar_consejo.assert_called_once()
@@ -56,10 +61,13 @@ def test_consejo_previo_generado_devuelve_el_texto():
 
 def test_consejo_previo_llama_a_la_ia_con_es_previo_true():
     repository = crear_repository_con_datos()
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo."
 
-    ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     llamada = consejo_ia_port.generar_consejo.call_args
     assert llamada.kwargs.get("es_previo") is True
@@ -67,10 +75,13 @@ def test_consejo_previo_llama_a_la_ia_con_es_previo_true():
 
 def test_contexto_incluye_historial_categoria():
     repository = crear_repository_con_datos()
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo."
 
-    ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     contexto = consejo_ia_port.generar_consejo.call_args.args[0]
     historial = contexto["historial_categoria"]
@@ -84,10 +95,13 @@ def test_contexto_incluye_historial_categoria():
 
 def test_contexto_incluye_limite_con_porcentajes():
     repository = crear_repository_con_datos()
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo."
 
-    ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     contexto = consejo_ia_port.generar_consejo.call_args.args[0]
     assert "limite" in contexto
@@ -99,10 +113,13 @@ def test_contexto_incluye_limite_con_porcentajes():
 def test_contexto_sin_limite_cuando_no_existe():
     repository = crear_repository_con_datos()
     repository.get_limite_categoria.return_value = None
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo."
 
-    ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     contexto = consejo_ia_port.generar_consejo.call_args.args[0]
     assert "limite" not in contexto
@@ -110,10 +127,13 @@ def test_contexto_sin_limite_cuando_no_existe():
 
 def test_contexto_no_lleva_datos_personales():
     repository = crear_repository_con_datos()
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
     consejo_ia_port.generar_consejo.return_value = "Consejo."
 
-    ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+    ObtenerConsejoPrevio(
+        repository, cuenta_repository, consejo_ia_port
+    ).execute(6, 50000, 3)
 
     contexto = consejo_ia_port.generar_consejo.call_args.args[0]
     for dato_prohibido in ("id_usuario", "id_cuenta", "id_transaccion", "email"):
@@ -122,22 +142,27 @@ def test_contexto_no_lleva_datos_personales():
 
 def test_cuenta_no_encontrada_lanza_excepcion():
     repository = Mock()
-    repository.get_cuenta_usuario.return_value = None
+    cuenta_repository = Mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
     consejo_ia_port = Mock()
 
     with pytest.raises(CuentaNoEncontrada):
-        ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 3)
+        ObtenerConsejoPrevio(
+            repository, cuenta_repository, consejo_ia_port
+        ).execute(6, 50000, 3)
 
     consejo_ia_port.generar_consejo.assert_not_called()
 
 
 def test_categoria_invalida_lanza_excepcion():
     repository = Mock()
-    repository.get_cuenta_usuario.return_value = {"id_cuenta": 1, "saldo": 250000}
     repository.get_categoria_nombre.return_value = None
+    cuenta_repository = crear_cuenta_repository()
     consejo_ia_port = Mock()
 
     with pytest.raises(CategoriaInvalida):
-        ObtenerConsejoPrevio(repository, consejo_ia_port).execute(6, 50000, 999)
+        ObtenerConsejoPrevio(
+            repository, cuenta_repository, consejo_ia_port
+        ).execute(6, 50000, 999)
 
     consejo_ia_port.generar_consejo.assert_not_called()

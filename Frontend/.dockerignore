@@ -1,6 +1,7 @@
-
-Frontend/node_modules/
-Frontend/dist/
-Frontend/build/
+node_modules/
+dist/
+build/
 
 .git*
+
+*.log
