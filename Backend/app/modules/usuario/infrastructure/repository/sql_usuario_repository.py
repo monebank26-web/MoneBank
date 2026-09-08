@@ -61,6 +61,8 @@ class SqlUsuarioRepository(UsuarioRepository):
             id_rol=usuario.id_rol,
             id_tipo_usuario=usuario.id_tipo_usuario,
             fecha_creacion=usuario.fecha_creacion,
+            motivo_bloqueo=usuario.motivo_bloqueo,
+            fecha_bloqueo=usuario.fecha_bloqueo,
         )
 
     def delete(self, id_usuario):

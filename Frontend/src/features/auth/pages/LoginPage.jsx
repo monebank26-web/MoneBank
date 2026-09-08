@@ -1,7 +1,8 @@
+import { useAuthForm } from '../hooks/useAuthForm';
+import CampoContrasena from '../../../shared/components/CampoContrasena';
+import './Auth.css';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthForm } from '../hooks/useAuthForm';
-import './Auth.css';
 
 const IconoOjo = ({ cerrado = false }) => (
   <svg

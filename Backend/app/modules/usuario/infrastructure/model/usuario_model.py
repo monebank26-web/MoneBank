@@ -25,3 +25,6 @@ class UsuarioModel(Base):
 
     intentos_fallidos = Column(Integer, default=0, nullable=False)
     bloqueado_hasta = Column(DateTime, nullable=True)
+
+    motivo_bloqueo = Column(String(255), nullable=True)
+    fecha_bloqueo = Column(DateTime, nullable=True)
