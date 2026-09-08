@@ -3,7 +3,7 @@ import { ROLES } from '../../../core/constants';
 import { formatMoney } from '../../../core/utils/format';
 import { etiquetaRol } from '../../../core/utils/roles';
 
-const FilaUsuarioAdmin = ({ usuario, onVerDetalle, onEditar, onEliminar }) => {
+const FilaUsuarioAdmin = ({ usuario, onVerDetalle, onEditar, onEliminar, onBloquear }) => {
   return (
     <div className="fila-usuario-admin">
       <div className="avatar-usuario-admin">
@@ -27,6 +27,11 @@ const FilaUsuarioAdmin = ({ usuario, onVerDetalle, onEditar, onEliminar }) => {
         <button className="boton-accion-admin boton-accion-admin--editar" onClick={() => onEditar(usuario)}>
           Editar
         </button>
+        {usuario.rol !== ROLES.ADMIN && usuario.estado !== 'Bloqueado' && (
+          <button className="boton-accion-admin boton-accion-admin--bloquear" onClick={() => onBloquear(usuario)}>
+            Bloquear
+          </button>
+        )}
         {usuario.rol !== ROLES.ADMIN && (
           <button className="boton-accion-admin boton-accion-admin--eliminar" onClick={() => onEliminar(usuario)}>
             Eliminar

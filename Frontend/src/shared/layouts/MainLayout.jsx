@@ -4,6 +4,7 @@ import { useAuth } from '../../core/context/AuthContext';
 import { ROUTES, ROLES } from '../../core/constants';
 import { controlParentalService } from '../../features/controlParental/services/controlParentalServices';
 
+import logoMonebank from '../assets/logo-monebank.png';
 import './MainLayout.css';
 
 const MainLayout = ({ children }) => {
@@ -53,6 +54,11 @@ const MainLayout = ({ children }) => {
     navigate(ROUTES.LOGIN);
   };
 
+  const irAlInicio = () => {
+    navigate(ROUTES.HOME);
+  };
+
+
   const elementosNav = [
     { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
     { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
@@ -96,15 +102,16 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="raiz-estructura">
-      <aside
-        className={`barra-lateral ${
-          menuOpen ? 'barra-lateral--abierta' : ''
-        }`}
-      >
-        <div className="marca-barra-lateral">
-          <span className="logo-barra-lateral">MB</span>
+      {/* Sidebar */}
+      <aside className={`barra-lateral ${menuOpen ? 'barra-lateral--abierta' : ''}`}>
+        <button
+          className="marca-barra-lateral marca-barra-lateral--clickeable"
+          onClick={irAlInicio}
+          title="Volver a la página principal"
+        >
+          <img src={logoMonebank} alt="MoneBank" className="logo-barra-lateral" />
           <span className="nombre-barra-lateral">MoneBank</span>
-        </div>
+        </button>
 
         <nav className="navegacion-barra-lateral">
           {elementosNav.map((item) => (

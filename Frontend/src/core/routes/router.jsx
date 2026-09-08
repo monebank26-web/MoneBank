@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES, ROLES } from '../constants';
+import HomePage from '../../features/Home/pages/HomePage';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
@@ -45,6 +46,11 @@ const RutaPublica = ({ children }) => {
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
+      {/* Página principal: SIEMPRE accesible, tengas sesión o no.
+          A diferencia de RutaPublica, esta NO redirige si ya estás logueado,
+          porque justamente queremos poder volver aquí desde adentro de la app. */}
+      <Route path={ROUTES.HOME} element={<HomePage />} />
+
       {/* Públicas */}
       <Route path="/login" element={<RutaPublica><LoginPage /></RutaPublica>} />
       <Route path="/register" element={<RutaPublica><RegisterPage /></RutaPublica>} />
@@ -66,8 +72,7 @@ const AppRouter = () => (
       {/* Solo admin */}
       <Route path="/admin" element={<RutaAdmin><AdminPage /></RutaAdmin>} />
 
-      {/* Redirección raíz */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* Cualquier ruta desconocida */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   </BrowserRouter>

@@ -1,4 +1,4 @@
-﻿from app.modules.cuenta.domain.entity.cuenta import Cuenta
+from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.shared.exceptions.business_exceptions import EstadoInvalido
 

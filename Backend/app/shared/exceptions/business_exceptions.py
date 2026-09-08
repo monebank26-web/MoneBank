@@ -244,6 +244,9 @@ class ConsejoIANoDisponible(Exception):
 class FrecuenciaInvalida(Exception):
     status_code = 400
     description = "La frecuencia debe ser DIARIA, SEMANAL, QUINCENAL, MENSUAL, TRIMESTRAL, SEMESTRAL o ANUAL"
+class CuentaYaBloqueadaException(Exception):
+    status_code = 409
+    description = "La cuenta ya se encuentra bloqueada"
 
     def __init__(self, message: str = None):
         self.message = message or self.description
@@ -253,6 +256,9 @@ class FrecuenciaInvalida(Exception):
 class RangoFechasInvalido(Exception):
     status_code = 400
     description = "fecha_fin debe ser mayor o igual a fecha_inicio"
+class MotivoBloqueoRequeridoException(Exception):
+    status_code = 422
+    description = "El motivo del bloqueo es obligatorio"
 
     def __init__(self, message: str = None):
         self.message = message or self.description
