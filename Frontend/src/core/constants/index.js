@@ -20,6 +20,9 @@ export const ROUTES = {
   CONTROL_PARENTAL_PADRE: '/control-parental/padre',
   CONTROL_PARENTAL_HIJO: '/control-parental/hijo',
   PERFIL: '/perfil',
+  GRAFICAS: '/analitica/graficas',
+  RESUMEN_SEMANAL: '/analitica/resumen-semanal',
+  REPORTES: '/analitica/reportes',
 };
 
 export const ROLES = {

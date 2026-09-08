@@ -82,9 +82,9 @@ const AppRouter = () => (
       <Route path="/control-parental/padre" element={<RutaPadre><ControlParentalPadrePage /></RutaPadre>} />
       <Route path="/control-parental/hijo" element={<RutaHijo><ControlParentalHijoPage /></RutaHijo>} />
       <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
-      <Route path="/analitica/graficas" element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
-      <Route path="/analitica/resumen-semanal" element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
-      <Route path="/analitica/reportes" element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
+      <Route path={ROUTES.GRAFICAS} element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
+      <Route path={ROUTES.RESUMEN_SEMANAL} element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
+      <Route path={ROUTES.REPORTES} element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
       
 
       {/* Solo admin */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
 import { ROUTES, ROLES } from '../../core/constants';
 import './MainLayout.css';
@@ -7,7 +7,9 @@ import './MainLayout.css';
 const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [analiticaAbierta, setAnaliticaAbierta] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -34,6 +36,13 @@ const MainLayout = ({ children }) => {
     { to: ROUTES.ADMIN, label: 'Administrador', icono: '👑', visible: esAdmin },
     { to: ROUTES.PERFIL, label: 'Mi perfil', icono: '⚙', visible: true },
   ].filter((e) => e.visible);
+
+  const submenuAnalitica = [
+    { to: ROUTES.GRAFICAS, label: 'Gráficas' },
+    { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
+    { to: ROUTES.REPORTES, label: 'Reportes' },
+  ];
+  const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 
   const etiquetaRol = {
     administrador: '👑 Administrador',
@@ -65,6 +74,38 @@ const MainLayout = ({ children }) => {
               <span className="etiqueta-navegacion">{item.label}</span>
             </NavLink>
           ))}
+
+          {!esAdmin && (
+            <div className="grupo-submenu">
+              <button
+                type="button"
+                className={`elemento-navegacion submenu-toggle ${analiticaActiva ? 'elemento-navegacion--activo' : ''}`}
+                onClick={() => setAnaliticaAbierta(!analiticaAbierta)}
+                aria-expanded={analiticaAbierta}
+              >
+                <span className="icono-navegacion">▦</span>
+                <span className="etiqueta-navegacion">Analítica</span>
+                <span className={`caret-submenu ${analiticaAbierta ? 'caret-submenu--abierta' : ''}`}>▾</span>
+              </button>
+
+              {analiticaAbierta && (
+                <div className="submenu-list">
+                  {submenuAnalitica.map((sub) => (
+                    <NavLink
+                      key={sub.to}
+                      to={sub.to}
+                      className={({ isActive }) =>
+                        `elemento-navegacion submenu-item ${isActive ? 'elemento-navegacion--activo' : ''}`
+                      }
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <span className="etiqueta-navegacion">{sub.label}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         <div className="pie-barra-lateral">
