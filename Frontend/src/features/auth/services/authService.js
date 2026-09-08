@@ -4,29 +4,36 @@ const ROLES_MAP = { 1: 'administrador', 2: 'normal' };
 
 const toFrontend = (u) => ({
   id: u.id_usuario,
+  id_usuario: u.id_usuario,
   nombres: u.nombres,
   apellidos: u.apellidos,
   email: u.correo,
   rol: ROLES_MAP[u.id_rol] || 'normal',
+  fecha_creacion: u.fecha_creacion,
 });
+
 
 export const authService = {
   login: async ({ email, password }) => {
-    const data = await apiClient.post('/auth/login', {
-      correo: email,
-      contrasena: password,
-    });
-    return {
-      id: data.usuario_id,
-      nombres: data.nombres,
-      apellidos: data.apellidos,
-      email: data.correo,
-      rol: ROLES_MAP[data.id_rol] || 'normal',
-      access_token: data.access_token,
-    };
-  },
+  const data = await apiClient.post('/auth/login', {
+    correo: email,
+    contrasena: password,
+  });
 
-  register: async ({ nombres, apellidos, email, password }) => {
+  return {
+    id: data.usuario_id,
+    id_usuario: data.usuario_id,
+    nombres: data.nombres,
+    apellidos: data.apellidos,
+    email: data.correo,
+    rol: ROLES_MAP[data.id_rol] || 'normal',
+    fecha_creacion: data.fecha_creacion,
+    access_token: data.access_token,
+  };
+},
+
+
+  register: async ({ nombres,apellidos, email, password }) => {
     const data = await apiClient.post('/usuarios/', {
       nombres,
       apellidos,
@@ -53,7 +60,6 @@ export const authService = {
   actualizarUsuario: async (id, datos) => {
     const payload = {};
     if (datos.nombres !== undefined) payload.nombres = datos.nombres;
-    if (datos.apellidos !== undefined) payload.apellidos = datos.apellidos;
     if (datos.email !== undefined) payload.correo = datos.email;
     const data = await apiClient.put(`/usuarios/${id}`, payload);
     return toFrontend(data);

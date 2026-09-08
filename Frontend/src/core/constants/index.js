@@ -18,8 +18,7 @@ export const ROUTES = {
   LIMITES: '/limites',
   TRANSACCIONES: '/transacciones',
   ADMIN: '/admin',
-  CONTROL_PARENTAL_PADRE: '/control-parental/padre',
-  CONTROL_PARENTAL_HIJO: '/control-parental/hijo',
+  CONTROL_PARENTAL: '/control-parental',
   PERFIL: '/perfil',
 };
 

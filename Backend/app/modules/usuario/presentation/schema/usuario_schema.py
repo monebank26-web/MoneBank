@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, field_validator
@@ -28,6 +29,4 @@ class UsuarioResponse(BaseModel):
     nombres: str
     apellidos: str
     correo: EmailStr
-
-    class Config:
-        from_attributes = True
+    fecha_creacion: date
