@@ -22,6 +22,26 @@
   padding: 16px;
 }
 
+.formulario-gasto__consejo-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.formulario-gasto__consejo-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--color-blanco);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-violeta));
+  box-shadow: 0 0 0 1px var(--color-accent-ring), 0 0 12px var(--color-violeta-glow);
+}
+
 .formulario-gasto__consejo-titulo {
   font-size: 13px;
   font-weight: 700;

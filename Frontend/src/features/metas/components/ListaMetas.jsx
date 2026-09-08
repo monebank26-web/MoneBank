@@ -1,5 +1,6 @@
 import React from 'react';
 import TarjetaMeta from './TarjetaMeta';
+import './ListaMetas.css';
 
 const ListaMetas = ({ metas, onAbonar }) => (
   <div className="lista-metas">
