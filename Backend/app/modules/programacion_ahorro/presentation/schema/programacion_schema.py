@@ -14,6 +14,12 @@ Frecuencia = Literal[
     "ANUAL",
 ]
 
+Estado = Literal[
+    "ACTIVA",
+    "PAUSADA",
+    "FINALIZADA",
+]
+
 
 class ProgramacionCreate(BaseModel):
     monto_periodico: Decimal = Field(..., gt=0)
@@ -29,6 +35,11 @@ class ProgramacionCreate(BaseModel):
                 "fecha_fin debe ser mayor o igual a fecha_inicio"
             )
         return self
+
+
+class ProgramacionUpdate(BaseModel):
+    id_programacion_ahorro: int
+    estado: Estado
 
 
 class ProgramacionResponse(BaseModel):

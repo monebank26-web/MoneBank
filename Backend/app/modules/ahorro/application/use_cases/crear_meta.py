@@ -68,3 +68,5 @@ class CrearMeta:
             self.cuenta_repository.actualizar_saldo(cuenta.id_cuenta, saldo_inicial)
 
         return meta_creada
+
+
