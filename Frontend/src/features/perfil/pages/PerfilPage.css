@@ -235,7 +235,7 @@
 }
 .seccion-desvincular-padre {
   border: 1px solid #f1caca;
-  background: linear-gradient(135deg, #fffafa 0%, #fff 100%);
+  background: var(--color-surface);
 }
 
 .formulario-desvincular-padre {
@@ -245,7 +245,6 @@
 }
 
 .formulario-desvincular-padre label {
-  color: #111827;
   font-size: 13px;
   font-weight: 700;
 }
@@ -321,7 +320,7 @@
 
 .mensaje-desvincular-padre--ok {
   color: #166534;
-  background: #f0fdf4;
+  background: black;
   border: 1px solid #bbf7d0;
 }
 

@@ -78,7 +78,7 @@ const SeccionDesvincularPadre = ({ relacion }) => {
   };
 
   return (
-    <div className="tarjeta-seccion-perfil seccion-desvincular-padre">
+    <div className="tarjeta-seccion-perfil">
       <div className="encabezado-seccion-perfil">
         <h3 className="titulo-seccion-perfil">
           Desvincular cuenta parental
@@ -94,7 +94,7 @@ const SeccionDesvincularPadre = ({ relacion }) => {
           className="formulario-desvincular-padre"
           onSubmit={solicitarCodigo}
         >
-          <label htmlFor="correo-padre-desvincular">
+          <label className="titulo-seccion-perfil" >
             Correo del padre o madre
           </label>
 

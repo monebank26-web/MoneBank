@@ -74,4 +74,4 @@ const CarruselServicios = ({ servicios }) => {
   );
 };
 
-export default CarruselServicios;
+export default CarruselServicios; 

@@ -48,8 +48,8 @@
 }
 
 .campo-seleccion option {
-  background: #161616;
-  color: var(--color-text);
+  background: var(--color-accent-hover);
+  color: var(--color-text-hard);
 }
 
 .campo-seleccion option[value=""] {

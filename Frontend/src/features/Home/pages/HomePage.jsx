@@ -7,19 +7,13 @@ import CarruselServicios from '../components/CarruselServicios';
 import ToggleTema from '../components/ToggleTema';
 import './HomePage.css';
 
-import imgBolsillos from '../../../shared/assets/bolsillos.png';
 import imgMetasDeAhorro from '../../../shared/assets/metas-de-ahorro.png';
 import imgLimitesDeGasto from '../../../shared/assets/limites-de-gasto.png';
 import imgControlParental from '../../../shared/assets/control-parental.png';
 import imgMovimientosClaros from '../../../shared/assets/movimientos-claros.png';
 
 const servicios = [
-  {
-    titulo: 'Bolsillos',
-    descripcion: 'Separa tu dinero en bolsillos con un propósito claro, sin abrir cinco cuentas distintas.',
-    icono: '◈',
-    imagen: imgBolsillos,
-  },
+  
   {
     titulo: 'Metas de ahorro',
     descripcion: 'Ponte una meta, un plazo, y deja que MoneBank te muestre qué tan cerca estás.',
