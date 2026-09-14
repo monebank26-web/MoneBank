@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../../../shared/components/Modal';
 import { metasService } from '../services/metasService';
 
+const hoyLocal = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
 const ModalCrearMeta = ({ open, onClose, onCrear }) => {
   const [form, setForm] = useState({
     nombre: '',
@@ -31,8 +36,8 @@ const ModalCrearMeta = ({ open, onClose, onCrear }) => {
       return;
     }
     if (!form.fecha_objetivo) { setError('La fecha objetivo es obligatoria.'); return; }
-    const hoy = new Date().toISOString().slice(0, 10);
-    if (form.fecha_objetivo < hoy) { setError('La fecha objetivo debe ser posterior a hoy.'); return; }
+    const hoy = hoyLocal();
+    if (form.fecha_objetivo < hoy) { setError('La fecha objetivo no puede ser en el pasado.'); return; }
     if (!form.id_categoria) { setError('Selecciona una categoría.'); return; }
 
     setLoading(true);
@@ -94,11 +99,13 @@ const ModalCrearMeta = ({ open, onClose, onCrear }) => {
         <div className="grupo-campo">
           <label className="etiqueta-campo">Fecha objetivo</label>
           <input
-            className="campo-entrada"
+            className="campo-entrada campo-entrada--fecha"
             type="date"
+            min={hoyLocal()}
             value={form.fecha_objetivo}
             onChange={(e) => setForm({ ...form, fecha_objetivo: e.target.value })}
           />
+          <p className="ayuda-campo-fecha">Debe ser hoy o una fecha futura.</p>
         </div>
         <div className="grupo-campo">
           <label className="etiqueta-campo">Categoría</label>
