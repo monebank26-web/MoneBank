@@ -125,6 +125,27 @@ class SqlTransaccionesRepository(TransaccionRepository):
         self.db.refresh(transaccion)
         return transaccion
 
+    def get_transaccion(self, id_transaccion):
+        return (
+            self.db.query(TransaccionModel)
+            .filter(TransaccionModel.id_transaccion == id_transaccion)
+            .first()
+        )
+
+    def update_transaccion(self, transaccion, datos, id_cuenta, nuevo_saldo):
+        transaccion.monto = datos["monto"]
+        transaccion.descripcion = datos.get("descripcion")
+        transaccion.id_categoria = datos["id_categoria"]
+
+        cuenta = self.get_cuenta(id_cuenta)
+
+        if cuenta:
+            cuenta.saldo = nuevo_saldo
+
+        self.db.commit()
+        self.db.refresh(transaccion)
+        return transaccion
+
     def get_cuenta(self, id_cuenta):
         return (
             self.db.query(CuentaModel)

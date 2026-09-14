@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from app.core.responses import ErrorResponse
 from app.shared.exceptions.business_exceptions import (
     TransaccionesNoEncontrado,
+    TransaccionNoEditable,
     MontoInvalido,
     FechaInvalida,
     CategoriaInvalida,
@@ -21,6 +22,13 @@ def register_transaccion_exception_handlers(app: FastAPI):
     async def transacciones_no_encontrado_handler(request: Request, exc: TransaccionesNoEncontrado):
         return JSONResponse(
             status_code=TransaccionesNoEncontrado.status_code,
+            content=ErrorResponse(message=exc.message).model_dump()
+        )
+
+    @app.exception_handler(TransaccionNoEditable)
+    async def transaccion_no_editable_handler(request: Request, exc: TransaccionNoEditable):
+        return JSONResponse(
+            status_code=TransaccionNoEditable.status_code,
             content=ErrorResponse(message=exc.message).model_dump()
         )
 
