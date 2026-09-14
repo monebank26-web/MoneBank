@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/context/AuthContext';
 import { ROUTES } from '../../../core/constants';
 import logoMonebank from '../../../shared/assets/logo-monebank.png';
 import CarruselServicios from '../components/CarruselServicios';
+import DrawerAcciones from '../components/DrawerAcciones';
 import ToggleTema from '../components/ToggleTema';
 import './HomePage.css';
 
@@ -42,34 +43,73 @@ const servicios = [
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate(ROUTES.LOGIN);
+  };
+
+  const irA = (ruta) => {
+    setMenuAbierto(false);
+    navigate(ruta);
+  };
 
   return (
     <div className="pagina-principal">
-      <ToggleTema />
-
       <header className="encabezado-inicio">
         <div className="marca-inicio">
           <img src={logoMonebank} alt="MoneBank" className="logo-inicio" />
           <span className="nombre-inicio">MoneBank</span>
         </div>
 
-        <nav className="acciones-encabezado-inicio">
+        <button
+          className="boton-menu-inicio"
+          onClick={() => setMenuAbierto(true)}
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+
+        <DrawerAcciones open={menuAbierto} onClose={() => setMenuAbierto(false)}>
+          <div className="drawer-inicio__tema">
+            <span>Modo claro / oscuro</span>
+            <ToggleTema />
+          </div>
+
+          <span className="drawer-inicio__separador" />
+
           {isAuthenticated ? (
-            <button className="boton-inicio boton-inicio--primario" onClick={() => navigate(ROUTES.DASHBOARD)}>
+            <button
+              className="drawer-inicio__opcion drawer-inicio__opcion--primaria"
+              onClick={() => irA(ROUTES.DASHBOARD)}
+            >
               Ir a mi panel
             </button>
           ) : (
             <>
-              <button className="boton-inicio boton-inicio--fantasma" onClick={() => navigate(ROUTES.LOGIN)}>
+              <button
+                className="drawer-inicio__opcion drawer-inicio__opcion--secundaria"
+                onClick={() => irA(ROUTES.LOGIN)}
+              >
                 Iniciar sesión
               </button>
-              <button className="boton-inicio boton-inicio--primario" onClick={() => navigate(ROUTES.REGISTER)}>
+              <button
+                className="drawer-inicio__opcion drawer-inicio__opcion--primaria"
+                onClick={() => irA(ROUTES.REGISTER)}
+              >
                 Crear cuenta
               </button>
             </>
           )}
-        </nav>
+
+          {isAuthenticated && (
+            <button className="drawer-inicio__logout" onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          )}
+        </DrawerAcciones>
       </header>
 
       <section className="seccion-hero">

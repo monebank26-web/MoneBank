@@ -16,7 +16,7 @@ class SqlAhorroRepository(AhorroRepository):
     def create(self, ahorro_data):
         ahorro = AhorroModel(
             **ahorro_data,
-            saldo_actual=ahorro_data.get("saldo_inicial") or 0
+            saldo_actual=ahorro_data.get("saldo_actual") or 0
         )
         self.db.add(ahorro)
         self.db.commit()

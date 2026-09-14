@@ -29,7 +29,7 @@ const SeccionMovimientosInicio = ({ transacciones }) => {
         <div className="lista-movimientos">
           {transacciones.map((movimiento) => {
             const tipo = movimiento.tipo_transaccion;
-            const color = COLORES[tipo] || 'ahorro';
+            const color = COLORES[tipo] || 'movimiento';
             return (
               <div key={movimiento.id_transaccion} className="elemento-movimiento">
                 <div className={`icono-movimiento icono-movimiento--${color}`}>
