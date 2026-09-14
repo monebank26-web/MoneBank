@@ -43,6 +43,7 @@ class MetaResponse(BaseModel):
     porcentaje_completado: Optional[Decimal] = None
     monto_faltante: Optional[Decimal] = None
     fecha_objetivo: Optional[date] = None
+    fecha_creacion: Optional[date] = None
     estado: str
 
     model_config = ConfigDict(from_attributes=True)
