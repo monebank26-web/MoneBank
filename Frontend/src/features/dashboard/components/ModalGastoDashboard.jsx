@@ -139,8 +139,9 @@ const ModalGastoDashboard = ({
           </div>
         )}
         {puedeVerConsejo && !mostrandoConsejo && (
-          <button className="boton-secundario" onClick={handleVerConsejo}>
-            Ver cómo afecta este gasto
+          <button className="boton-secundario boton-secundario--consejo-ia" onClick={handleVerConsejo}>
+            <span className="boton-secundario__icono-ia"><IconoIA /></span>
+            Consejo IA
           </button>
         )}
         <button className="boton-principal" onClick={handleGasto} disabled={superaSaldo || guardando}>

@@ -47,7 +47,6 @@
 }
 
 .mensaje-ia__negrita {
-  color: var(--color-text-resaltado);
   font-weight: 700;
 }
 
