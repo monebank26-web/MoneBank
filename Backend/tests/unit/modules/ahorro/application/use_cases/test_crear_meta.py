@@ -27,6 +27,8 @@ def datos_validos():
 
 def repository_mock():
     repository = Mock()
+    cuenta_repository = Mock()
+    registrar_abono = Mock()
 
     cuenta = Mock()
     cuenta.id_cuenta = 1
@@ -41,14 +43,14 @@ def repository_mock():
     tipo_meta.id_tipo_ahorro = 1
     repository.get_tipo_ahorro.return_value = tipo_meta
 
-    return repository
+    return repository, cuenta_repository, registrar_abono
 
 
 def test_debe_crear_una_meta_con_datos_validos():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
 
-    resultado = CrearMeta(repository).execute(datos_validos(), 6)
+    resultado = CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
 
     data_enviada = repository.create.call_args.args[0]
     assert data_enviada["id_cuenta"] == 1
@@ -59,68 +61,99 @@ def test_debe_crear_una_meta_con_datos_validos():
 
 def test_sin_cuenta_lanza_cuenta_no_encontrada():
 
-    repository = repository_mock()
-    repository.get_cuenta_por_usuario.return_value = None
+    repository, cuenta_repository, registrar_abono = repository_mock()
+    cuenta_repository.get_cuenta_por_usuario.return_value = None
 
     with pytest.raises(CuentaNoEncontrada):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_categoria_inexistente_lanza_categoria_no_existe():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
     repository.get_categoria.return_value = None
 
     with pytest.raises(CategoriaNoExiste):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_categoria_gasto_lanza_categoria_no_compatible():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
     repository.get_categoria.return_value.tipo_categoria = "GASTO"
 
     with pytest.raises(CategoriaNoCompatible):
-        CrearMeta(repository).execute(datos_validos(), 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
 
 
 def test_sin_fecha_objetivo_lanza_fecha_objetivo_requerida():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
     datos = datos_validos()
     datos["fecha_objetivo"] = None
 
     with pytest.raises(FechaObjetivoRequerida):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos, 6)
 
     repository.create.assert_not_called()
 
 
 def test_fecha_objetivo_pasada_lanza_fecha_objetivo_pasada():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
     datos = datos_validos()
     datos["fecha_objetivo"] = date.today() - timedelta(days=1)
 
     with pytest.raises(FechaObjetivoPasada):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos, 6)
 
     repository.create.assert_not_called()
 
 
 def test_saldo_inicial_mayor_al_saldo_lanza_saldo_insuficiente():
 
-    repository = repository_mock()
+    repository, cuenta_repository, registrar_abono = repository_mock()
     datos = datos_validos()
     datos["saldo_inicial"] = Decimal("10000000.00")
 
     with pytest.raises(SaldoInsuficiente):
-        CrearMeta(repository).execute(datos, 6)
+        CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos, 6)
 
     repository.create.assert_not_called()
+
+
+def test_con_saldo_inicial_registra_movimiento_de_ahorro():
+
+    repository, cuenta_repository, registrar_abono = repository_mock()
+    datos = datos_validos()
+    datos["saldo_inicial"] = Decimal("50000.00")
+
+    resultado = CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos, 6)
+
+    repository.create.assert_called_once()
+    registrar_abono.execute.assert_called_once()
+    datos_abono = registrar_abono.execute.call_args.args[0]
+    assert datos_abono["monto"] == Decimal("50000.00")
+    assert datos_abono["id_cuenta"] == 1
+    assert datos_abono["id_ahorro"] == repository.create.return_value.id_ahorro
+    assert datos_abono["fecha"] == date.today()
+    cuenta_repository.actualizar_saldo.assert_not_called()
+    assert resultado == repository.create.return_value
+
+
+def test_sin_saldo_inicial_no_registra_movimiento():
+
+    repository, cuenta_repository, registrar_abono = repository_mock()
+
+    resultado = CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
+
+    repository.create.assert_called_once()
+    registrar_abono.execute.assert_not_called()
+    cuenta_repository.actualizar_saldo.assert_not_called()
+    assert resultado == repository.create.return_value

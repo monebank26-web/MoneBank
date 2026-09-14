@@ -13,12 +13,14 @@ from app.shared.exceptions.business_exceptions import (
 
 class CrearMeta:
 
-    def __init__(self, repository):
+    def __init__(self, repository, cuenta_repository, registrar_abono):
         self.repository = repository
+        self.cuenta_repository = cuenta_repository
+        self.registrar_abono = registrar_abono
 
     def execute(self, meta_data, id_usuario):
 
-        cuenta = self.repository.get_cuenta_por_usuario(id_usuario)
+        cuenta = self.cuenta_repository.get_cuenta_por_usuario(id_usuario)
 
         if not cuenta:
             raise CuentaNoEncontrada()
@@ -61,4 +63,19 @@ class CrearMeta:
         meta_data["id_tipo_ahorro"] = tipo_meta.id_tipo_ahorro
         meta_data["estado"] = Ahorro.ESTADO_ACTIVO
 
-        return self.repository.create(meta_data)
+        meta_creada = self.repository.create(meta_data)
+
+        if saldo_inicial > 0:
+            self.registrar_abono.execute({
+                "monto": saldo_inicial,
+                "fecha": date.today(),
+                "descripcion": (
+                    f"Saldo inicial de la meta {meta_creada.nombre}"
+                ),
+                "id_cuenta": cuenta.id_cuenta,
+                "id_ahorro": meta_creada.id_ahorro,
+            }, id_usuario)
+
+        return meta_creada
+
+

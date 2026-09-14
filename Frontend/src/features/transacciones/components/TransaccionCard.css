@@ -38,7 +38,7 @@
   color: var(--color-success);
 }
 
-.transaccion-card__icono--ahorro {
+.transaccion-card__icono--movimiento-a-meta {
   background: var(--color-accent-soft);
   color: var(--color-accent);
 }
@@ -88,7 +88,7 @@
 
 .transaccion-card__monto--gasto { color: var(--color-danger); }
 .transaccion-card__monto--ingreso { color: var(--color-success); }
-.transaccion-card__monto--ahorro { color: var(--color-accent); }
+.transaccion-card__monto--movimiento-a-meta { color: var(--color-accent); }
 
 .transaccion-card__etiqueta {
   font-size: 11px;
@@ -107,7 +107,7 @@
   color: var(--color-success);
 }
 
-.transaccion-card__etiqueta--ahorro {
+.transaccion-card__etiqueta--movimiento-a-meta {
   background: var(--color-accent-soft);
   color: var(--color-accent);
 }

@@ -11,7 +11,7 @@ const ICONOS = {
 const COLORES = {
   GASTO: 'gasto',
   INGRESO: 'ingreso',
-  MOVIMIENTO_AHORRO: 'ahorro',
+  MOVIMIENTO_AHORRO: 'movimiento-a-meta',
 };
 
 const TransaccionCard = ({ transaccion, onDetalle }) => {
@@ -36,7 +36,7 @@ const TransaccionCard = ({ transaccion, onDetalle }) => {
           {tipo === 'INGRESO' ? '+' : ''}{formatMoney(transaccion.monto)}
         </p>
         <span className={`transaccion-card__etiqueta transaccion-card__etiqueta--${COLORES[tipo]}`}>
-          {tipo === 'GASTO' ? 'Gasto' : tipo === 'INGRESO' ? 'Ingreso' : 'Ahorro'}
+          {tipo === 'GASTO' ? 'Gasto' : tipo === 'INGRESO' ? 'Ingreso' : 'Movimiento a meta'}
         </span>
       </div>
     </button>
