@@ -9,6 +9,13 @@ export const transaccionesService = {
   
   obtenerDetalle: (id) =>
     apiClient.get(`/transacciones/${id}`),
+
+  actualizarTransaccion: (id, { monto, descripcion, id_categoria }) =>
+    apiClient.put(`/transacciones/${id}`, {
+      monto,
+      descripcion: descripcion || null,
+      id_categoria,
+    }),
   
   registrarGasto: ({ monto, descripcion, id_cuenta, id_categoria }) =>
     apiClient.post('/transacciones/gastos', {

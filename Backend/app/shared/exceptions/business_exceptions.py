@@ -61,6 +61,15 @@ class TransaccionesNoEncontrado(Exception):
         super().__init__(self.message)
 
 
+class TransaccionNoEditable(Exception):
+    status_code = 422
+    description = "Esta transacción no se puede editar"
+
+    def __init__(self, message: str = None):
+        self.message = message or self.description
+        super().__init__(self.message)
+
+
 class MontoInvalido(Exception):
     status_code = 400
     description = "El monto del gasto debe ser mayor a 0"

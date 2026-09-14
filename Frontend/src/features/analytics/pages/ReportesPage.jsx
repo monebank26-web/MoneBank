@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useReporte } from '../hooks/useReporte';
 import { ReporteResumen } from '../components/ReporteResumen';
 import { ReporteDetalleCategoria } from '../components/ReporteDetalleCategoria';
 import { analyticsService } from '../services/analyticsService';
+import '../../../features/transacciones/components/FiltrosHistorial.css';
 import '../styles/analytics-cards.css';
+import '../styles/ReportesPage.css';
 
 export const ReportesPage = () => {
-  const { data, loading, error, recargar } = useReporte('mensual');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+
+  const { data, loading, error, recargar } = useReporte(
+    'mensual',
+    fechaInicio || undefined,
+    fechaFin || undefined
+  );
 
   const handleDescargarPDF = async () => {
     try {
-      const blob = await analyticsService.descargarReportePDF('mensual');
+      const blob = await analyticsService.descargarReportePDF(
+        'mensual',
+        fechaInicio || undefined,
+        fechaFin || undefined
+      );
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -24,26 +37,20 @@ export const ReportesPage = () => {
     }
   };
 
+  const limpiarFechas = () => {
+    setFechaInicio('');
+    setFechaFin('');
+  };
+
   if (loading) {
-    return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text)' }}>Generando reporte...</div>;
+    return <p className="cargando-pagina">Generando reporte...</p>;
   }
 
   if (error) {
     return (
-      <div style={{ padding: '24px', color: 'var(--color-danger)' }}>
+      <div className="reportes-error">
         <p>{error}</p>
-        <button
-          onClick={recargar}
-          style={{
-            marginTop: '12px',
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent)',
-            color: '#080808',
-            border: 'none',
-            borderRadius: 'var(--radius-sm)',
-            fontWeight: 600,
-          }}
-        >
+        <button className="boton-principal-pequeno" onClick={recargar}>
           Reintentar
         </button>
       </div>
@@ -51,39 +58,37 @@ export const ReportesPage = () => {
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '760px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--color-text)' }}>
-          Reporte Mensual
-        </h1>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={handleDescargarPDF}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: 'var(--color-accent)',
-              color: '#080808',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Descargar PDF
-          </button>
-          <button
-            onClick={recargar}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: 'var(--color-surface-2)',
-              color: 'var(--color-text)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-sm)',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Actualizar
+    <div className="pagina-reportes">
+      <div className="encabezado-pagina-reportes">
+        <h1 className="titulo-pagina">Reporte Financiero</h1>
+        <button className="boton-principal-pequeno" onClick={handleDescargarPDF}>
+          Descargar PDF
+        </button>
+      </div>
+
+      <div className="filtros-historial">
+        <div className="filtros-historial__grid">
+          <div className="filtros-historial__campo">
+            <span>Fecha</span>
+            <div className="grupo-rango">
+              <input
+                type="date"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+                aria-label="Fecha inicio"
+              />
+              <span className="grupo-rango__conector">–</span>
+              <input
+                type="date"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+                aria-label="Fecha fin"
+              />
+            </div>
+          </div>
+
+          <button className="filtros-historial__limpiar" onClick={limpiarFechas}>
+            Limpiar
           </button>
         </div>
       </div>

@@ -26,7 +26,7 @@ const TransaccionesPage = () => {
 
   const hoy = fechaLocalHoy();
   const inicioMes = `${hoy.slice(0, 7)}-01`;
-  const { data: reporte, loading: reporteLoading, error: reporteError } = useReporte('mensual', inicioMes, hoy);
+  const { data: reporte, loading: reporteLoading, error: reporteError, recargar: recargarReporte } = useReporte('mensual', inicioMes, hoy);
 
   // Cargar categorías una vez
   useEffect(() => {
@@ -57,6 +57,11 @@ const TransaccionesPage = () => {
 
   const handlePagina = (nuevaPagina) => {
     setFiltros((prev) => ({ ...prev, pagina: nuevaPagina }));
+  };
+
+  const handleActualizado = () => {
+    cargar();
+    recargarReporte();
   };
 
   return (
@@ -106,6 +111,8 @@ const TransaccionesPage = () => {
         open={detalleId !== null}
         transaccionId={detalleId}
         onClose={() => setDetalleId(null)}
+        categorias={categorias}
+        onActualizado={handleActualizado}
       />
     </div>
   );

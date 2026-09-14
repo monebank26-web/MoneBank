@@ -88,7 +88,7 @@ const MainLayout = ({ children }) => {
   const submenuAnalitica = [
     { to: ROUTES.GRAFICAS, label: 'Gráficas' },
     { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
-    { to: ROUTES.REPORTES, label: 'Reportes' },
+    { to: ROUTES.REPORTES, label: 'Descargar reporte' },
   ];
   const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 

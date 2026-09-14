@@ -102,3 +102,70 @@
 .detalle-mensaje--error {
   color: var(--color-danger);
 }
+
+.detalle-transaccion__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detalle-transaccion__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detalle-transaccion__campo-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.detalle-transaccion__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.detalle-transaccion__input:focus {
+  border-color: var(--color-accent);
+}
+
+.detalle-transaccion__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.detalle-transaccion__boton {
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.detalle-transaccion__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detalle-transaccion__boton--primario {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.detalle-transaccion__boton--secundario {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
