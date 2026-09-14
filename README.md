@@ -24,20 +24,25 @@ El sistema permite simular la administración del dinero en un entorno controlad
 
 ## 3️⃣ Funcionalidades Principales
 
-- [ ] Registro e inicio de sesión mediante autenticación JWT.
-- [ ] Gestión del perfil de usuario.
-- [ ] Gestión de cuentas y saldo interno.
-- [ ] Registro de ingresos y gastos.
-- [ ] Historial de movimientos financieros.
-- [ ] Clasificación de movimientos por categorías.
-- [ ] Evaluación previa del impacto financiero de un gasto.
-- [ ] Dashboard con métricas y análisis financiero.
-- [ ] Creación y administración de metas de ahorro.
-- [ ] Programación automática de aportes a metas de ahorro.
-- [ ] Sistema de control parental para supervisión y gestión de cuentas dependientes.
-- [ ] Administración de usuarios por parte del administrador.
-- [ ] Gestión de roles y permisos.
-- [ ] Validación y control de acceso según el tipo de usuario.
+- [x] Registro e inicio de sesión mediante autenticación JWT.
+- [x] Gestión del perfil de usuario (datos personales, cambio de contraseña).
+- [x] Gestión de cuentas y saldo interno.
+- [x] Registro de ingresos y gastos.
+- [x] Historial de movimientos financieros, con filtros, paginación y detalle.
+- [x] Clasificación de movimientos por categorías.
+- [x] Evaluación previa del impacto financiero de un gasto mediante IA (consejo generado con Gemini).
+- [x] Dashboard con métricas, resumen de saldo, movimientos recientes y ahorros.
+- [x] Creación y administración de metas de ahorro (con seguimiento de progreso).
+- [x] Límites de gasto por categoría y alertas de presupuesto.
+- [x] Administración de usuarios por parte del administrador (listar, editar, eliminar).
+- [x] Gestión de roles y permisos (administrador, usuario normal, padre, hijo).
+- [x] Validación y control de acceso según el tipo de usuario (rutas privadas por rol).
+- [~] Sistema de control parental para supervisión de cuentas dependientes (vinculación padre-hijo implementada en el frontend; el módulo backend `control_parental` aún no está implementado).
+- [~] Bolsillos / sub-cuentas de ahorro (funcional en el frontend, actualmente sobre `localStorage`; pendiente de integración con el backend).
+- [ ] Programación automática de aportes a metas de ahorro (módulo backend `programacion_ahorro` creado pero sin implementar).
+- [ ] Sistema de notificaciones (feature `notification` del frontend aún sin implementar).
+
+> Leyenda: `[x]` implementado, `[~]` parcialmente implementado / en progreso, `[ ]` pendiente.
 
 ---
 
@@ -193,7 +198,49 @@ Esta arquitectura facilita el mantenimiento, la escalabilidad, las pruebas y el 
 
 ---
 
-## 6️⃣ Stack Tecnológico
+## 6️⃣ Estado Actual del Código
+
+### Backend (`app/`)
+
+Módulos implementados en `app/app/modules/`, cada uno con sus capas de presentación (router + schemas), aplicación (use cases), dominio (entities + interfaces) e infraestructura (models + repositories):
+
+| Módulo | Estado | Rutas principales |
+|---|---|---|
+| `auth` | ✅ Implementado | `/auth/login`, recuperación y cambio de contraseña |
+| `usuario` | ✅ Implementado | CRUD de usuarios |
+| `cuenta` | ✅ Implementado | Creación, listado y eliminación de cuentas |
+| `transaccion` | ✅ Implementado | Registro de ingresos/gastos, historial, categorías |
+| `ahorro` | ✅ Implementado | Metas de ahorro, límites de gasto y alertas de presupuesto |
+| `analytics` | ✅ Implementado | Consejo financiero generado con IA (Gemini) sobre un gasto |
+| `control_parental` | 🚧 Estructura creada, sin lógica | — |
+| `programacin_ahorro` | 🚧 Estructura creada, sin lógica | — |
+
+El punto de entrada `app/app/main.py` registra los routers de `usuario`, `auth`, `ahorro`, `cuenta`, `transaccion` y `analytics`, junto con los manejadores globales de excepciones (`app/app/shared/exceptions`) y el middleware CORS. El núcleo (`app/app/core`) contiene configuración, conexión a base de datos, seguridad (JWT, hashing, políticas de contraseña, roles) y dependencias como el servicio de correo.
+
+### Frontend (`src/`)
+
+Features implementadas en `src/src/features/`, cada una con sus páginas, componentes, hooks y servicios propios:
+
+| Feature | Estado | Descripción |
+|---|---|---|
+| `auth` | ✅ Implementado | Login y registro |
+| `dashboard` | ✅ Implementado | Resumen de saldo, movimientos recientes, ahorros y consejo IA |
+| `bolsillos` | ⚠️ Parcial | Sub-cuentas/bolsillos de ahorro; funciona sobre `localStorage`, pendiente de conectarse al backend |
+| `metas` | ✅ Implementado | Metas de ahorro, consumiendo `/ahorros/metas` |
+| `limites` | ✅ Implementado | Límites de gasto y alertas, consumiendo `/ahorros/limites` |
+| `transacciones` | ✅ Implementado | Historial, filtros, paginación y detalle de movimientos |
+| `perfil` | ✅ Implementado | Datos personales y cambio de contraseña |
+| `admin` | ✅ Implementado | Panel de administración de usuarios |
+| `controlParental` | ⚠️ Parcial | Vinculación padre-hijo y vista de movimientos del hijo; sin backend asociado aún |
+| `notification`, `parental_control`, `saving`, `transaction` | 🚧 Sin implementar | Carpetas de scaffolding (solo `.gitkeep`), reservadas para desarrollo futuro |
+
+El enrutamiento (`src/src/core/routes/router.jsx`) protege las rutas según autenticación y rol (`administrador`, `padre`, `hijo`), y el `core` centraliza el cliente HTTP (`core/api/client.js`), el contexto de autenticación, constantes y utilidades compartidas.
+
+> Leyenda: ✅ implementado y funcional · ⚠️ parcialmente implementado · 🚧 solo estructura/planificado.
+
+---
+
+## 7️⃣ Stack Tecnológico
 
 | Componente | Tecnología |
 |------------|------------|
@@ -205,6 +252,7 @@ Esta arquitectura facilita el mantenimiento, la escalabilidad, las pruebas y el 
 | Autenticación | JWT |
 | Hash de contraseñas | bcrypt |
 | Control de versiones | Git + GitHub |
+| IA / Analítica | Google Gemini (`google-genai`) para el consejo financiero |
 
 ---
 
