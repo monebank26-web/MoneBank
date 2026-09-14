@@ -21,11 +21,6 @@ const servicios = [
     imagen: imgControlParental,
   },
   {
-    titulo: 'Bolsillos',
-    descripcion: 'Separa tu dinero en bolsillos con un propósito claro, sin abrir cinco cuentas distintas.',
-    imagen: imgBolsillos,
-  },
-  {
     titulo: 'Movimientos claros',
     descripcion: 'Cada ingreso y cada gasto, ordenado y fácil de entender, sin hojas de cálculo.',
     imagen: imgMovimientosClaros,
