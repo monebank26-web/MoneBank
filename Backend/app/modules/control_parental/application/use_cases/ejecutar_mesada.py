@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.core.utils.fechas import hoy_colombia
 
 from app.modules.control_parental.domain.entity.ejecucion_mesada import (

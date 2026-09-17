@@ -1,8 +1,14 @@
 .pagina-movimientos {
-  max-width: 800px;
+  width: 70%;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .pagina-movimientos {
+    width: 100%;
+  }
 }
 
 .encabezado-pagina-movimientos {
