@@ -1,5 +1,4 @@
-from datetime import date
-
+from app.core.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
 
@@ -22,7 +21,7 @@ class ObtenerAlertasPresupuesto:
         )
 
         alertas = []
-        hoy = date.today()
+        hoy = hoy_colombia()
 
         for limite in limites:
 

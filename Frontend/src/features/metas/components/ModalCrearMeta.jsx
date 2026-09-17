@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../../../shared/components/Modal';
 import { metasService } from '../services/metasService';
+import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 
 const ModalCrearMeta = ({ open, onClose, onCrear }) => {
   const [form, setForm] = useState({
@@ -31,7 +32,7 @@ const ModalCrearMeta = ({ open, onClose, onCrear }) => {
       return;
     }
     if (!form.fecha_objetivo) { setError('La fecha objetivo es obligatoria.'); return; }
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = fechaLocalHoy();
     if (form.fecha_objetivo < hoy) { setError('La fecha objetivo debe ser posterior a hoy.'); return; }
     if (!form.id_categoria) { setError('Selecciona una categoría.'); return; }
 

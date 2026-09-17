@@ -87,7 +87,7 @@ class GastoRequest(BaseModel):
         gt=0,
         description="Monto del gasto, debe ser mayor a 0"
     )
-    fecha: date
+    fecha: datetime
     descripcion: Optional[str] = None
     id_tipo_transaccion: Optional[int] = None
     id_cuenta: int
@@ -101,7 +101,7 @@ class AbonoAhorroRequest(BaseModel):
         gt=0,
         description="Monto del abono al ahorro, debe ser mayor a 0"
     )
-    fecha: date
+    fecha: datetime
     descripcion: Optional[str] = None
     id_cuenta: int
     id_ahorro: int = Field(..., gt=0)

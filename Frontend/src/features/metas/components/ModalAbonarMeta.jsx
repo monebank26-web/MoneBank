@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../../../shared/components/Modal';
+import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(val) || 0);
 
-const fechaHoy = () => new Date().toISOString().slice(0, 10);
+const fechaHoy = () => fechaLocalHoy();
 
 const ModalAbonarMeta = ({ open, onClose, meta, onAbonar }) => {
   const [form, setForm] = useState({ monto: '', fecha: fechaHoy(), descripcion: '' });

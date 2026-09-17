@@ -1,5 +1,7 @@
 from datetime import date, timedelta
 
+from app.core.utils.fechas import hoy_colombia
+
 
 class Ahorro:
 
@@ -56,7 +58,7 @@ class Ahorro:
     def es_fecha_objetivo_valida(self, fecha_actual=None):
         if self.fecha_objetivo is None:
             return False
-        fecha_actual = fecha_actual or date.today()
+        fecha_actual = fecha_actual or hoy_colombia()
         return self.fecha_objetivo >= fecha_actual
 
     @classmethod
@@ -72,7 +74,7 @@ class Ahorro:
         if not cls.es_periodo_valido(periodo):
             return None
 
-        fecha_actual = fecha_actual or date.today()
+        fecha_actual = fecha_actual or hoy_colombia()
 
         if periodo == cls.PERIODO_DIARIO:
             return fecha_actual, fecha_actual

@@ -1,6 +1,6 @@
-from datetime import date
 from decimal import Decimal
 
+from app.core.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
 
@@ -43,7 +43,7 @@ class ObtenerLimites:
         )
 
         resultado = []
-        hoy = date.today()
+        hoy = hoy_colombia()
 
         for limite in limites:
             rango = Ahorro.calcular_rango_periodo(limite.periodo, hoy)

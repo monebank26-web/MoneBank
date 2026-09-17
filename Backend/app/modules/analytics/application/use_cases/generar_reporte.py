@@ -1,4 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
+
+from app.core.utils.fechas import hoy_colombia
 
 
 class GenerarReporte:
@@ -28,7 +30,7 @@ class GenerarReporte:
         }
 
     def _calcular_rango(self, periodo):
-        hoy = date.today()
+        hoy = hoy_colombia()
         if periodo == "mensual" or periodo is None:
             inicio_mes_actual = hoy.replace(day=1)
             fecha_fin = inicio_mes_actual - timedelta(days=1)

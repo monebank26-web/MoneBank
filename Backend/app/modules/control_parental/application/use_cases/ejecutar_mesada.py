@@ -1,4 +1,4 @@
-from datetime import date
+from app.core.utils.fechas import hoy_colombia
 
 from app.modules.control_parental.domain.entity.ejecucion_mesada import (
     EjecucionMesada,
@@ -15,7 +15,7 @@ class EjecutarMesada:
         id_hijo: int,
         fecha: date | None = None,
     ):
-        fecha_ejecucion = fecha or date.today()
+        fecha_ejecucion = fecha or hoy_colombia()
 
         # Validar vínculo
         vinculo = self.repository.vinculo_activo(

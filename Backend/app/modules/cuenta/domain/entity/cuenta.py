@@ -1,4 +1,4 @@
-from datetime import date
+from app.core.utils.fechas import hoy_colombia
 
 
 class Cuenta:
@@ -18,7 +18,7 @@ class Cuenta:
         self.saldo = saldo
         self.estado = estado
         self.id_usuario = id_usuario
-        self.fecha_creacion = fecha_creacion or date.today()
+        self.fecha_creacion = fecha_creacion or hoy_colombia()
 
     @classmethod
     def es_estado_valido(cls, estado):

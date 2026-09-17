@@ -1,7 +1,9 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
+
+from app.core.utils.fechas import fin_del_dia, hoy_colombia
 
 from app.modules.analytics.domain.interface.analytics_repository import (
     AnalyticsRepository
@@ -36,7 +38,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
         )
 
     def calcular_stats_mes(self, id_usuario):
-        inicio_mes = date.today().replace(day=1)
+        inicio_mes = hoy_colombia().replace(day=1)
 
         filtros = [
             HistorialTransaccionModel.id_usuario == id_usuario,
@@ -82,7 +84,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
         return cat.nombre_categoria if cat else None
 
     def get_resumen_categoria(self, id_usuario, id_categoria):
-        hoy = date.today()
+        hoy = hoy_colombia()
         inicio_mes = hoy.replace(day=1)
         inicio_mes_anterior = (inicio_mes - timedelta(days=1)).replace(day=1)
         fin_mes_anterior = inicio_mes - timedelta(days=1)
@@ -162,7 +164,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
         if not limite:
             return None
 
-        rango = Ahorro.calcular_rango_periodo(limite.periodo, date.today())
+        rango = Ahorro.calcular_rango_periodo(limite.periodo, hoy_colombia())
         if not rango:
             return None
 
@@ -193,13 +195,13 @@ class SqlAnalyticsRepository(AnalyticsRepository):
 
         series_temporales = (
             self.db.query(
-                HistorialTransaccionModel.fecha,
+                func.date(HistorialTransaccionModel.fecha).label("fecha"),
                 HistorialTransaccionModel.tipo_transaccion,
                 func.sum(HistorialTransaccionModel.monto).label("total")
             )
             .filter(*filtros)
-            .group_by(HistorialTransaccionModel.fecha, HistorialTransaccionModel.tipo_transaccion)
-            .order_by(HistorialTransaccionModel.fecha.asc())
+            .group_by(func.date(HistorialTransaccionModel.fecha), HistorialTransaccionModel.tipo_transaccion)
+            .order_by(func.date(HistorialTransaccionModel.fecha).asc())
             .all()
         )
 
@@ -246,7 +248,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
                 HistorialTransaccionModel.id_categoria == id_categoria,
                 HistorialTransaccionModel.tipo_transaccion == Transaccion.TIPO_GASTO,
                 HistorialTransaccionModel.fecha >= fecha_desde,
-                HistorialTransaccionModel.fecha <= fecha_hasta,
+                HistorialTransaccionModel.fecha < fin_del_dia(fecha_hasta),
             )
             .scalar()
         )
@@ -264,7 +266,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
                 HistorialTransaccionModel.id_categoria == id_categoria,
                 HistorialTransaccionModel.tipo_transaccion == Transaccion.TIPO_GASTO,
                 HistorialTransaccionModel.fecha >= fecha_desde,
-                HistorialTransaccionModel.fecha <= fecha_hasta,
+                HistorialTransaccionModel.fecha < fin_del_dia(fecha_hasta),
             )
             .scalar()
             or 0
@@ -273,7 +275,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
         filtros = [
             HistorialTransaccionModel.id_usuario == id_usuario,
             HistorialTransaccionModel.fecha >= fecha_inicio,
-            HistorialTransaccionModel.fecha <= fecha_fin,
+            HistorialTransaccionModel.fecha < fin_del_dia(fecha_fin),
         ]
 
         resultados = (
@@ -294,7 +296,7 @@ class SqlAnalyticsRepository(AnalyticsRepository):
         filtros = [
             HistorialTransaccionModel.id_usuario == id_usuario,
             HistorialTransaccionModel.fecha >= fecha_inicio,
-            HistorialTransaccionModel.fecha <= fecha_fin,
+            HistorialTransaccionModel.fecha < fin_del_dia(fecha_fin),
         ]
 
         resultados = (

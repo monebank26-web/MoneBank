@@ -1,4 +1,5 @@
 import { apiClient } from '../../../core/api/client';
+import { fechaHoraLocalHoy } from '../../../core/utils/fechaLocal';
 
 export const transaccionesService = {
   listarCategorias: () => apiClient.get('/transacciones/categorias'),
@@ -12,7 +13,7 @@ export const transaccionesService = {
   registrarGasto: ({ monto, descripcion, id_cuenta, id_categoria }) =>
     apiClient.post('/transacciones/gastos', {
       monto,
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: fechaHoraLocalHoy(),
       descripcion: descripcion || null,
       id_cuenta,
       id_categoria,
@@ -21,7 +22,7 @@ export const transaccionesService = {
   registrarIngreso: ({ monto, descripcion, id_cuenta, id_categoria }) =>
     apiClient.post('/transacciones/ingresos', {
       monto,
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: fechaHoraLocalHoy(),
       descripcion: descripcion || null,
       id_cuenta,
       id_categoria,
@@ -30,7 +31,7 @@ export const transaccionesService = {
      registrarAbonoAhorro: ({ monto, descripcion, id_cuenta, id_ahorro }) =>
     apiClient.post('/transacciones/ahorros', {
       monto,
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: fechaHoraLocalHoy(),
       descripcion: descripcion || null,
       id_cuenta,
       id_ahorro,

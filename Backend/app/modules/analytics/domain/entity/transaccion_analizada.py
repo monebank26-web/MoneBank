@@ -1,4 +1,4 @@
-from datetime import date
+from app.core.utils.fechas import hoy_colombia
 
 
 class TransaccionAnalizada:
@@ -39,7 +39,7 @@ class TransaccionAnalizada:
         return self.id_usuario == id_usuario
 
     def fecha_relativa(self, hoy=None):
-        hoy = hoy or date.today()
+        hoy = hoy or hoy_colombia()
 
         a_fecha = getattr(self.fecha, "date", None)
         fecha_gasto = a_fecha() if callable(a_fecha) else self.fecha
