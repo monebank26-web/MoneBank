@@ -1,6 +1,7 @@
 import { apiClient } from '../../../core/api/client';
 import { authService } from '../../auth/services/authService';
 import { transaccionesService } from '../../transacciones/services/transaccionesService';
+import { fechaHoraLocal } from '../../../core/utils/fechaLocal';
 
 export const metasService = {
   listar: () => apiClient.get('/ahorros/metas'),
@@ -22,7 +23,7 @@ export const metasService = {
     const { id_cuenta } = await authService.obtenerSaldo();
     return apiClient.post('/transacciones/ahorros', {
       monto,
-      fecha,
+      fecha: fechaHoraLocal(fecha),
       descripcion: descripcion || null,
       id_cuenta,
       id_ahorro,

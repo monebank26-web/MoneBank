@@ -12,3 +12,11 @@ export const fechaHoraLocalHoy = () => {
     `T${dosDigitos(ahora.getHours())}:${dosDigitos(ahora.getMinutes())}:${dosDigitos(ahora.getSeconds())}`
   );
 };
+
+export const fechaHoraLocal = (dia) => {
+  const ahora = new Date();
+  return (
+    dia +
+    `T${dosDigitos(ahora.getHours())}:${dosDigitos(ahora.getMinutes())}:${dosDigitos(ahora.getSeconds())}`
+  );
+};

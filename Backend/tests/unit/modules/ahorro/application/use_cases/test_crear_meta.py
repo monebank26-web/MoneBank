@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock
 
@@ -142,7 +142,8 @@ def test_con_saldo_inicial_registra_movimiento_de_ahorro():
     assert datos_abono["monto"] == Decimal("50000.00")
     assert datos_abono["id_cuenta"] == 1
     assert datos_abono["id_ahorro"] == repository.create.return_value.id_ahorro
-    assert datos_abono["fecha"] == date.today()
+    assert isinstance(datos_abono["fecha"], datetime)
+    assert datos_abono["fecha"].date() == date.today()
     cuenta_repository.actualizar_saldo.assert_not_called()
     assert resultado == repository.create.return_value
 

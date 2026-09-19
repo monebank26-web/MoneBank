@@ -1,4 +1,4 @@
-from app.core.utils.fechas import hoy_colombia
+from app.core.utils.fechas import ahora_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.business_exceptions import (
     CategoriaNoCompatible,
@@ -67,7 +67,7 @@ class CrearMeta:
         if saldo_inicial > 0:
             self.registrar_abono.execute({
                 "monto": saldo_inicial,
-                "fecha": hoy_colombia(),
+                "fecha": ahora_colombia(),
                 "descripcion": (
                     f"Saldo inicial de la meta {meta_creada.nombre}"
                 ),

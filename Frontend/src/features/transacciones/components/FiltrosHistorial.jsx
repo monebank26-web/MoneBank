@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMediaQuery } from '../../../core/hooks/useMediaQuery';
 import './FiltrosHistorial.css';
 
@@ -21,7 +21,14 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
   const [ordenarPor, setOrdenarPor] = useState('fecha');
   const [orden, setOrden] = useState('desc');
 
-  const aplicar = () => {
+ const primero = useRef(true);
+
+useEffect(() => {
+  if (primero.current) {
+    primero.current = false;
+    return;
+  }
+  const timeout = setTimeout(() => {
     onFiltrar({
       busqueda: busqueda || undefined,
       id_tipo_transaccion: tipoFiltro || undefined,
@@ -34,7 +41,9 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
       orden: orden,
       pagina: 1,
     });
-  };
+  }, 300);
+  return () => clearTimeout(timeout);
+}, [busqueda, tipoFiltro, categoriaFiltro, fechaInicio, fechaFin, montoMin, montoMax, ordenarPor, orden]);
 
   const limpiar = () => {
     setBusqueda(''); setTipoFiltro(''); setCategoriaFiltro('');
@@ -101,8 +110,7 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
       <div className="filtros-historial__fila">
         <input className="filtros-historial__busqueda" type="text"
           placeholder="Buscar en descripción..." value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && aplicar()} />
+          onChange={(e) => setBusqueda(e.target.value)} />
 
         <div className="grupo-botones filtros-historial__orden">
           <button
@@ -129,7 +137,6 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
           </button>
         </div>
 
-        <button className="filtros-historial__buscar" onClick={aplicar}>Filtrar</button>
         <button className="filtros-historial__limpiar" onClick={limpiar}>Limpiar</button>
       </div>
 

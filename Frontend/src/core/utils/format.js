@@ -18,6 +18,23 @@ export const formatFechaConHora = (iso) => {
   });
 };
 
+export const formatFechaCorta = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('es-CO', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
+export const formatHora = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString('es-CO', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 export const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',

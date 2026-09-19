@@ -3,8 +3,9 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 16px;
-  display: flex;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.6fr) minmax(120px, 0.9fr) minmax(150px, 1fr) auto;
   align-items: center;
   gap: 14px;
   text-align: left;
@@ -16,15 +17,15 @@
   border-color: var(--color-accent);
 }
 
+/* ── COLUMNA 1: ICONO ── */
 .transaccion-card__icono {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
@@ -43,40 +44,55 @@
   color: var(--color-accent);
 }
 
-.transaccion-card__info {
-  flex: 1;
+/* ── COLUMNA 2: DESCRIPCIÓN ── */
+.transaccion-card__descripcion {
+  font-size: 13px;
+  color: var(--color-text);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── COLUMNA 3: CATEGORÍA ── */
+.transaccion-card__categoria {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaccion-card__categoria--gasto { color: var(--color-danger); }
+.transaccion-card__categoria--ingreso { color: var(--color-success); }
+.transaccion-card__categoria--movimiento-a-meta { color: var(--color-accent); }
+
+/* ── COLUMNA 4: FECHA Y HORA ── */
+.transaccion-card__fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.transaccion-card__categoria {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.transaccion-card__descripcion {
-  font-size: 12px;
+.transaccion-card__fecha-dia {
+  font-size: 13px;
   color: var(--color-text-muted);
-  margin-top: 2px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.transaccion-card__fecha {
-  font-size: 12px;
+.transaccion-card__fecha-hora {
+  font-size: 11px;
   color: var(--color-text-muted);
-  margin-top: 4px;
 }
 
-.transaccion-card__derecha {
+/* ── COLUMNA 5: MONTO Y TIPO ── */
+.transaccion-card__monto-celda {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
 }
 
@@ -84,6 +100,7 @@
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .transaccion-card__monto--gasto { color: var(--color-danger); }
@@ -95,6 +112,7 @@
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 20px;
+  white-space: nowrap;
 }
 
 .transaccion-card__etiqueta--gasto {
@@ -110,4 +128,22 @@
 .transaccion-card__etiqueta--movimiento-a-meta {
   background: var(--color-accent-soft);
   color: var(--color-accent);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .transaccion-card {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "icono descripcion monto"
+      "icono categoria categoria"
+      "icono fecha fecha";
+    gap: 4px 12px;
+  }
+
+  .transaccion-card__icono { grid-area: icono; }
+  .transaccion-card__descripcion { grid-area: descripcion; align-self: center; }
+  .transaccion-card__categoria { grid-area: categoria; }
+  .transaccion-card__fecha { grid-area: fecha; }
+  .transaccion-card__monto-celda { grid-area: monto; }
 }
