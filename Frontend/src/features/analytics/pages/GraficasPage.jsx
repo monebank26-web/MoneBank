@@ -27,9 +27,6 @@ export const GraficasPage = () => {
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Gráficas Financieras</h1>
-        <button onClick={recargar} className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">
-          Actualizar
-        </button>
       </div>
 
      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
