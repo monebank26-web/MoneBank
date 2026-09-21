@@ -5,14 +5,7 @@ import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(val) || 0);
 
-<<<<<<< HEAD
 const fechaHoy = () => fechaLocalHoy();
-=======
-const fechaHoy = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
->>>>>>> f53fc0eb (Arreglo de fechas en metas)
 
 const ModalAbonarMeta = ({ open, onClose, meta, onAbonar }) => {
   const [form, setForm] = useState({ monto: '', fecha: fechaHoy(), descripcion: '' });
