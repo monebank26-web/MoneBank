@@ -13,11 +13,13 @@ class GenerarReporte:
 
         datos = self.repository.obtener_reporte_periodo(id_usuario, fecha_inicio, fecha_fin)
 
+        detalle_por_categoria = datos["detalle_por_categoria"]
+
         total_ingresos = sum(
-            d["total"] for d in datos if d["tipo_transaccion"] == "INGRESO"
+            d["total"] for d in detalle_por_categoria if d["tipo_transaccion"] == "INGRESO"
         )
         total_gastos = sum(
-            d["total"] for d in datos if d["tipo_transaccion"] == "GASTO"
+            d["total"] for d in detalle_por_categoria if d["tipo_transaccion"] == "GASTO"
         )
 
         return {
@@ -26,7 +28,8 @@ class GenerarReporte:
             "total_ingresos": total_ingresos,
             "total_gastos": total_gastos,
             "balance": total_ingresos - total_gastos,
-            "detalle_por_categoria": datos,
+            "total_metas": datos.get("total_metas", 0),
+            "detalle_por_categoria": detalle_por_categoria,
         }
 
     def _calcular_rango(self, periodo):

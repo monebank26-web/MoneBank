@@ -311,11 +311,20 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             .all()
         )
 
-        return [
-            {
-                "nombre_categoria": row.nombre_categoria,
-                "tipo_transaccion": row.tipo_transaccion,
-                "total": row.total,
-            }
+        total_metas = sum(
+            row.total
             for row in resultados
-        ]
+            if row.tipo_transaccion == Transaccion.TIPO_MOVIMIENTO_AHORRO
+        )
+
+        return {
+            "detalle_por_categoria": [
+                {
+                    "nombre_categoria": row.nombre_categoria,
+                    "tipo_transaccion": row.tipo_transaccion,
+                    "total": row.total,
+                }
+                for row in resultados
+            ],
+            "total_metas": total_metas or 0,
+        }

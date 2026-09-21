@@ -26,6 +26,7 @@ def generar_pdf_reporte(reporte: dict) -> BytesIO:
         ["Total Ingresos", f"${reporte['total_ingresos']:,.0f}"],
         ["Total Gastos", f"${reporte['total_gastos']:,.0f}"],
         ["Balance", f"${reporte['balance']:,.0f}"],
+        ["Total en metas", f"${reporte.get('total_metas', 0):,.0f}"],
     ]
     tabla_resumen = Table(resumen_data, colWidths=[8 * cm, 6 * cm])
     tabla_resumen.setStyle(TableStyle([
