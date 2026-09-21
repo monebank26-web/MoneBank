@@ -83,4 +83,7 @@ class Ahorro:
             inicio = fecha_actual - timedelta(days=fecha_actual.weekday())
             return inicio, fecha_actual
 
-        return fecha_actual.replace(day=1), fecha_actual
+        if periodo == cls.PERIODO_MENSUAL:
+            return fecha_actual.replace(day=1), fecha_actual
+
+        return None
