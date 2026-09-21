@@ -1,4 +1,3 @@
-import React from 'react';
 
 const formatoMoneda = (valor) =>
   new Intl.NumberFormat('es-CO', {

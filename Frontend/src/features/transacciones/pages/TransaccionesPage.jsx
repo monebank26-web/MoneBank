@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
+import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 import { transaccionesService } from '../services/transaccionesService';
+import { useReporte } from '../../analytics/hooks/useReporte';
+import { ReporteResumen } from '../../analytics/components/ReporteResumen';
+import '../../analytics/styles/analytics-cards.css';
 import TransaccionCard from '../components/TransaccionCard';
 import DetalleTransaccionModal from '../components/DetalleTransaccionModal';
 import FiltrosHistorial from '../components/FiltrosHistorial';
@@ -19,6 +23,10 @@ const TransaccionesPage = () => {
   });
   const [categorias, setCategorias] = useState([]);
   const [detalleId, setDetalleId] = useState(null);
+
+  const hoy = fechaLocalHoy();
+  const inicioMes = `${hoy.slice(0, 7)}-01`;
+  const { data: reporte, loading: reporteLoading, error: reporteError } = useReporte('mensual', inicioMes, hoy);
 
   // Cargar categorías una vez
   useEffect(() => {
@@ -57,6 +65,14 @@ const TransaccionesPage = () => {
         <h1 className="titulo-pagina">Movimientos</h1>
         <span className="total-movimientos">{total} movimiento{total !== 1 ? 's' : ''}</span>
       </div>
+
+      { reporteLoading ? (
+        <p className="cargando-pagina">Cargando resumen del mes...</p>
+      ) : reporteError ? (
+        <p className="movimientos-sin-contenido">{reporteError}</p>
+      ) : (
+        <ReporteResumen data={reporte} />
+      )}
 
       <FiltrosHistorial onFiltrar={handleFiltrar} categorias={categorias} />
 
