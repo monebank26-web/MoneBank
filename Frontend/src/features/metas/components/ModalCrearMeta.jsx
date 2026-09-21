@@ -37,13 +37,8 @@ const ModalCrearMeta = ({ open, onClose, onCrear }) => {
       return;
     }
     if (!form.fecha_objetivo) { setError('La fecha objetivo es obligatoria.'); return; }
-<<<<<<< HEAD
     const hoy = hoyLocal();
     if (form.fecha_objetivo < hoy) { setError('La fecha objetivo no puede ser en el pasado.'); return; }
-=======
-    const hoy = fechaLocalHoy();
-    if (form.fecha_objetivo < hoy) { setError('La fecha objetivo debe ser posterior a hoy.'); return; }
->>>>>>> origin/desarrollo
     if (!form.id_categoria) { setError('Selecciona una categoría.'); return; }
 
     setLoading(true);
