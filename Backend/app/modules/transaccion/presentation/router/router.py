@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 
 from app.core.security.auth import get_current_user
 
+from app.modules.transaccion.application.use_cases.actualizar_transaccion import ActualizarTransaccion
 from app.modules.transaccion.application.use_cases.obtener_detalle_transaccion import ObtenerDetalleUseCase
 from app.modules.transaccion.application.use_cases.obtener_transacciones_historial import ObtenerHistorialUseCase
 from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
@@ -21,7 +22,8 @@ from app.modules.transaccion.presentation.schema.trans_schema import (
     GastoRequest,
     GastoResponse,
     HistorialRequest,
-    HistorialPaginadoResponse
+    HistorialPaginadoResponse,
+    TransaccionUpdateRequest,
 )
 
 from app.core.database.connection import get_db
@@ -118,3 +120,19 @@ def obtener_detalle(
 ):
     caso_uso = ObtenerDetalleUseCase(repository)
     return caso_uso.execute(current_user.id_usuario, id_transaccion)
+
+
+@router.put("/{id_transaccion}", response_model=GastoResponse, status_code=200)
+def actualizar_transaccion(
+    id_transaccion: int,
+    transaccion: TransaccionUpdateRequest,
+    current_user: object = Depends(get_current_user),
+    repository: TransaccionRepository = Depends(get_transaccion_repository),
+):
+    caso_uso = ActualizarTransaccion(repository)
+
+    return caso_uso.execute(
+        id_transaccion,
+        transaccion.model_dump(),
+        current_user.id_usuario
+    )

@@ -21,6 +21,14 @@ class TransaccionRepository(ABC):
         pass
 
     @abstractmethod
+    def get_transaccion(self, id_transaccion):
+        pass
+
+    @abstractmethod
+    def update_transaccion(self, transaccion, datos, id_cuenta, nuevo_saldo):
+        pass
+
+    @abstractmethod
     def get_cuenta(self, id_cuenta):
         pass
 
