@@ -24,10 +24,10 @@
   color: var(--color-text-muted);
 }
 
-/* Grid de totales (ingresos / gastos / balance) */
+/* Grid de totales (ingresos / gastos / balance / metas) */
 .resumen-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -67,6 +67,10 @@
 
 .resumen-item.balance.negativo strong {
   color: var(--color-danger);
+}
+
+.resumen-item.meta strong {
+  color: var(--color-accent);
 }
 
 /* Tabla de detalle por categoría */
@@ -113,6 +117,12 @@
 }
 
 /* Responsive */
+@media (max-width: 960px) {
+  .resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .resumen-grid {
     grid-template-columns: 1fr;

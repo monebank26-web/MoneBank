@@ -14,4 +14,5 @@ class ReporteResponse(BaseModel):
     total_ingresos: float
     total_gastos: float
     balance: float
+    total_metas: float = 0
     detalle_por_categoria: list[DetalleCategoria]

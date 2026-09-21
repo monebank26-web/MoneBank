@@ -14,14 +14,17 @@ const formatoFecha = (fecha) =>
     timeZone: 'UTC',
   });
 
-export const ReporteResumen = ({ data }) => {
+const aNumero = (v) => Number(v) || 0;
+
+export const ReporteResumen = ({ data, titulo = 'Reporte del periodo' }) => {
   if (!data) return null;
 
   const balancePositivo = data.balance >= 0;
+  const totalMetas = aNumero(data.total_metas);
 
   return (
     <div className="card">
-      <h3>Reporte del periodo</h3>
+      <h3>{titulo}</h3>
       <p className="periodo">
         {formatoFecha(data.periodo_inicio)} — {formatoFecha(data.periodo_fin)}
       </p>
@@ -38,6 +41,10 @@ export const ReporteResumen = ({ data }) => {
         <div className={`resumen-item balance ${balancePositivo ? 'positivo' : 'negativo'}`}>
           <span>Balance</span>
           <strong>{formatoMoneda(data.balance)}</strong>
+        </div>
+        <div className="resumen-item meta">
+          <span>Metas</span>
+          <strong>{formatoMoneda(totalMetas)}</strong>
         </div>
       </div>
     </div>
