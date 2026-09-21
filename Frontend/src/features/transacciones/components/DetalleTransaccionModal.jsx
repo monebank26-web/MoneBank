@@ -34,7 +34,7 @@ const DetalleTransaccionModal = ({ open, transaccionId, onClose }) => {
               {tipo === 'GASTO' ? '↓' : tipo === 'INGRESO' ? '↑' : '→'}
             </span>
             <p className="detalle-transaccion__hero-tipo">
-              {tipo === 'GASTO' ? 'Gasto' : tipo === 'INGRESO' ? 'Ingreso' : 'Ahorro'}
+              {tipo === 'GASTO' ? 'Gasto' : tipo === 'INGRESO' ? 'Ingreso' : 'Movimiento a meta'}
             </p>
             <p className="detalle-transaccion__hero-monto">{formatMoney(detalle.monto)}</p>
           </div>
@@ -61,7 +61,7 @@ const DetalleTransaccionModal = ({ open, transaccionId, onClose }) => {
             )}
             {detalle.nombre_ahorro && (
               <div className="detalle-transaccion__fila">
-                <span className="detalle-transaccion__fila-label">Ahorro asociado</span>
+                <span className="detalle-transaccion__fila-label">Meta asociada</span>
                 <span className="detalle-transaccion__fila-valor">{detalle.nombre_ahorro}</span>
               </div>
             )}

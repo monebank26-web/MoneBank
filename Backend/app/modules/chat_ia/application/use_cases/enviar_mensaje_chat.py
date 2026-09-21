@@ -1,5 +1,4 @@
-from datetime import date
-
+from app.core.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.modules.chat_ia.domain.entity.historial_chat import HistorialChat
 from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
@@ -31,7 +30,7 @@ class EnviarMensajeChat:
             raise CuentaNoEncontrada()
 
         id_cuenta = cuenta.id_cuenta
-        inicio_mes = date.today().replace(day=1)
+        inicio_mes = hoy_colombia().replace(day=1)
 
         return {
             "saldo_actual": round(float(cuenta.saldo or 0)),

@@ -1,5 +1,4 @@
-from datetime import date
-
+from app.core.utils.fechas import ahora_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.business_exceptions import (
     CategoriaNoCompatible,
@@ -13,9 +12,10 @@ from app.shared.exceptions.business_exceptions import (
 
 class CrearMeta:
 
-    def __init__(self, repository, cuenta_repository):
+    def __init__(self, repository, cuenta_repository, registrar_abono):
         self.repository = repository
         self.cuenta_repository = cuenta_repository
+        self.registrar_abono = registrar_abono
 
     def execute(self, meta_data, id_usuario):
 
@@ -65,7 +65,15 @@ class CrearMeta:
         meta_creada = self.repository.create(meta_data)
 
         if saldo_inicial > 0:
-            self.cuenta_repository.actualizar_saldo(cuenta.id_cuenta, saldo_inicial)
+            self.registrar_abono.execute({
+                "monto": saldo_inicial,
+                "fecha": ahora_colombia(),
+                "descripcion": (
+                    f"Saldo inicial de la meta {meta_creada.nombre}"
+                ),
+                "id_cuenta": cuenta.id_cuenta,
+                "id_ahorro": meta_creada.id_ahorro,
+            }, id_usuario)
 
         return meta_creada
 

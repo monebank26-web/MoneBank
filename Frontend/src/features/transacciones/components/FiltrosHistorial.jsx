@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { PERIODOS_LIMITE } from '../../../core/constants';
+import React, { useState, useEffect, useRef } from 'react';
+import { useMediaQuery } from '../../../core/hooks/useMediaQuery';
 import './FiltrosHistorial.css';
 
+const TIPOS = [
+  { etiqueta: 'Ingreso', valor: '1' },
+  { etiqueta: 'Gasto', valor: '2' },
+  { etiqueta: 'Mov. a Meta', valor: '3' },
+];
+
 const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
+  const esMovil = useMediaQuery('(max-width: 768px)');
+
   const [busqueda, setBusqueda] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
@@ -13,7 +21,14 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
   const [ordenarPor, setOrdenarPor] = useState('fecha');
   const [orden, setOrden] = useState('desc');
 
-  const aplicar = () => {
+ const primero = useRef(true);
+
+useEffect(() => {
+  if (primero.current) {
+    primero.current = false;
+    return;
+  }
+  const timeout = setTimeout(() => {
     onFiltrar({
       busqueda: busqueda || undefined,
       id_tipo_transaccion: tipoFiltro || undefined,
@@ -24,9 +39,11 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
       monto_max: montoMax || undefined,
       ordenar_por: ordenarPor,
       orden: orden,
-      pagina: 1, 
+      pagina: 1,
     });
-  };
+  }, 300);
+  return () => clearTimeout(timeout);
+}, [busqueda, tipoFiltro, categoriaFiltro, fechaInicio, fechaFin, montoMin, montoMax, ordenarPor, orden]);
 
   const limpiar = () => {
     setBusqueda(''); setTipoFiltro(''); setCategoriaFiltro('');
@@ -36,61 +53,103 @@ const FiltrosHistorial = ({ onFiltrar, categorias = [] }) => {
     onFiltrar({ pagina: 1, ordenar_por: 'fecha', orden: 'desc' });
   };
 
+  const toggleTipo = (valor) => {
+    setTipoFiltro(tipoFiltro === valor ? '' : valor);
+  };
+
+  const contenidoAvanzados = (
+    <div className="filtros-historial__grid">
+      <div className="filtros-historial__campo">
+        <span className="filtros-historial__etiqueta">Tipo</span>
+        <div className="grupo-botones">
+          {TIPOS.map((t) => (
+            <button
+              key={t.valor}
+              type="button"
+              className={`grupo-botones__item ${tipoFiltro === t.valor ? 'grupo-botones__item--activo' : ''}`}
+              onClick={() => toggleTipo(t.valor)}
+            >
+              {t.etiqueta}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <label className="filtros-historial__campo">
+        Categoría
+        <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
+          <option value="">Todas</option>
+          {categorias.map((c) => (
+            <option key={c.id_categoria} value={c.id_categoria}>{c.nombre_categoria}</option>
+          ))}
+        </select>
+      </label>
+
+      <div className="filtros-historial__campo">
+        <span className="filtros-historial__etiqueta">Fecha</span>
+        <div className="grupo-rango">
+          <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} aria-label="Fecha inicio" />
+          <span className="grupo-rango__conector">–</span>
+          <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} aria-label="Fecha fin" />
+        </div>
+      </div>
+
+      <div className="filtros-historial__campo">
+        <span className="filtros-historial__etiqueta">Monto</span>
+        <div className="grupo-rango">
+          <input type="number" placeholder="Mín" value={montoMin} onChange={(e) => setMontoMin(e.target.value)} />
+          <span className="grupo-rango__conector">–</span>
+          <input type="number" placeholder="Máx" value={montoMax} onChange={(e) => setMontoMax(e.target.value)} />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="filtros-historial">
       <div className="filtros-historial__fila">
         <input className="filtros-historial__busqueda" type="text"
           placeholder="Buscar en descripción..." value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && aplicar()} />
+          onChange={(e) => setBusqueda(e.target.value)} />
 
-        <div className="filtros-historial__orden">
-          <select value={ordenarPor} onChange={(e) => setOrdenarPor(e.target.value)}>
-            <option value="fecha">Fecha</option>
-            <option value="monto">Monto</option>
-          </select>
-          <button onClick={() => setOrden(orden === 'asc' ? 'desc' : 'asc')}>
+        <div className="grupo-botones filtros-historial__orden">
+          <button
+            type="button"
+            className={`grupo-botones__item ${ordenarPor === 'fecha' ? 'grupo-botones__item--activo' : ''}`}
+            onClick={() => setOrdenarPor('fecha')}
+          >
+            Fecha
+          </button>
+          <button
+            type="button"
+            className={`grupo-botones__item ${ordenarPor === 'monto' ? 'grupo-botones__item--activo' : ''}`}
+            onClick={() => setOrdenarPor('monto')}
+          >
+            Monto
+          </button>
+          <button
+            type="button"
+            className="grupo-botones__item grupo-botones__direccion"
+            onClick={() => setOrden(orden === 'asc' ? 'desc' : 'asc')}
+            title={`Orden ${orden === 'asc' ? 'ascendente' : 'descendente'}`}
+          >
             {orden === 'asc' ? '↑' : '↓'}
           </button>
         </div>
 
-        <button className="filtros-historial__buscar" onClick={aplicar}>Filtrar</button>
         <button className="filtros-historial__limpiar" onClick={limpiar}>Limpiar</button>
       </div>
 
-      <details className="filtros-historial__avanzados">
-        <summary>Más filtros</summary>
-        <div className="filtros-historial__grid">
-          <label>Tipo
-            <select value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
-              <option value="">Todos</option>
-              <option value="1">Ahorro</option>
-              <option value="2">Gasto</option>
-              <option value="3">Ingreso</option>
-            </select>
-          </label>
-          <label>Categoría
-            <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
-              <option value="">Todas</option>
-              {categorias.map((c) => (
-                <option key={c.id_categoria} value={c.id_categoria}>{c.nombre_categoria}</option>
-              ))}
-            </select>
-          </label>
-          <label>Fecha inicio
-            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
-          </label>
-          <label>Fecha fin
-            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
-          </label>
-          <label>Monto mín.
-            <input type="number" value={montoMin} onChange={(e) => setMontoMin(e.target.value)} />
-          </label>
-          <label>Monto máx.
-            <input type="number" value={montoMax} onChange={(e) => setMontoMax(e.target.value)} />
-          </label>
+      {esMovil ? (
+        <details className="filtros-historial__avanzados">
+          <summary>Más filtros</summary>
+          {contenidoAvanzados}
+        </details>
+      ) : (
+        <div className="filtros-historial__avanzados filtros-historial__avanzados--desplegados">
+          {contenidoAvanzados}
         </div>
-      </details>
+      )}
     </div>
   );
 };

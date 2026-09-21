@@ -20,6 +20,14 @@ from app.modules.ahorro.application.use_cases.eliminar_ahorro import EliminarAho
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
 
+from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
+    RegistrarAbonoAhorro
+)
+from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
+from app.modules.transaccion.infrastructure.repository.sql_transaccion_repository import (
+    SqlTransaccionesRepository
+)
+
 from app.modules.ahorro.presentation.schema.ahorro_schema import (
     AhorroCreate,
     AhorroResponse,
@@ -51,14 +59,22 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
+def get_transaccion_repository(
+    db: Session = Depends(get_db)
+) -> TransaccionRepository:
+    return SqlTransaccionesRepository(db)
+
+
 @router.post("/metas", response_model=MetaResponse, status_code=201)
 def crear_meta(
     meta: MetaCreate,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    transaccion_repository: TransaccionRepository = Depends(get_transaccion_repository),
 ):
-    caso_uso = CrearMeta(repository, cuenta_repository)
+    registrar_abono = RegistrarAbonoAhorro(transaccion_repository)
+    caso_uso = CrearMeta(repository, cuenta_repository, registrar_abono)
     return caso_uso.execute(meta.model_dump(), current_user.id_usuario)
 
 

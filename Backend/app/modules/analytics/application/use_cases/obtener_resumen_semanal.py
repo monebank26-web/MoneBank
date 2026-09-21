@@ -1,4 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
+
+from app.core.utils.fechas import hoy_colombia
 
 
 class ObtenerResumenSemanal:
@@ -38,7 +40,7 @@ class ObtenerResumenSemanal:
         }
 
     def _calcular_ultima_semana_finalizada(self):
-        hoy = date.today()
+        hoy = hoy_colombia()
         inicio_semana_actual = hoy - timedelta(days=hoy.weekday())
         fin_semana_pasada = inicio_semana_actual - timedelta(days=1)
         inicio_semana_pasada = fin_semana_pasada - timedelta(days=6)

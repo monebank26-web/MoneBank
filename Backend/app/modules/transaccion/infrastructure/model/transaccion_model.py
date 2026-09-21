@@ -6,9 +6,8 @@ from sqlalchemy import (
     Numeric
 )
 
-from datetime import datetime
-
 from app.core.database.base import Base
+from app.core.utils.fechas import ahora_colombia
 
 
 class TransaccionModel(Base):
@@ -28,7 +27,7 @@ class TransaccionModel(Base):
 
     fecha = Column(
         DateTime,
-        default=datetime.now
+        default=ahora_colombia
     )
 
     descripcion = Column(

@@ -1,6 +1,8 @@
-from datetime import date, datetime
+from datetime import date
 
 from sqlalchemy.orm import Session
+
+from app.core.utils.fechas import ahora_colombia
 
 from app.modules.control_parental.infrastructure.model.control_parental_model import (
     ControlParentalModel,
@@ -165,7 +167,7 @@ class SqlEjecucionMesadaRepository:
         # Movimiento de salida del padre
         salida = TransaccionModel(
             monto=monto,
-            fecha=datetime.utcnow(),
+            fecha=ahora_colombia(),
             descripcion="Mesada parental enviada",
             estado="COMPLETADA",
             id_tipo_transaccion=id_tipo_salida,
@@ -176,7 +178,7 @@ class SqlEjecucionMesadaRepository:
         # Movimiento de entrada del hijo
         entrada = TransaccionModel(
             monto=monto,
-            fecha=datetime.utcnow(),
+            fecha=ahora_colombia(),
             descripcion="Mesada parental recibida",
             estado="COMPLETADA",
             id_tipo_transaccion=id_tipo_entrada,
