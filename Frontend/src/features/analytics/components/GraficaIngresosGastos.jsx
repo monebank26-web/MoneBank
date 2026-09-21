@@ -21,9 +21,9 @@ export const GraficaIngresosGastos = ({ data }) => {
       <h3>Evolución de Ingresos y Gastos</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#0a0101" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#ececec" />
           <XAxis dataKey="fecha" stroke="#888" />
-          <YAxis stroke="#fdf1f1" />
+          <YAxis stroke="#f5eded" />
           <Tooltip
             contentStyle={{
               backgroundColor: '#1d1515',

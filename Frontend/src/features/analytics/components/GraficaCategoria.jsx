@@ -13,18 +13,19 @@ export const GraficaCategoria = ({ data }) => {
       <h3>Totales por Categoría</h3>
       <ResponsiveContainer width="100%" height={Math.max(300, data.length * 50)}>
         <BarChart data={data} layout="vertical" margin={{ left: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-          <XAxis type="number" stroke="#888" />
-          <YAxis type="category" dataKey="nombre_categoria" width={120} stroke="#888" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+          <XAxis type="number" stroke="#ffffff" />
+          <YAxis type="category" dataKey="nombre_categoria" width={120} stroke="#ffeaea" />
           <Tooltip
             contentStyle={{
               backgroundColor: '#1a1a1a',
-              border: '1px solid #000000',
+              border: '1px solid #e6dddd',
               borderRadius: '8px',
               color: '#f5f0e8',
             }}
             labelStyle={{ color: '#f5f0e8' }}
-            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+            itemStyle={{ color: '#f5f0e8' }}
+            cursor={{ fill: 'rgba(199, 199, 199, 0.39)' }}
           />
           <Bar dataKey="total" radius={[0, 4, 4, 0]}>
             {data.map((_, i) => (
