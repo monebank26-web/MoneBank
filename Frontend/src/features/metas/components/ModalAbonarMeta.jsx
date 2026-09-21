@@ -5,7 +5,14 @@ import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 const formatMoney = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(val) || 0);
 
+<<<<<<< HEAD
+const fechaHoy = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+=======
 const fechaHoy = () => fechaLocalHoy();
+>>>>>>> origin/desarrollo
 
 const ModalAbonarMeta = ({ open, onClose, meta, onAbonar }) => {
   const [form, setForm] = useState({ monto: '', fecha: fechaHoy(), descripcion: '' });
@@ -23,6 +30,12 @@ const ModalAbonarMeta = ({ open, onClose, meta, onAbonar }) => {
     const monto = parseFloat(form.monto);
     if (!monto || monto <= 0) { setError('Ingresa un monto válido mayor a 0.'); return; }
     if (!form.fecha) { setError('La fecha del abono es obligatoria.'); return; }
+    const hoy = fechaHoy();
+    if (form.fecha > hoy) { setError('La fecha del abono no puede ser en el futuro.'); return; }
+    if (meta?.fecha_creacion && form.fecha < meta.fecha_creacion) {
+      setError('La fecha no puede ser anterior a la creación de la meta.');
+      return;
+    }
     if (form.descripcion.length > 255) { setError('La descripción no puede superar 255 caracteres.'); return; }
 
     setLoading(true);
@@ -67,11 +80,14 @@ const ModalAbonarMeta = ({ open, onClose, meta, onAbonar }) => {
         <div className="grupo-campo">
           <label className="etiqueta-campo">Fecha</label>
           <input
-            className="campo-entrada"
+            className="campo-entrada campo-entrada--fecha"
             type="date"
+            min={meta?.fecha_creacion}
+            max={fechaHoy()}
             value={form.fecha}
             onChange={(e) => setForm({ ...form, fecha: e.target.value })}
           />
+          <p className="ayuda-campo-fecha">Entre la creación de la meta y hoy.</p>
         </div>
         <div className="grupo-campo">
           <label className="etiqueta-campo">Descripción (opcional)</label>
