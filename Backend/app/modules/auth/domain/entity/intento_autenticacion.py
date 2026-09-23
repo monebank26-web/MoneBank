@@ -15,9 +15,6 @@ class IntentoAutenticacion:
     def esta_bloqueado(self) -> bool:
         if not self.bloqueado_hasta:
             return False
-
-        bloqueado = self.bloqueado_hasta
-        if bloqueado.tzinfo is None:
-            bloqueado = bloqueado.replace(tzinfo=timezone.utc)
-
-        return bloqueado > datetime.now(timezone.utc)
+        
+        ahora = datetime.now(self.bloqueado_hasta.tzinfo)
+        return self.bloqueado_hasta > ahora

@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 from unittest.mock import Mock
+from datetime import date
 
 import pytest
 
@@ -21,6 +22,9 @@ def crear_usuario():
         nombres="Juan",
         apellidos="Pérez",
         contrasena=PasswordHasher.hash("password123"),
+        estado="Activo",
+        fecha_creacion=date.today(),
+
     )
 
 

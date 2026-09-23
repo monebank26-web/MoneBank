@@ -34,7 +34,8 @@ class SqlAuthRepository(AuthRepository):
         )
 
         if intento.debe_bloquearse():
-            bloqueado_hasta = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_BLOQUEO)
+            ahora_local = datetime.now()
+            bloqueado_hasta = ahora_local + timedelta(minutes=MINUTOS_BLOQUEO)
 
         return self.usuario_repository.update_auth_fields(
             usuario_id, nuevos_intentos, bloqueado_hasta
