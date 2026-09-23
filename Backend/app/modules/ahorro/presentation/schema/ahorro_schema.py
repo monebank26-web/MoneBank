@@ -49,6 +49,13 @@ class MetaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ResumenGlobalMetasResponse(BaseModel):
+    total_ahorrado: Decimal
+    monto_objetivo_total: Decimal
+    porcentaje_consolidado: Decimal
+    cantidad_metas: int
+
+
 class AhorroProgresoResponse(BaseModel):
     id_meta: int
     nombre: str
