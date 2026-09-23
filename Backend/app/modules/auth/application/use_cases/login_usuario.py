@@ -15,6 +15,9 @@ class LoginUsuarioUseCase:
         if not usuario:
             raise InvalidCredentialsException()
 
+        if (usuario.estado or "").lower() == "bloqueado":
+            raise AccountLockedException("Cuenta bloqueada por el administrador")
+
         if self.repository.is_locked(usuario.id_usuario):
             raise AccountLockedException()
 
