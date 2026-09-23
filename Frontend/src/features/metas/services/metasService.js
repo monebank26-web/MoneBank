@@ -6,6 +6,8 @@ import { fechaHoraLocal } from '../../../core/utils/fechaLocal';
 export const metasService = {
   listar: () => apiClient.get('/ahorros/metas'),
 
+  resumenGlobal: () => apiClient.get('/ahorros/metas/resumen'),
+
   crear: ({ nombre, monto_objetivo, saldo_inicial, fecha_objetivo, id_categoria }) => {
     const datos = {
       nombre,

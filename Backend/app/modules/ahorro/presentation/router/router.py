@@ -8,6 +8,9 @@ from app.modules.ahorro.domain.interface.ahorro_repository import AhorroReposito
 from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
 from app.modules.ahorro.application.use_cases.crear_meta import CrearMeta
 from app.modules.ahorro.application.use_cases.obtener_metas import ObtenerMetas
+from app.modules.ahorro.application.use_cases.obtener_resumen_global_metas import (
+    ObtenerResumenGlobalMetas
+)
 from app.modules.ahorro.application.use_cases.crear_limite import CrearLimite
 from app.modules.ahorro.application.use_cases.obtener_limites import ObtenerLimites
 from app.modules.ahorro.application.use_cases.obtener_alertas_presupuesto import ObtenerAlertasPresupuesto
@@ -34,6 +37,7 @@ from app.modules.ahorro.presentation.schema.ahorro_schema import (
     MetaCreate,
     MetaResponse,
     AhorroProgresoResponse,
+    ResumenGlobalMetasResponse,
     LimiteCreate,
     LimiteResponse,
     AlertaResponse,
@@ -85,6 +89,24 @@ def obtener_metas(
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
     caso_uso = ObtenerMetas(repository, cuenta_repository)
+    return caso_uso.execute(current_user.id_usuario)
+
+
+@router.get(
+    "/metas/resumen",
+    response_model=ResumenGlobalMetasResponse,
+    responses={
+        200: {"description": "Resumen global consolidado de todas las metas"},
+        404: {"description": "Cuenta no encontrada"},
+        500: {"description": "Error interno del servidor"},
+    },
+)
+def obtener_resumen_global_metas(
+    current_user: object = Depends(get_current_user),
+    repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+):
+    caso_uso = ObtenerResumenGlobalMetas(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 

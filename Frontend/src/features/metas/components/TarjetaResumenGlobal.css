@@ -1,0 +1,115 @@
+.tarjeta-resumen-global {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.etiqueta-resumen-global {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cifra-resumen-global {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.icono-billetera {
+  font-size: 36px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.monto-resumen-global {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.carga-resumen-global {
+  color: var(--color-text-muted);
+}
+
+.error-resumen-global {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.error-resumen-global p {
+  font-size: 13px;
+  color: var(--color-danger);
+}
+
+.bloque-meta-global {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fila-meta-global {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.etiqueta-meta-global {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cifras-meta-global {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.objetivo-meta-global {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.porcentaje-meta-global {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.barra-progreso-global {
+  width: 100%;
+  height: 10px;
+  background: var(--color-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.relleno-progreso-global {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-claro));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.relleno-progreso-global--completo {
+  background: var(--degradado-verde);
+}
+
+@media (max-width: 640px) {
+  .monto-resumen-global {
+    font-size: 30px;
+  }
+}
