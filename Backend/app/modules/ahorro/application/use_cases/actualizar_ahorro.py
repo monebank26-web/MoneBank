@@ -1,11 +1,11 @@
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.ahorro_errors import (
     AhorroNoEncontrado,
-    CuentaNoEncontrada,
     EstadoInvalido,
     PeriodoInvalido,
     PresupuestoDuplicado,
 )
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 CAMPOS_PERMITIDOS = ("nombre", "monto_objetivo", "estado", "fecha_objetivo", "periodo")
 

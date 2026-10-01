@@ -1,7 +1,7 @@
 import pytest
 
 from app.modules.chat_ia.domain.entity.historial_chat import HistorialChat
-from app.shared.exceptions.business_exceptions import ChatInvalido
+from app.shared.exceptions.chat_ia_errors import ChatInvalido
 
 
 def turnos_wire(n):

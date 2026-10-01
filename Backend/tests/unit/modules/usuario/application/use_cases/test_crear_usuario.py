@@ -5,7 +5,7 @@ import pytest
 from app.core.security.PasswordHasher import PasswordHasher
 from app.core.security.roles import ROL_USUARIO
 from app.modules.usuario.application.use_cases.crear_usuario import CrearUsuario
-from app.shared.exceptions.business_exceptions import EmailAlreadyExistsException
+from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
 
 
 def test_crear_usuario_exitosamente():

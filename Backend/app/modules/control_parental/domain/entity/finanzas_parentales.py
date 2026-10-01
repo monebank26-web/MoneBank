@@ -1,5 +1,5 @@
 from decimal import Decimal
-from app.shared.exceptions.business_exceptions import SaldoInsuficiente
+from app.shared.exceptions.transaccion_errors import SaldoInsuficiente
 
 
 def validar_saldo_para_asignacion(saldo_padre, monto):

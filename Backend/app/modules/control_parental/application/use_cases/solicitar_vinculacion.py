@@ -1,7 +1,11 @@
 from ._servicios import generar_codigo_seis_digitos, hash_codigo, expiracion_codigo
 from ...domain.entity.control_parental import ControlParental
 from ...domain.entity.solicitud_control_parental import SolicitudControlParental
-from app.shared.exceptions.control_parental_exception import UsuarioParentalNoEncontrado, AutoVinculacionNoPermitida, VinculacionDuplicada
+from app.shared.exceptions.control_parental_errors import (
+    AutoVinculacionNoPermitida,
+    UsuarioParentalNoEncontrado,
+    VinculacionDuplicada,
+)
 
 class SolicitarVinculacionUseCase:
     def __init__(self, repository, email_service):

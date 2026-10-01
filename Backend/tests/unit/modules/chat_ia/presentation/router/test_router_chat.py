@@ -7,7 +7,7 @@ from app.modules.chat_ia.presentation.router.router import (
     _armar_respuesta,
 )
 from app.modules.chat_ia.presentation.schema.chat_schema import TurnoChat
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 
 
 def crear_mocks_interiores():

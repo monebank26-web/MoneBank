@@ -1,27 +1,16 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
-from app.core.responses import ErrorResponse
-from app.shared.exceptions.business_exceptions import (EmailAlreadyExistsException,UsuarioNotFoundException,)
+from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
+from app.shared.exceptions.handlers._helpers import registrar_error_business
+from app.shared.exceptions.usuario_errors import (
+    CuentaYaBloqueadaException,
+    MotivoBloqueoRequeridoException,
+    UsuarioNotFoundException,
+)
+
 
 def register_usuario_exception_handlers(app: FastAPI):
-
-    @app.exception_handler(EmailAlreadyExistsException)
-    async def email_already_exists_handler(
-        request: Request,
-        exc: EmailAlreadyExistsException
-    ):
-        return JSONResponse(
-            status_code=EmailAlreadyExistsException.status_code,
-            content=ErrorResponse(message=exc.message).model_dump()
-        )
-
-    @app.exception_handler(UsuarioNotFoundException)
-    async def usuario_not_found_handler(
-        request: Request,
-        exc: UsuarioNotFoundException
-    ):
-        return JSONResponse(
-            status_code=UsuarioNotFoundException.status_code,
-            content=ErrorResponse(message=exc.message).model_dump()
-        )
+    registrar_error_business(app, EmailAlreadyExistsException, 409)
+    registrar_error_business(app, UsuarioNotFoundException, 404)
+    registrar_error_business(app, CuentaYaBloqueadaException, 409)
+    registrar_error_business(app, MotivoBloqueoRequeridoException, 422)

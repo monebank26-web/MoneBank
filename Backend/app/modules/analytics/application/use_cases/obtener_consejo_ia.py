@@ -1,7 +1,7 @@
 from app.modules.analytics.domain.entity.transaccion_analizada import (
     TransaccionAnalizada
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     CuentaNoEncontrada,
     TransaccionesNoEncontrado,
 )

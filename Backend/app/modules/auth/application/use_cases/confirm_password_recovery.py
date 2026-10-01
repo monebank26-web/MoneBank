@@ -1,7 +1,7 @@
 from app.core.security.PasswordHasher import PasswordHasher
 from app.core.security.password_policy import validate_password
 from app.core.security.reset_token import TokenGenerator
-from app.shared.exceptions.business_exceptions import InvalidOrExpiredTokenException
+from app.shared.exceptions.auth_errors import InvalidOrExpiredTokenException
 
 
 class ConfirmPasswordRecoveryUseCase:

@@ -6,7 +6,7 @@ import pytest
 from app.modules.transaccion.application.use_cases.actualizar_transaccion import (
     ActualizarTransaccion
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,

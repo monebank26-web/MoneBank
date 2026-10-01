@@ -12,6 +12,10 @@
   gap: 24px;
 }
 
+.resumen-metas-grid > * {
+  min-height: 240px;
+}
+
 .encabezado-metas {
   display: flex;
   align-items: center;

@@ -7,7 +7,7 @@ from sqlalchemy import (
 )
 
 from app.core.database.base import Base
-from app.core.utils.fechas import ahora_colombia
+from app.shared.utils.fechas import ahora_colombia
 
 
 class TransaccionModel(Base):

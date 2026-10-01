@@ -23,8 +23,12 @@ from app.modules.auth.presentation.schema.password_recovery_response import Pass
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 
 
-from app.shared.exceptions.business_exceptions import (InvalidCredentialsException, AccountLockedException,EmailNotFoundException, InvalidOrExpiredTokenException)
-from app.shared.exceptions.http_exceptions import ValidationException, InternalServerException
+from app.shared.exceptions.auth_errors import (
+    AccountLockedException,
+    EmailNotFoundException,
+    InvalidCredentialsException,
+    InvalidOrExpiredTokenException,
+)
 
 
 router = APIRouter(
@@ -50,12 +54,12 @@ def get_email_service() -> EmailService:
     summary="Iniciar sesión",
     description="Autentica un usuario mediante correo y contraseña.",
     responses = {
-    200: {"description": "Login exitoso, devuelve token JWT"},
-    InvalidCredentialsException.status_code: {"description": InvalidCredentialsException.description},
-    AccountLockedException.status_code: {"description": AccountLockedException.description},
-    ValidationException.status_code: {"description": ValidationException.description},
-    InternalServerException.status_code: {"description": InternalServerException.description},
-}
+        200: {"description": "Login exitoso, devuelve token JWT"},
+        401: {"description": "Credenciales incorrectas"},
+        423: {"description": "Cuenta bloqueada temporalmente por múltiples intentos fallidos"},
+        422: {"description": "Datos de entrada inválidos"},
+        500: {"description": "Error interno del servidor"},
+    }
 )
 def login(
     request: LoginRequest,
@@ -75,9 +79,9 @@ def login(
     ),
     responses={
         200: {"description": "Solicitud procesada (mensaje genérico)"},
-        EmailNotFoundException.status_code: {"description": EmailNotFoundException.description},
-        ValidationException.status_code: {"description": ValidationException.description},
-        InternalServerException.status_code: {"description": InternalServerException.description},
+        404: {"description": "El correo no está registrado"},
+        422: {"description": "Datos de entrada inválidos"},
+        500: {"description": "Error interno del servidor"},
     }
 )
 def request_password_recovery(
@@ -121,9 +125,9 @@ def cambiar_contrasena(
     ),
     responses={
         200: {"description": "Contraseña restablecida exitosamente"},
-        InvalidOrExpiredTokenException.status_code: {"description": InvalidOrExpiredTokenException.description},
-        ValidationException.status_code: {"description": ValidationException.description},
-        InternalServerException.status_code: {"description": InternalServerException.description},
+        410: {"description": "El token es inválido o ha expirado"},
+        422: {"description": "Datos de entrada inválidos"},
+        500: {"description": "Error interno del servidor"},
     }
 )
 def confirm_password_recovery(

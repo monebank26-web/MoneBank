@@ -7,13 +7,14 @@ from app.modules.ahorro.application.use_cases.obtener_resumen_global_metas impor
     ObtenerResumenGlobalMetas,
 )
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
-def crear_meta(monto_objetivo, saldo_actual):
+def crear_meta(monto_objetivo, saldo_actual, estado=Ahorro.ESTADO_ACTIVO):
     meta = Mock()
     meta.monto_objetivo = Decimal(monto_objetivo)
     meta.saldo_actual = Decimal(saldo_actual)
+    meta.estado = estado
     return meta
 
 
@@ -52,6 +53,7 @@ def test_debe_retornar_resumen_consolidado_de_todas_las_metas():
     assert resultado["monto_objetivo_total"] == Decimal("15000")
     assert resultado["porcentaje_consolidado"] == Decimal("40")
     assert resultado["cantidad_metas"] == 3
+    assert resultado["cantidad_metas_en_curso"] == 3
 
 
 def test_porcentaje_consolidado_se_topea_en_100():
@@ -77,6 +79,25 @@ def test_sin_metas_retorna_ceros():
     assert resultado["monto_objetivo_total"] == 0
     assert resultado["porcentaje_consolidado"] == Decimal("0")
     assert resultado["cantidad_metas"] == 0
+    assert resultado["cantidad_metas_en_curso"] == 0
+
+
+def test_contabiliza_solo_las_metas_en_curso():
+
+    cuenta = Mock()
+    cuenta.id_cuenta = 1
+
+    metas = [
+        crear_meta("1000", "1000", estado=Ahorro.ESTADO_ACTIVO),
+        crear_meta("4000", "2000", estado=Ahorro.ESTADO_PAUSADO),
+        crear_meta("10000", "3000", estado=Ahorro.ESTADO_FINALIZADO),
+        crear_meta("5000", "500", estado=Ahorro.ESTADO_ACTIVO),
+    ]
+
+    resultado = _ejecutar(cuenta, metas)
+
+    assert resultado["cantidad_metas"] == 4
+    assert resultado["cantidad_metas_en_curso"] == 2
 
 
 def test_sin_cuenta_lanza_cuenta_no_encontrada():

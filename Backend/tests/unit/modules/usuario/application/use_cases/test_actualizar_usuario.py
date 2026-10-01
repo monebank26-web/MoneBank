@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
-from app.shared.exceptions.business_exceptions import UsuarioNotFoundException
+from app.shared.exceptions.usuario_errors import UsuarioNotFoundException
 
 
 def test_execute_actualiza_usuario():

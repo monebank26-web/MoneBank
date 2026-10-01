@@ -29,7 +29,7 @@ from app.modules.cuenta.domain.interface.cuenta_repository import CuentaReposito
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
     SqlCuentaRepository
 )
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 
 
 router = APIRouter(

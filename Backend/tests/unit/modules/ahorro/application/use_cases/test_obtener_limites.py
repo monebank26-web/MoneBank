@@ -7,7 +7,7 @@ import pytest
 from app.modules.ahorro.application.use_cases.obtener_limites import (
     ObtenerLimites,
 )
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def limite_base():

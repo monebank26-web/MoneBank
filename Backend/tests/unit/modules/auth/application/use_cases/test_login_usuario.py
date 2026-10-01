@@ -7,7 +7,7 @@ from app.core.config.settings import settings
 from app.core.security.JwtManager import JwtManager
 from app.core.security.PasswordHasher import PasswordHasher
 from app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.auth_errors import (
     AccountLockedException,
     InvalidCredentialsException,
 )

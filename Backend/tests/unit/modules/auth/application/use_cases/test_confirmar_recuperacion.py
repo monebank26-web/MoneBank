@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.auth.application.use_cases.confirm_password_recovery import ConfirmPasswordRecoveryUseCase
-from app.shared.exceptions.business_exceptions import InvalidOrExpiredTokenException
+from app.shared.exceptions.auth_errors import InvalidOrExpiredTokenException
 
 
 def crear_token_valido():

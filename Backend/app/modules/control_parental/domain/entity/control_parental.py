@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
-from app.shared.exceptions.control_parental_exception import (
-    AutoVinculacionNoPermitida, VinculacionDuplicada,
+from app.shared.exceptions.control_parental_errors import (
+    AutoVinculacionNoPermitida,
+    VinculacionDuplicada,
 )
 
 class ControlParental:

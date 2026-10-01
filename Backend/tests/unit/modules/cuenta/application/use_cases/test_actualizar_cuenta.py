@@ -5,10 +5,8 @@ import pytest
 from app.modules.cuenta.application.use_cases.actualizar_cuenta import (
     ActualizarCuentaUseCase
 )
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
-    EstadoInvalido,
-)
+from app.shared.exceptions.ahorro_errors import EstadoInvalido
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def test_debe_actualizar_estado_de_la_cuenta():

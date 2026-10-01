@@ -5,13 +5,15 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.ahorro.application.use_cases.crear_limite import CrearLimite
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.ahorro_errors import (
     CategoriaNoCompatible,
     CategoriaNoExiste,
-    CuentaNoEncontrada,
-    MontoInvalido,
     PeriodoInvalido,
     PresupuestoDuplicado,
+)
+from app.shared.exceptions.transaccion_errors import (
+    CuentaNoEncontrada,
+    MontoInvalido,
 )
 
 

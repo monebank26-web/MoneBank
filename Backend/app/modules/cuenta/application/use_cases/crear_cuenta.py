@@ -1,6 +1,6 @@
 from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.shared.exceptions.business_exceptions import EstadoInvalido
+from app.shared.exceptions.ahorro_errors import EstadoInvalido
 
 
 class CrearCuenta:

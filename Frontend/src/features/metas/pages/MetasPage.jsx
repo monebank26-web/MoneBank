@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMetas } from '../hooks/useMetas';
 import { useResumenGlobalMetas } from '../hooks/useResumenGlobalMetas';
 import TarjetaResumenGlobal from '../components/TarjetaResumenGlobal';
+import TarjetaRitmoAhorro from '../components/TarjetaRitmoAhorro';
 import ListaMetas from '../components/ListaMetas';
 import ModalCrearMeta from '../components/ModalCrearMeta';
 import ModalAbonarMeta from '../components/ModalAbonarMeta';
@@ -44,6 +45,12 @@ const MetasPage = () => {
 
       <div className="resumen-metas-grid">
         <TarjetaResumenGlobal
+          resumen={resumen}
+          loading={loadingResumen}
+          error={errorResumen}
+          onReintentar={recargarResumen}
+        />
+        <TarjetaRitmoAhorro
           resumen={resumen}
           loading={loadingResumen}
           error={errorResumen}
