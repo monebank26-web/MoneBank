@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.ahorro.application.use_cases.obtener_metas import ObtenerMetas
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def test_debe_retornar_las_metas_activas_de_la_cuenta():

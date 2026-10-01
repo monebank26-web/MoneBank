@@ -5,11 +5,11 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
+from app.shared.exceptions.ahorro_errors import (
     FrecuenciaInvalida,
     RangoFechasInvalido,
 )
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def datos_validos():

@@ -54,6 +54,7 @@ class ResumenGlobalMetasResponse(BaseModel):
     monto_objetivo_total: Decimal
     porcentaje_consolidado: Decimal
     cantidad_metas: int
+    cantidad_metas_en_curso: int
 
 
 class AhorroProgresoResponse(BaseModel):

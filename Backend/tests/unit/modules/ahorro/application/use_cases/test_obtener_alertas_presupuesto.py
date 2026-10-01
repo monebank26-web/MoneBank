@@ -6,7 +6,7 @@ import pytest
 from app.modules.ahorro.application.use_cases.obtener_alertas_presupuesto import (
     ObtenerAlertasPresupuesto,
 )
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def limite_base(estado="ACTIVO", monto=Decimal("10000.00"), periodo="MENSUAL"):

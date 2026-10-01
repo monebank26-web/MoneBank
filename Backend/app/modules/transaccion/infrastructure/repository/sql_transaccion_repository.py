@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.core.utils.fechas import fin_del_dia
+from app.shared.utils.fechas import fin_del_dia
 from app.modules.ahorro.infrastructure.model.ahorro_model import AhorroModel
 from app.modules.ahorro.infrastructure.model.tipo_ahorro_model import (
     TipoAhorroModel

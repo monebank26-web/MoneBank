@@ -6,6 +6,7 @@ const RESULTADO_VACIO = {
   monto_objetivo_total: 0,
   porcentaje_consolidado: 0,
   cantidad_metas: 0,
+  cantidad_metas_en_curso: 0,
 };
 
 export const useResumenGlobalMetas = () => {

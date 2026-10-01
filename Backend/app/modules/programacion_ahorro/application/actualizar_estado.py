@@ -1,10 +1,10 @@
 from app.modules.programacion_ahorro.domain.entity.programacion_ahorro import ProgramacionAhorro
 from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
+from app.shared.exceptions.ahorro_errors import (
     EstadoInvalido,
     ProgramacionNoEncontrada,
 )
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 class ActualizarEstadoUseCase:

@@ -1,11 +1,13 @@
-from app.core.utils.fechas import ahora_colombia
+from app.shared.utils.fechas import ahora_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.ahorro_errors import (
     CategoriaNoCompatible,
     CategoriaNoExiste,
-    CuentaNoEncontrada,
     FechaObjetivoPasada,
     FechaObjetivoRequerida,
+)
+from app.shared.exceptions.transaccion_errors import (
+    CuentaNoEncontrada,
     SaldoInsuficiente,
 )
 

@@ -1,9 +1,9 @@
 from app.modules.programacion_ahorro.domain.entity.programacion_ahorro import ProgramacionAhorro
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
+from app.shared.exceptions.ahorro_errors import (
     FrecuenciaInvalida,
     RangoFechasInvalido,
 )
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 class CrearProgramacion:

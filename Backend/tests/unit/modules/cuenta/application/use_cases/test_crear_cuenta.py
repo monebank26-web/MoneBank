@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.cuenta.application.use_cases.crear_cuenta import CrearCuenta
-from app.shared.exceptions.business_exceptions import EstadoInvalido
+from app.shared.exceptions.ahorro_errors import EstadoInvalido
 
 
 def test_crear_cuenta_exitosamente():

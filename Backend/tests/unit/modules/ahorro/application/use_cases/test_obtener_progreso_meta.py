@@ -7,10 +7,8 @@ import pytest
 from app.modules.ahorro.application.use_cases.obtener_progreso_meta import (
     ObtenerProgresoMeta
 )
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
-    MetaNoEncontrada,
-)
+from app.shared.exceptions.ahorro_errors import MetaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def repository_mock():

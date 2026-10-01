@@ -43,7 +43,7 @@ from app.modules.analytics.presentation.schema.resumen_semanal_schema import (
 )
 from app.modules.analytics.application.use_cases.generar_reporte import GenerarReporte
 from app.modules.analytics.presentation.schema.reporte_schema import ReporteResponse 
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 from fastapi.responses import StreamingResponse
 from app.modules.analytics.infrastructure.pdf.reporte_pdf_generator import (
     generar_pdf_reporte

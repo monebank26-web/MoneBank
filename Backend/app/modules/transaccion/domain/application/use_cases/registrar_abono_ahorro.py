@@ -5,7 +5,7 @@ from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,

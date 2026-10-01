@@ -3,7 +3,7 @@ from datetime import timedelta
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
-from app.core.utils.fechas import fin_del_dia, hoy_colombia
+from app.shared.utils.fechas import fin_del_dia, hoy_colombia
 
 from app.modules.analytics.domain.interface.analytics_repository import (
     AnalyticsRepository

@@ -2,7 +2,7 @@ from app.core.security.PasswordHasher import PasswordHasher
 from app.core.security.roles import ROL_USUARIO, INDEPENDIENTE
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.shared.exceptions.business_exceptions import EmailAlreadyExistsException
+from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
 
 
 class CrearUsuario:

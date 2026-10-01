@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 class ObtenerResumenGlobalMetas:
@@ -42,4 +42,8 @@ class ObtenerResumenGlobalMetas:
                 porcentaje_consolidado, Decimal("100")
             ),
             "cantidad_metas": len(metas),
+            "cantidad_metas_en_curso": sum(
+                1 for meta in metas
+                if meta.estado == Ahorro.ESTADO_ACTIVO
+            ),
         }

@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 
-from app.core.utils.fechas import ahora_colombia
+from app.shared.utils.fechas import ahora_colombia
 
 from app.modules.control_parental.infrastructure.model.control_parental_model import (
     ControlParentalModel,

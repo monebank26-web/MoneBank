@@ -1,8 +1,8 @@
 from decimal import Decimal
 
-from app.core.utils.fechas import hoy_colombia
+from app.shared.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def armar_fila_limite(limite, gasto_actual, nombre_categoria=None):

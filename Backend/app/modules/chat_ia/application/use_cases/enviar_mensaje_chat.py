@@ -1,7 +1,7 @@
-from app.core.utils.fechas import hoy_colombia
+from app.shared.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.modules.chat_ia.domain.entity.historial_chat import HistorialChat
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 class EnviarMensajeChat:

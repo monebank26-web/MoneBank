@@ -7,7 +7,7 @@ import pytest
 from app.modules.transaccion.application.use_cases.registrar_ingreso import (
     RegistrarIngreso
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
     CategoriaInvalida,
     CuentaNoEncontrada,

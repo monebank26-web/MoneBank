@@ -3,11 +3,11 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.programacion_ahorro.application.actualizar_estado import ActualizarEstadoUseCase
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
+from app.shared.exceptions.ahorro_errors import (
     EstadoInvalido,
     ProgramacionNoEncontrada,
 )
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def mocks_con_cuenta():

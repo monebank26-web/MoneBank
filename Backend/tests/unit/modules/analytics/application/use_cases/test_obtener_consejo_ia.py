@@ -6,7 +6,7 @@ import pytest
 from app.modules.analytics.application.use_cases.obtener_consejo_ia import (
     ObtenerConsejoIA
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     CuentaNoEncontrada,
     TransaccionesNoEncontrado,
 )

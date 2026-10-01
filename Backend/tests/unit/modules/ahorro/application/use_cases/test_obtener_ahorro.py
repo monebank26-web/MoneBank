@@ -15,7 +15,7 @@ from app.modules.ahorro.application.use_cases.obtener_ahorro import (
 from app.modules.ahorro.application.use_cases.obtener_ahorro_por_id import (
     ObtenerAhorroPorIdUseCase
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.ahorro_errors import (
     AhorroNoEncontrado,
     EstadoInvalido,
     PresupuestoDuplicado,

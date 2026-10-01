@@ -5,7 +5,7 @@ import pytest
 from app.modules.chat_ia.application.use_cases.enviar_mensaje_chat import (
     EnviarMensajeChat
 )
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
 
 
 def crear_cuenta():

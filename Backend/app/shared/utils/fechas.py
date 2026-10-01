@@ -13,3 +13,11 @@ def ahora_colombia() -> datetime:
 
 def fin_del_dia(fecha: date) -> date:
     return fecha + timedelta(days=1)
+
+
+def es_fecha_posterior_a_hoy(fecha: date, hoy: date = None) -> bool:
+    return fecha > (hoy or hoy_colombia())
+
+
+def es_fecha_anterior_a_hoy(fecha: date, hoy: date = None) -> bool:
+    return fecha < (hoy or hoy_colombia())
