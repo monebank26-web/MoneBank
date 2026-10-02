@@ -10,7 +10,7 @@ const ETIQUETAS_ESTADO = {
   FINALIZADO: 'Finalizada',
 };
 
-const TarjetaMeta = ({ meta, onAbonar }) => {
+const TarjetaMeta = ({ meta, onAbonar, onProgramar }) => {
   const porcentaje = Math.min(Number(meta.porcentaje_completado) || 0, 100);
   const finalizada = meta.estado === 'FINALIZADO' || porcentaje >= 100;
 
@@ -53,14 +53,24 @@ const TarjetaMeta = ({ meta, onAbonar }) => {
             </p>
           )}
         </div>
-        <button
-          className="boton-abonar-meta"
-          onClick={() => onAbonar(meta)}
-          disabled={finalizada}
-          title={finalizada ? 'Esta meta ya está completada' : 'Abonar a esta meta'}
-        >
-          Abonar
-        </button>
+        <div className="acciones-tarjeta-meta">
+          <button
+            className="boton-programar-meta"
+            onClick={() => onProgramar(meta)}
+            disabled={finalizada}
+            title={finalizada ? 'Esta meta ya está completada' : 'Programar aporte automático'}
+          >
+            Programar aporte
+          </button>
+          <button
+            className="boton-abonar-meta"
+            onClick={() => onAbonar(meta)}
+            disabled={finalizada}
+            title={finalizada ? 'Esta meta ya está completada' : 'Abonar a esta meta'}
+          >
+            Abonar
+          </button>
+        </div>
       </div>
     </div>
   );

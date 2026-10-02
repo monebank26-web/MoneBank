@@ -31,5 +31,10 @@ export const useMetas = () => {
     await cargar();
   };
 
-  return { metas, loading, error, crear, abonar, recargar: cargar };
+  const programar = async (datos) => {
+    await metasService.programarAporte(datos);
+    await cargar();
+  };
+
+  return { metas, loading, error, crear, abonar, programar, recargar: cargar };
 };

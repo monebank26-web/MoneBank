@@ -45,6 +45,14 @@ class ProgramacionNoEncontrada(BusinessError):
     message = "Programación de ahorro no encontrada"
 
 
+class ProgramacionDuplicada(BusinessError):
+    message = "La meta ya tiene una programación de ahorro activa"
+
+
+class FechaCobroInvalida(BusinessError):
+    message = "La fecha de cobro debe ser posterior a hoy"
+
+
 class FrecuenciaInvalida(BusinessError):
     message = "La frecuencia debe ser DIARIA, SEMANAL, QUINCENAL, MENSUAL, TRIMESTRAL, SEMESTRAL o ANUAL"
 

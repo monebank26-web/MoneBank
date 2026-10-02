@@ -22,17 +22,17 @@ Estado = Literal[
 
 
 class ProgramacionCreate(BaseModel):
+    id_ahorro: int
     monto_periodico: Decimal = Field(..., gt=0)
     fecha_cobro: date
     frecuencia: Frecuencia
-    fecha_inicio: date
     fecha_fin: Optional[date] = None
 
     @model_validator(mode="after")
     def validar_fechas(self):
-        if self.fecha_fin and self.fecha_fin < self.fecha_inicio:
+        if self.fecha_fin and self.fecha_fin < self.fecha_cobro:
             raise ValueError(
-                "fecha_fin debe ser mayor o igual a fecha_inicio"
+                "fecha_fin debe ser mayor o igual a fecha_cobro"
             )
         return self
 
@@ -44,6 +44,7 @@ class ProgramacionUpdate(BaseModel):
 
 class ProgramacionResponse(BaseModel):
     id_programacion_ahorro: int
+    id_ahorro: int
     monto_periodico: Decimal
     fecha_cobro: date
     frecuencia: str
