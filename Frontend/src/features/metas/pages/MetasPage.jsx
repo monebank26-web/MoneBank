@@ -6,13 +6,15 @@ import TarjetaRitmoAhorro from '../components/TarjetaRitmoAhorro';
 import ListaMetas from '../components/ListaMetas';
 import ModalCrearMeta from '../components/ModalCrearMeta';
 import ModalAbonarMeta from '../components/ModalAbonarMeta';
+import ModalProgramarAporte from '../components/ModalProgramarAporte';
 import './MetasPage.css';
 
 const MetasPage = () => {
-  const { metas, loading, error, crear, abonar, recargar } = useMetas();
+  const { metas, loading, error, crear, abonar, programar, recargar } = useMetas();
   const { resumen, loading: loadingResumen, error: errorResumen, recargar: recargarResumen } = useResumenGlobalMetas();
   const [modalCrear, setModalCrear] = useState(false);
   const [metaAbonar, setMetaAbonar] = useState(null);
+  const [metaProgramar, setMetaProgramar] = useState(null);
 
   const onCrear = async (datos) => {
     await crear(datos);
@@ -22,6 +24,10 @@ const MetasPage = () => {
   const onAbonar = async (datos) => {
     await abonar(datos);
     recargarResumen();
+  };
+
+  const onProgramar = async (datos) => {
+    await programar(datos);
   };
 
   return (
@@ -68,7 +74,7 @@ const MetasPage = () => {
           <button className="boton-principal" onClick={() => setModalCrear(true)}>Crear mi primera meta</button>
         </div>
       ) : (
-        <ListaMetas metas={metas} onAbonar={setMetaAbonar} />
+        <ListaMetas metas={metas} onAbonar={setMetaAbonar} onProgramar={setMetaProgramar} />
       )}
 
       <ModalCrearMeta open={modalCrear} onClose={() => setModalCrear(false)} onCrear={onCrear} />
@@ -77,6 +83,12 @@ const MetasPage = () => {
         onClose={() => setMetaAbonar(null)}
         meta={metaAbonar}
         onAbonar={onAbonar}
+      />
+      <ModalProgramarAporte
+        open={!!metaProgramar}
+        onClose={() => setMetaProgramar(null)}
+        meta={metaProgramar}
+        onProgramar={onProgramar}
       />
     </div>
   );

@@ -16,6 +16,8 @@ from app.modules.programacion_ahorro.presentation.schema.programacion_schema imp
 
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
+from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
+from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
 
 
 router = APIRouter(
@@ -37,14 +39,21 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
+def get_ahorro_repository(
+    db: Session = Depends(get_db),
+) -> AhorroRepository:
+    return SqlAhorroRepository(db)
+
+
 @router.post("/", response_model=ProgramacionResponse, status_code=201)
 def crear_programacion(
     programacion: ProgramacionCreate,
     current_user: object = Depends(get_current_user),
     repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    ahorro_repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
-    caso_uso = CrearProgramacion(repository, cuenta_repository)
+    caso_uso = CrearProgramacion(repository, cuenta_repository, ahorro_repository)
     return caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
 
 @router.put("/", response_model=ProgramacionResponse, status_code=200)

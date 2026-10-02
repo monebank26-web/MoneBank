@@ -32,6 +32,15 @@ export const metasService = {
     });
   },
 
+  programarAporte: ({ id_ahorro, monto_periodico, frecuencia, fecha_cobro, fecha_fin }) =>
+    apiClient.post('/programacion-ahorro/', {
+      id_ahorro,
+      monto_periodico,
+      frecuencia,
+      fecha_cobro,
+      fecha_fin: fecha_fin || null,
+    }),
+
   listarCategoriasAhorro: async () => {
     const categorias = await transaccionesService.listarCategorias();
     return categorias.filter((c) => c.tipo_categoria === 'AHORRO');

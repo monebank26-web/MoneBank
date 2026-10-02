@@ -33,3 +33,10 @@ class SqlProgramacionRepository(ProgramacionAhorroRepository):
             self.db.commit()
             self.db.refresh(programacion)
             return programacion
+
+    def obtener_por_ahorro(self, id_ahorro):
+            return (
+                self.db.query(ProgramacionModel)
+                .filter(ProgramacionModel.id_ahorro == id_ahorro)
+                .first()
+            )
