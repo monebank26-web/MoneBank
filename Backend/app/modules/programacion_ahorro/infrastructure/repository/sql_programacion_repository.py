@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
 from app.modules.programacion_ahorro.infrastructure.model.programacion_model import ProgramacionModel
+from app.modules.programacion_ahorro.infrastructure.model.programacion_detalle_model import ProgramacionDetalleModel
 
 
 class SqlProgramacionRepository(ProgramacionAhorroRepository):
@@ -39,4 +40,12 @@ class SqlProgramacionRepository(ProgramacionAhorroRepository):
                 self.db.query(ProgramacionModel)
                 .filter(ProgramacionModel.id_ahorro == id_ahorro)
                 .first()
+            )
+
+    def obtener_detalles_por_cuenta(self, id_cuenta):
+            return (
+                self.db.query(ProgramacionDetalleModel)
+                .filter(ProgramacionDetalleModel.id_cuenta == id_cuenta)
+                .order_by(ProgramacionDetalleModel.proxima_fecha_cobro.asc())
+                .all()
             )

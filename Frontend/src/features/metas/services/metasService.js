@@ -41,6 +41,11 @@ export const metasService = {
       fecha_fin: fecha_fin || null,
     }),
 
+  listarProgramaciones: () => apiClient.get('/programacion-ahorro/'),
+
+  actualizarEstadoProgramacion: ({ id_programacion_ahorro, estado }) =>
+    apiClient.put('/programacion-ahorro/', { id_programacion_ahorro, estado }),
+
   listarCategoriasAhorro: async () => {
     const categorias = await transaccionesService.listarCategorias();
     return categorias.filter((c) => c.tipo_categoria === 'AHORRO');

@@ -15,4 +15,8 @@ class ProgramacionAhorroRepository(ABC):
     @abstractmethod
     def update_estado(self, programacion_id, nuevo_estado):
         pass
+
+    @abstractmethod
+    def obtener_detalles_por_cuenta(self, id_cuenta):
+        pass
     
