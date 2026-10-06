@@ -19,8 +19,6 @@ Estado = Literal[
     "PAUSADA",
     "FINALIZADA",
 ]
-
-
 class ProgramacionCreate(BaseModel):
     id_ahorro: int
     monto_periodico: Decimal = Field(..., gt=0)
@@ -50,6 +48,21 @@ class ProgramacionResponse(BaseModel):
     frecuencia: str
     fecha_inicio: date
     fecha_fin: Optional[date] = None
+    estado: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AhorroAsociadoResponse(BaseModel):
+    id_programacion_ahorro: int
+    id_ahorro: int
+    nombre_ahorro: str
+    monto_periodico: Decimal
+    fecha_cobro: Optional[date] = None
+    frecuencia: str
+    fecha_inicio: date
+    fecha_fin: Optional[date] = None
+    tiempo_restante: Optional[str] = None
     estado: str
 
     model_config = ConfigDict(from_attributes=True)

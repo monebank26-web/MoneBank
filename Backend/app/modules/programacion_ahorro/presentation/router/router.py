@@ -6,9 +6,11 @@ from app.core.database.connection import get_db
 from app.core.security.auth import get_current_user
 
 from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
+from app.modules.programacion_ahorro.application.consultar_programaciones import ConsultarProgramacionesUseCase
 from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
 from app.modules.programacion_ahorro.infrastructure.repository.sql_programacion_repository import SqlProgramacionRepository
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
+    AhorroAsociadoResponse,
     ProgramacionCreate,
     ProgramacionResponse,
     ProgramacionUpdate,
@@ -69,3 +71,12 @@ def actualizar_estado(
         programacion.id_programacion_ahorro,
         programacion.estado,
     )
+
+@router.get("/", response_model=list[AhorroAsociadoResponse], status_code=200)
+def consultar_programaciones(
+    current_user: object = Depends(get_current_user),
+    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+):
+    caso_uso = ConsultarProgramacionesUseCase(repository, cuenta_repository)
+    return caso_uso.execute(current_user.id_usuario)
