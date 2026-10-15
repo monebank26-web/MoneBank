@@ -23,7 +23,8 @@ def test_obtener_cuentas_usuario_estandar_solo_ve_las_suyas(
 ):
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_por_usuario.return_value.execute.return_value = {"id_cuenta": 1}
 
     resultado = controller.obtener_cuentas(_usuario(id_usuario=7))
@@ -47,7 +48,8 @@ def test_obtener_cuentas_admin_sin_filtro_ve_todas(
 ):
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_todas.return_value.execute.return_value = [{"id_cuenta": 1}]
 
     resultado = controller.obtener_cuentas(
@@ -73,7 +75,8 @@ def test_obtener_cuentas_admin_con_filtro_ve_cuenta_del_usuario(
 ):
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_por_usuario.return_value.execute.return_value = {"id_cuenta": 9}
 
     resultado = controller.obtener_cuentas(
@@ -93,7 +96,8 @@ def test_obtener_cuentas_admin_con_filtro_ve_cuenta_del_usuario(
 def test_obtener_cuenta_por_id_pasa_autorizacion_al_use_case(mock_use_case):
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_use_case.return_value.execute.return_value = {"id_cuenta": 1}
 
     controller.obtener_cuenta_por_id(1, _usuario(id_usuario=7))
@@ -114,7 +118,8 @@ def test_actualizar_cuenta_pasa_autorizacion_al_use_case(mock_use_case):
     from app.modules.cuenta.presentation.schema.cuenta_schema import CuentaUpdate
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_use_case.return_value.execute.return_value = {"id_cuenta": 1}
 
     cuenta = CuentaUpdate(estado="INACTIVA")
@@ -125,6 +130,7 @@ def test_actualizar_cuenta_pasa_autorizacion_al_use_case(mock_use_case):
     mock_use_case.return_value.execute.assert_called_once_with(
         1, cuenta.model_dump(exclude_unset=True), 7, False
     )
+    unit_of_work.commit.assert_called_once()
 
 
 @patch(
@@ -134,11 +140,13 @@ def test_actualizar_cuenta_pasa_autorizacion_al_use_case(mock_use_case):
 def test_eliminar_cuenta_pasa_autorizacion_al_use_case(mock_use_case):
 
     repository = Mock()
-    controller = CuentaController(repository)
+    unit_of_work = Mock()
+    controller = CuentaController(repository, unit_of_work)
     mock_use_case.return_value.execute.return_value = {"mensaje": "ok"}
 
     resultado = controller.eliminar_cuenta(1, _usuario(id_usuario=7))
 
     mock_use_case.assert_called_once_with(repository)
     mock_use_case.return_value.execute.assert_called_once_with(1, 7, False)
+    unit_of_work.commit.assert_called_once()
     assert resultado == {"mensaje": "ok"}

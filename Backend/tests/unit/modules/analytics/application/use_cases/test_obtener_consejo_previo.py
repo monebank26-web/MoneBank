@@ -5,7 +5,7 @@ import pytest
 from app.modules.analytics.application.use_cases.obtener_consejo_previo import (
     ObtenerConsejoPrevio,
 )
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
 )

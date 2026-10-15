@@ -1,11 +1,11 @@
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.ahorro_errors import (
     CategoriaNoCompatible,
-    CategoriaNoExiste,
     PeriodoInvalido,
     PresupuestoDuplicado,
 )
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
+    CategoriaInvalida,
     CuentaNoEncontrada,
     MontoInvalido,
 )
@@ -29,7 +29,7 @@ class CrearLimite:
         )
 
         if not categoria:
-            raise CategoriaNoExiste()
+            raise CategoriaInvalida()
 
         if categoria.tipo_categoria != "GASTO":
             raise CategoriaNoCompatible()

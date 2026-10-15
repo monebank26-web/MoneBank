@@ -8,8 +8,8 @@ from app.shared.exceptions.ahorro_errors import (
     ProgramacionDuplicada,
     RangoFechasInvalido,
 )
-from app.shared.exceptions.transaccion_errors import (
-    AhorroAsociadoNoValido,
+from app.shared.exceptions.transaccion_errors import AhorroAsociadoNoValido
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )

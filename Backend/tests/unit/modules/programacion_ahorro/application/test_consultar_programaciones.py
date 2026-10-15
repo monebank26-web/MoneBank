@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.programacion_ahorro.application.consultar_programaciones import ConsultarProgramacionesUseCase
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 def fila_base(**sobrescritura):

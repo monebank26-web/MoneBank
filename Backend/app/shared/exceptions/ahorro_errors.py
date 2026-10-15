@@ -5,16 +5,8 @@ class MetaNoEncontrada(BusinessError):
     message = "Meta no encontrada"
 
 
-class PresupuestoNoEncontrado(BusinessError):
-    message = "Presupuesto no encontrado"
-
-
 class PeriodoInvalido(BusinessError):
     message = "El período debe ser DIARIO, SEMANAL o MENSUAL"
-
-
-class CategoriaNoExiste(BusinessError):
-    message = "La categoría no existe en el catálogo"
 
 
 class CategoriaNoCompatible(BusinessError):

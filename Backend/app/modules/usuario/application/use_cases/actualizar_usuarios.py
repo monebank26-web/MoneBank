@@ -1,7 +1,7 @@
 import logging
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.shared.exceptions.usuario_errors import UsuarioNotFoundException
+from app.shared.exceptions.common import UsuarioNotFoundException
 
 logger = logging.getLogger(__name__)
 

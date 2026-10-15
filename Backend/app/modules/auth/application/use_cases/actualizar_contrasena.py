@@ -2,7 +2,7 @@ from app.core.security.PasswordHasher import PasswordHasher
 from app.core.security.password_policy import validate_password
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.shared.exceptions.auth_errors import InvalidCredentialsException
-from app.shared.exceptions.usuario_errors import UsuarioNotFoundException
+from app.shared.exceptions.common import UsuarioNotFoundException
 
 
 

@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 
 from app.modules.usuario.infrastructure.repository.sql_usuario_repository import SqlUsuarioRepository
 from app.modules.usuario.application.use_cases.crear_usuario import CrearUsuario
@@ -25,9 +27,6 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
 
 from app.core.database.connection import get_db
 
-from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
-from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-
 
 
 router = APIRouter(
@@ -42,20 +41,16 @@ def get_usuario_repository(
     return SqlUsuarioRepository(db)
 
 
-def get_cuenta_repository(
-    db: Session = Depends(get_db)
-) -> CuentaRepository:
-    return SqlCuentaRepository(db)
-
-
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(
     usuario: UsuarioCreate,
     repository: UsuarioRepository = Depends(get_usuario_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = CrearUsuario(repository, cuenta_repository)
-    return caso_uso.execute(usuario.model_dump())
+    caso_uso = CrearUsuario(repository, unit_of_work.cuentas)
+    resultado = caso_uso.execute(usuario.model_dump())
+    unit_of_work.commit()
+    return resultado
 
 
 @router.get("/")

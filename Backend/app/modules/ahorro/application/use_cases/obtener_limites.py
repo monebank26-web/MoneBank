@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from app.shared.utils.fechas import hoy_colombia
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 def armar_fila_limite(limite, gasto_actual, nombre_categoria=None):

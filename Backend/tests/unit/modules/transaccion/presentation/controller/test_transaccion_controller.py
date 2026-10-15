@@ -18,7 +18,8 @@ from app.modules.transaccion.presentation.schema.trans_schema import (
 def test_registrar_gasto_ejecuta_use_case(mock_use_case):
 
     repository = Mock()
-    controller = TransaccionController(repository)
+    unit_of_work = Mock()
+    controller = TransaccionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
 
     gasto = GastoRequest(
@@ -36,6 +37,7 @@ def test_registrar_gasto_ejecuta_use_case(mock_use_case):
     mock_use_case.return_value.execute.assert_called_once_with(
         gasto.model_dump(), 7
     )
+    unit_of_work.commit.assert_called_once()
     assert resultado == {"id_transaccion": 1}
 
 
@@ -46,7 +48,8 @@ def test_registrar_gasto_ejecuta_use_case(mock_use_case):
 def test_obtener_historial_ejecuta_use_case(mock_use_case):
 
     repository = Mock()
-    controller = TransaccionController(repository)
+    unit_of_work = Mock()
+    controller = TransaccionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
 
     filtros = HistorialRequest()
@@ -69,7 +72,8 @@ def test_obtener_historial_ejecuta_use_case(mock_use_case):
 def test_obtener_categorias_ejecuta_use_case(mock_use_case):
 
     repository = Mock()
-    controller = TransaccionController(repository)
+    unit_of_work = Mock()
+    controller = TransaccionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
 
     mock_use_case.return_value.execute.return_value = [{"id_categoria": 1}]
@@ -88,7 +92,8 @@ def test_obtener_categorias_ejecuta_use_case(mock_use_case):
 def test_obtener_detalle_ejecuta_use_case(mock_use_case):
 
     repository = Mock()
-    controller = TransaccionController(repository)
+    unit_of_work = Mock()
+    controller = TransaccionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
 
     mock_use_case.return_value.execute.return_value = {"id_transaccion": 42}
@@ -107,7 +112,8 @@ def test_obtener_detalle_ejecuta_use_case(mock_use_case):
 def test_actualizar_transaccion_ejecuta_use_case(mock_use_case):
 
     repository = Mock()
-    controller = TransaccionController(repository)
+    unit_of_work = Mock()
+    controller = TransaccionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
 
     transaccion = TransaccionUpdateRequest(
@@ -123,4 +129,5 @@ def test_actualizar_transaccion_ejecuta_use_case(mock_use_case):
     mock_use_case.return_value.execute.assert_called_once_with(
         10, transaccion.model_dump(), 7
     )
+    unit_of_work.commit.assert_called_once()
     assert resultado == {"id_transaccion": 10}

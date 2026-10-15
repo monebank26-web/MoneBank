@@ -32,9 +32,5 @@ class AnalyticsRepository(ABC):
         pass
 
     @abstractmethod
-    def obtener_movimientos_periodo(self, id_usuario, fecha_inicio, fecha_fin):
-        pass
-
-    @abstractmethod
     def obtener_reporte_periodo(self, id_usuario, fecha_inicio, fecha_fin):
-         pass 
+        pass

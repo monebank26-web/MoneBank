@@ -4,7 +4,7 @@ from app.shared.exceptions.ahorro_errors import (
     EstadoInvalido,
     ProgramacionNoEncontrada,
 )
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ActualizarEstadoUseCase:

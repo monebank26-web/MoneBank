@@ -9,10 +9,12 @@ from app.modules.transaccion.application.use_cases.registrar_gasto import (
 )
 from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
+    FechaInvalida,
+)
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
-    FechaInvalida,
     MontoInvalido,
     SaldoInsuficiente,
 )

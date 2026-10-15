@@ -4,8 +4,8 @@ from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepos
 from app.shared.exceptions.usuario_errors import (
     CuentaYaBloqueadaException,
     MotivoBloqueoRequeridoException,
-    UsuarioNotFoundException,
 )
+from app.shared.exceptions.common import UsuarioNotFoundException
 
 
 class BloquearUsuario:

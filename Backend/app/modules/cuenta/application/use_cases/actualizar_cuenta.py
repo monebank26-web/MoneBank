@@ -1,7 +1,7 @@
 from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.shared.exceptions.ahorro_errors import EstadoInvalido
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.cuenta_errors import EstadoCuentaInvalido
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )
@@ -23,6 +23,6 @@ class ActualizarCuentaUseCase:
 
         estado = cuenta_data.get("estado")
         if estado is not None and not Cuenta.es_estado_valido(estado):
-            raise EstadoInvalido()
+            raise EstadoCuentaInvalido()
 
         return self.repository.update(id_cuenta, cuenta_data)

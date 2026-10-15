@@ -1,5 +1,5 @@
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerCuentaPorUsuarioUseCase:

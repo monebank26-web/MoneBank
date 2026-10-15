@@ -1,5 +1,5 @@
 from app.modules.programacion_ahorro.domain.entity.programacion_detalle import ProgramacionDetalle
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ConsultarProgramacionesUseCase:

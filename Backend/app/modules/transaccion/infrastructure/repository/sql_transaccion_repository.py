@@ -121,7 +121,7 @@ class SqlTransaccionesRepository(TransaccionRepository):
     def create(self, transaccion_data):
         transaccion = TransaccionModel(**transaccion_data)
         self.db.add(transaccion)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(transaccion)
         return transaccion
 
@@ -142,7 +142,7 @@ class SqlTransaccionesRepository(TransaccionRepository):
         if cuenta:
             cuenta.saldo = nuevo_saldo
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(transaccion)
         return transaccion
 
@@ -182,7 +182,7 @@ class SqlTransaccionesRepository(TransaccionRepository):
             return None
 
         cuenta.saldo -= monto
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(cuenta)
         return cuenta
         
@@ -193,7 +193,7 @@ class SqlTransaccionesRepository(TransaccionRepository):
                 return None
     
             cuenta.saldo += monto
-            self.db.commit()
+            self.db.flush()
             self.db.refresh(cuenta)
             return cuenta
 
@@ -216,6 +216,6 @@ class SqlTransaccionesRepository(TransaccionRepository):
             return None
 
         ahorro.saldo_actual += monto
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(ahorro)
         return ahorro
