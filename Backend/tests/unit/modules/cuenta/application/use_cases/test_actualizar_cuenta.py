@@ -5,8 +5,8 @@ import pytest
 from app.modules.cuenta.application.use_cases.actualizar_cuenta import (
     ActualizarCuentaUseCase
 )
-from app.shared.exceptions.ahorro_errors import EstadoInvalido
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.cuenta_errors import EstadoCuentaInvalido
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )
@@ -39,7 +39,7 @@ def test_estado_invalido_lanza_estado_invalido():
     cuenta.id_usuario = 3
     repository.get_cuenta_por_id.return_value = cuenta
 
-    with pytest.raises(EstadoInvalido):
+    with pytest.raises(EstadoCuentaInvalido):
         ActualizarCuentaUseCase(repository).execute(
             1, {"estado": "BLOQUEADA"}, 3, False
         )

@@ -5,7 +5,7 @@ from app.shared.exceptions.ahorro_errors import (
     PeriodoInvalido,
     PresupuestoDuplicado,
 )
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 CAMPOS_PERMITIDOS = ("nombre", "monto_objetivo", "estado", "fecha_objetivo", "periodo")
 

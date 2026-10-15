@@ -7,11 +7,11 @@ import pytest
 from app.modules.ahorro.application.use_cases.crear_limite import CrearLimite
 from app.shared.exceptions.ahorro_errors import (
     CategoriaNoCompatible,
-    CategoriaNoExiste,
     PeriodoInvalido,
     PresupuestoDuplicado,
 )
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
+    CategoriaInvalida,
     CuentaNoEncontrada,
     MontoInvalido,
 )
@@ -96,7 +96,7 @@ def test_categoria_no_existe():
     repository, cuenta_repository = repository_base()
     repository.get_categoria.return_value = None
 
-    with pytest.raises(CategoriaNoExiste):
+    with pytest.raises(CategoriaInvalida):
         CrearLimite(repository, cuenta_repository).execute(datos_validos(), 6)
 
 

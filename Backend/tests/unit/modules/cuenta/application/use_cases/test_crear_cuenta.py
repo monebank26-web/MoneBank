@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.cuenta.application.use_cases.crear_cuenta import CrearCuenta
-from app.shared.exceptions.ahorro_errors import EstadoInvalido
+from app.shared.exceptions.cuenta_errors import EstadoCuentaInvalido
 
 
 def test_crear_cuenta_exitosamente():
@@ -42,7 +42,7 @@ def test_estado_invalido_lanza_estado_invalido():
         "id_usuario": 1
     }
 
-    with pytest.raises(EstadoInvalido):
+    with pytest.raises(EstadoCuentaInvalido):
         CrearCuenta(repository).execute(cuenta_data)
 
     repository.create.assert_not_called()

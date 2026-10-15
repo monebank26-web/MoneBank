@@ -1,6 +1,7 @@
 from fastapi import Depends
 
-from app.core.dependencies.repositories import get_transaccion_repository
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.modules.transaccion.application.use_cases.actualizar_transaccion import (
     ActualizarTransaccion,
 )
@@ -32,26 +33,37 @@ from app.modules.transaccion.presentation.schema.trans_schema import (
 
 class TransaccionController:
 
-    def __init__(self, repository: TransaccionRepository):
+    def __init__(
+        self,
+        repository: TransaccionRepository,
+        unit_of_work: UnitOfWork,
+    ):
         self.repository = repository
+        self.unit_of_work = unit_of_work
 
     def registrar_gasto(self, gasto: GastoRequest, current_user):
-        return RegistrarGasto(self.repository).execute(
+        resultado = RegistrarGasto(self.repository).execute(
             gasto.model_dump(),
             current_user.id_usuario,
         )
+        self.unit_of_work.commit()
+        return resultado
 
     def registrar_ingreso(self, ingreso: GastoRequest, current_user):
-        return RegistrarIngreso(self.repository).execute(
+        resultado = RegistrarIngreso(self.repository).execute(
             ingreso.model_dump(),
             current_user.id_usuario,
         )
+        self.unit_of_work.commit()
+        return resultado
 
     def registrar_abono_ahorro(self, abono: AbonoAhorroRequest, current_user):
-        return RegistrarAbonoAhorro(self.repository).execute(
+        resultado = RegistrarAbonoAhorro(self.repository).execute(
             abono.model_dump(),
             current_user.id_usuario,
         )
+        self.unit_of_work.commit()
+        return resultado
 
     def obtener_historial(self, current_user, filtros: HistorialRequest):
         return ObtenerHistorialUseCase(self.repository).execute(
@@ -74,14 +86,16 @@ class TransaccionController:
         transaccion: TransaccionUpdateRequest,
         current_user,
     ):
-        return ActualizarTransaccion(self.repository).execute(
+        resultado = ActualizarTransaccion(self.repository).execute(
             id_transaccion,
             transaccion.model_dump(),
             current_user.id_usuario,
         )
+        self.unit_of_work.commit()
+        return resultado
 
 
 def get_transaccion_controller(
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ) -> TransaccionController:
-    return TransaccionController(repository)
+    return TransaccionController(unit_of_work.transacciones, unit_of_work)

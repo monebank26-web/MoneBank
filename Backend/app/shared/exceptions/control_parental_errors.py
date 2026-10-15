@@ -17,10 +17,6 @@ class VinculacionDuplicada(ControlParentalException):
     message = "Las cuentas ya están vinculadas"
 
 
-class SolicitudPendienteExiste(ControlParentalException):
-    message = "Ya existe una solicitud pendiente para estas cuentas"
-
-
 class CodigoInvalido(ControlParentalException):
     message = "El código es inválido o expiró"
 

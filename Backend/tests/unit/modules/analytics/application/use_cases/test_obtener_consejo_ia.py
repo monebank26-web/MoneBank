@@ -6,10 +6,8 @@ import pytest
 from app.modules.analytics.application.use_cases.obtener_consejo_ia import (
     ObtenerConsejoIA
 )
-from app.shared.exceptions.transaccion_errors import (
-    CuentaNoEncontrada,
-    TransaccionesNoEncontrado,
-)
+from app.shared.exceptions.transaccion_errors import TransaccionesNoEncontrado
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 def crear_fila_vista():

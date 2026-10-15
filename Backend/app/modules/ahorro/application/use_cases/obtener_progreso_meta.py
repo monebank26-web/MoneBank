@@ -1,6 +1,6 @@
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
 from app.shared.exceptions.ahorro_errors import MetaNoEncontrada
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerProgresoMeta:

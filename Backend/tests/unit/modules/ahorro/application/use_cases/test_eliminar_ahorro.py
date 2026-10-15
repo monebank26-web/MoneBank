@@ -6,7 +6,7 @@ from app.modules.ahorro.application.use_cases.eliminar_ahorro import (
     EliminarAhorroUseCase
 )
 from app.shared.exceptions.ahorro_errors import AhorroNoEncontrado
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 def repository_mock():

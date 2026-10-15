@@ -3,13 +3,15 @@ from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
 from app.shared.exceptions.transaccion_errors import (
+    TransaccionNoEditable,
+    TransaccionesNoEncontrado,
+)
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     MontoInvalido,
     SaldoInsuficiente,
-    TransaccionNoEditable,
-    TransaccionesNoEncontrado,
 )
 
 

@@ -1,4 +1,4 @@
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
 )

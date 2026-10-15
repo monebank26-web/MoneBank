@@ -5,7 +5,7 @@ import pytest
 from app.modules.cuenta.application.use_cases.eliminar_cuenta import (
     EliminarCuentaUseCase
 )
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )

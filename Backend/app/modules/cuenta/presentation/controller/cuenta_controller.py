@@ -1,6 +1,7 @@
 from fastapi import Depends
 
-from app.core.dependencies.repositories import get_cuenta_repository
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.roles import ROL_ADMIN
 from app.modules.cuenta.application.use_cases.actualizar_cuenta import (
     ActualizarCuentaUseCase,
@@ -27,15 +28,22 @@ from app.modules.cuenta.presentation.schema.cuenta_schema import (
 
 class CuentaController:
 
-    def __init__(self, repository: CuentaRepository):
+    def __init__(
+        self,
+        repository: CuentaRepository,
+        unit_of_work: UnitOfWork,
+    ):
         self.repository = repository
+        self.unit_of_work = unit_of_work
 
     @staticmethod
     def _es_admin(current_user) -> bool:
         return current_user.id_rol == ROL_ADMIN
 
     def crear_cuenta(self, cuenta: CuentaCreate):
-        return CrearCuenta(self.repository).execute(cuenta.model_dump())
+        resultado = CrearCuenta(self.repository).execute(cuenta.model_dump())
+        self.unit_of_work.commit()
+        return resultado
 
     def obtener_cuentas(self, current_user, usuario_id=None):
         if self._es_admin(current_user):
@@ -60,22 +68,26 @@ class CuentaController:
         cuenta: CuentaUpdate,
         current_user,
     ):
-        return ActualizarCuentaUseCase(self.repository).execute(
+        resultado = ActualizarCuentaUseCase(self.repository).execute(
             id_cuenta,
             cuenta.model_dump(exclude_unset=True),
             current_user.id_usuario,
             self._es_admin(current_user),
         )
+        self.unit_of_work.commit()
+        return resultado
 
     def eliminar_cuenta(self, id_cuenta: int, current_user):
-        return EliminarCuentaUseCase(self.repository).execute(
+        resultado = EliminarCuentaUseCase(self.repository).execute(
             id_cuenta,
             current_user.id_usuario,
             self._es_admin(current_user),
         )
+        self.unit_of_work.commit()
+        return resultado
 
 
 def get_cuenta_controller(
-    repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ) -> CuentaController:
-    return CuentaController(repository)
+    return CuentaController(unit_of_work.cuentas, unit_of_work)

@@ -5,7 +5,7 @@ import pytest
 from app.modules.cuenta.application.use_cases.obtener_cuenta_por_id_cuenta import (
     ObtenerCuentaPorIdUseCase
 )
-from app.shared.exceptions.transaccion_errors import (
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
 )

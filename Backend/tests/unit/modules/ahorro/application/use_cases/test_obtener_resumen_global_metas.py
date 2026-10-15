@@ -7,7 +7,7 @@ from app.modules.ahorro.application.use_cases.obtener_resumen_global_metas impor
     ObtenerResumenGlobalMetas,
 )
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 def crear_meta(monto_objetivo, saldo_actual, estado=Ahorro.ESTADO_ACTIVO):

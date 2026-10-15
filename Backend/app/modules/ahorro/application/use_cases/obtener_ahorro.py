@@ -1,4 +1,4 @@
-from app.shared.exceptions.transaccion_errors import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerAhorrosUseCase:
