@@ -14,6 +14,7 @@ class ProgramacionModel(Base):
 
 
     id_programacion_ahorro = Column(Integer, primary_key=True, index=True)
+    id_ahorro = Column(Integer)
     monto_periodico = Column(Numeric(12, 2))
     fecha_cobro = Column(Date)
     frecuencia = Column(String(20))

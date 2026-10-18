@@ -2,7 +2,7 @@
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
-from app.shared.exceptions.business_exceptions import TransaccionesNoEncontrado
+from app.shared.exceptions.transaccion_errors import TransaccionesNoEncontrado
 
 
 

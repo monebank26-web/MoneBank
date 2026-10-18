@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.auth.application.use_cases.request_password_recovery import RequestPasswordRecoveryUseCase
-from app.shared.exceptions.business_exceptions import EmailNotFoundException
+from app.shared.exceptions.auth_errors import EmailNotFoundException
 
 
 def crear_usuario_mock():

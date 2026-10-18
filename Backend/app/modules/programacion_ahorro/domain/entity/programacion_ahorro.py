@@ -34,6 +34,7 @@ class ProgramacionAhorro:
     def __init__(
         self,
         id_programacion_ahorro,
+        id_ahorro,
         monto_periodico,
         fecha_cobro,
         frecuencia,
@@ -42,6 +43,7 @@ class ProgramacionAhorro:
         estado
     ):
         self.id_programacion_ahorro = id_programacion_ahorro
+        self.id_ahorro = id_ahorro
         self.monto_periodico = monto_periodico
         self.fecha_cobro = fecha_cobro
         self.frecuencia = frecuencia

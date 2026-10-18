@@ -3,6 +3,7 @@ import { metasService } from '../services/metasService';
 
 export const useMetas = () => {
   const [metas, setMetas] = useState([]);
+  const [programaciones, setProgramaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -14,6 +15,13 @@ export const useMetas = () => {
       setError('');
     } catch (err) {
       setError(err.message);
+    }
+
+    try {
+      const dataProgramaciones = await metasService.listarProgramaciones();
+      setProgramaciones(Array.isArray(dataProgramaciones) ? dataProgramaciones : []);
+    } catch {
+      setProgramaciones([]);
     } finally {
       setLoading(false);
     }
@@ -31,5 +39,15 @@ export const useMetas = () => {
     await cargar();
   };
 
-  return { metas, loading, error, crear, abonar, recargar: cargar };
+  const programar = async (datos) => {
+    await metasService.programarAporte(datos);
+    await cargar();
+  };
+
+  const actualizarEstado = async (datos) => {
+    await metasService.actualizarEstadoProgramacion(datos);
+    await cargar();
+  };
+
+  return { metas, programaciones, loading, error, crear, abonar, programar, actualizarEstado, recargar: cargar };
 };

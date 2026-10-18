@@ -76,7 +76,7 @@ const TransaccionesPage = () => {
       ) : reporteError ? (
         <p className="movimientos-sin-contenido">{reporteError}</p>
       ) : (
-        <ReporteResumen data={reporte} />
+        <ReporteResumen data={reporte} titulo="Balance mensual" />
       )}
 
       <FiltrosHistorial onFiltrar={handleFiltrar} categorias={categorias} />

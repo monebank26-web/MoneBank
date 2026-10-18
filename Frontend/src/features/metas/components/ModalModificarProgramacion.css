@@ -1,0 +1,66 @@
+.mensaje-programacion-finalizada {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.grupo-estado-programacion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.estado-actual-programacion {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.estado-actual-programacion strong {
+  color: var(--color-text);
+}
+
+.acciones-estado-programacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.boton-estado-programacion {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.boton-estado-programacion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.boton-estado-programacion--pausar {
+  background: rgba(var(--rgb-ambar), 0.15);
+  color: var(--color-ambar);
+  border: 1px solid rgba(var(--rgb-ambar), 0.4);
+}
+
+.boton-estado-programacion--activar {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-verde-fuerte), 0.25);
+}
+
+.boton-estado-programacion--finalizar {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border: 1px solid rgba(var(--rgb-rojo), 0.3);
+}
+
+.ayuda-programacion-finalizar {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}

@@ -4,42 +4,26 @@ from fastapi import APIRouter, Depends
 
 from app.core.security.auth import get_current_user
 
-from app.modules.transaccion.application.use_cases.actualizar_transaccion import ActualizarTransaccion
-from app.modules.transaccion.application.use_cases.obtener_detalle_transaccion import ObtenerDetalleUseCase
-from app.modules.transaccion.application.use_cases.obtener_transacciones_historial import ObtenerHistorialUseCase
-from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
-    RegistrarAbonoAhorro
+from app.modules.transaccion.presentation.controller.transaccion_controller import (
+    TransaccionController,
+    get_transaccion_controller,
 )
-from app.modules.transaccion.application.use_cases.registrar_gasto import RegistrarGasto
-from app.modules.transaccion.application.use_cases.registrar_ingreso import RegistrarIngreso
-
-from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
-from app.modules.transaccion.infrastructure.repository.sql_transaccion_repository import SqlTransaccionesRepository
 from app.modules.transaccion.presentation.schema.trans_schema import (
+    AbonoAhorroRequest,
     CategoriaResponse,
     DetalleTransaccionResponse,
-    AbonoAhorroRequest,
     GastoRequest,
     GastoResponse,
-    HistorialRequest,
     HistorialPaginadoResponse,
+    HistorialRequest,
     TransaccionUpdateRequest,
 )
-
-from app.core.database.connection import get_db
-from sqlalchemy.orm import Session
 
 
 router = APIRouter(
     prefix="/transacciones",
     tags=["Transacciones"]
 )
-
-
-def get_transaccion_repository(
-    db: Session = Depends(get_db)
-) -> TransaccionRepository:
-    return SqlTransaccionesRepository(db)
 
 
 @router.post(
@@ -50,14 +34,10 @@ def get_transaccion_repository(
 def registrar_gasto(
     gasto: GastoRequest,
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    caso_uso = RegistrarGasto(repository)
+    return controller.registrar_gasto(gasto, current_user)
 
-    return caso_uso.execute(
-        gasto.model_dump(),
-        current_user.id_usuario
-    )
 
 @router.post(
     "/ingresos",
@@ -67,23 +47,18 @@ def registrar_gasto(
 def registrar_ingreso(
     ingreso: GastoRequest,
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    caso_uso = RegistrarIngreso(repository)
+    return controller.registrar_ingreso(ingreso, current_user)
 
-    return caso_uso.execute(
-        ingreso.model_dump(),
-        current_user.id_usuario
-    )
 
 @router.get("/historial", response_model=HistorialPaginadoResponse, status_code=200)
 def obtener_historial(
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
     filtros: HistorialRequest = Depends(),
 ):
-    caso_uso = ObtenerHistorialUseCase(repository)
-    return caso_uso.execute(current_user.id_usuario, filtros.model_dump())
+    return controller.obtener_historial(current_user, filtros)
 
 
 @router.post(
@@ -94,32 +69,26 @@ def obtener_historial(
 def registrar_abono_ahorro(
     abono: AbonoAhorroRequest,
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    caso_uso = RegistrarAbonoAhorro(repository)
+    return controller.registrar_abono_ahorro(abono, current_user)
 
-    return caso_uso.execute(
-        abono.model_dump(),
-        current_user.id_usuario
-    )
 
 @router.get("/categorias", response_model=List[CategoriaResponse], status_code=200)
 def obtener_categorias(
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    return repository.find_categorias()
+    return controller.obtener_categorias(current_user)
 
 
 @router.get("/{id_transaccion}", response_model=DetalleTransaccionResponse, status_code=200)
 def obtener_detalle(
     id_transaccion: int,
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository)
-    
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    caso_uso = ObtenerDetalleUseCase(repository)
-    return caso_uso.execute(current_user.id_usuario, id_transaccion)
+    return controller.obtener_detalle(id_transaccion, current_user)
 
 
 @router.put("/{id_transaccion}", response_model=GastoResponse, status_code=200)
@@ -127,12 +96,6 @@ def actualizar_transaccion(
     id_transaccion: int,
     transaccion: TransaccionUpdateRequest,
     current_user: object = Depends(get_current_user),
-    repository: TransaccionRepository = Depends(get_transaccion_repository),
+    controller: TransaccionController = Depends(get_transaccion_controller),
 ):
-    caso_uso = ActualizarTransaccion(repository)
-
-    return caso_uso.execute(
-        id_transaccion,
-        transaccion.model_dump(),
-        current_user.id_usuario
-    )
+    return controller.actualizar_transaccion(id_transaccion, transaccion, current_user)

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from app.core.constants import MINUTOS_TOKEN_RECUPERACION
 from app.core.security.reset_token import TokenGenerator
-from app.shared.exceptions.business_exceptions import EmailNotFoundException
+from app.shared.exceptions.auth_errors import EmailNotFoundException
 
 
 class RequestPasswordRecoveryUseCase:

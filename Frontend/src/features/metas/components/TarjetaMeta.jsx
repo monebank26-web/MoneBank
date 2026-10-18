@@ -10,9 +10,10 @@ const ETIQUETAS_ESTADO = {
   FINALIZADO: 'Finalizada',
 };
 
-const TarjetaMeta = ({ meta, onAbonar }) => {
+const TarjetaMeta = ({ meta, programacion, onAbonar, onProgramar, onConsultar }) => {
   const porcentaje = Math.min(Number(meta.porcentaje_completado) || 0, 100);
   const finalizada = meta.estado === 'FINALIZADO' || porcentaje >= 100;
+  const tieneProgramacion = Boolean(programacion);
 
   return (
     <div className={`tarjeta-meta ${finalizada ? 'tarjeta-meta--completada' : ''}`}>
@@ -53,14 +54,34 @@ const TarjetaMeta = ({ meta, onAbonar }) => {
             </p>
           )}
         </div>
-        <button
-          className="boton-abonar-meta"
-          onClick={() => onAbonar(meta)}
-          disabled={finalizada}
-          title={finalizada ? 'Esta meta ya está completada' : 'Abonar a esta meta'}
-        >
-          Abonar
-        </button>
+        <div className="acciones-tarjeta-meta">
+          {tieneProgramacion ? (
+            <button
+              className="boton-programar-meta"
+              onClick={() => onConsultar(programacion)}
+              title="Consultar la programación de aportes de esta meta"
+            >
+              Consultar programación
+            </button>
+          ) : (
+            <button
+              className="boton-programar-meta"
+              onClick={() => onProgramar(meta)}
+              disabled={finalizada}
+              title={finalizada ? 'Esta meta ya está completada' : 'Programar aporte automático'}
+            >
+              Programar aporte
+            </button>
+          )}
+          <button
+            className="boton-abonar-meta"
+            onClick={() => onAbonar(meta)}
+            disabled={finalizada}
+            title={finalizada ? 'Esta meta ya está completada' : 'Abonar a esta meta'}
+          >
+            Abonar
+          </button>
+        </div>
       </div>
     </div>
   );
