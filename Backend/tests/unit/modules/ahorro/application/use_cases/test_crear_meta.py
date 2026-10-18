@@ -35,7 +35,7 @@ def repository_mock():
     cuenta = Mock()
     cuenta.id_cuenta = 1
     cuenta.saldo = Decimal("999999.00")
-    repository.get_cuenta_por_usuario.return_value = cuenta
+    cuenta_repository.get_cuenta_por_usuario.return_value = cuenta
 
     categoria = Mock()
     categoria.tipo_categoria = "AHORRO"
