@@ -6,7 +6,7 @@ import pytest
 from app.modules.ahorro.application.use_cases.actualizar_ahorro import (
     ActualizarAhorroUseCase,
 )
-from app.shared.exceptions.business_exceptions import PeriodoInvalido
+from app.shared.exceptions.ahorro_errors import PeriodoInvalido
 
 
 def test_actualizar_limite_rechaza_periodo_fuera_del_catalogo():

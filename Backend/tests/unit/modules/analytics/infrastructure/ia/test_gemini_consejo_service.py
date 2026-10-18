@@ -6,7 +6,7 @@ import pytest
 from app.modules.analytics.infrastructure.ia.gemini_consejo_service import (
     GeminiConsejoService
 )
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 
 
 def crear_respuesta_gemini(texto):

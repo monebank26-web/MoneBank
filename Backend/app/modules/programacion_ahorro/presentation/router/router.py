@@ -6,9 +6,11 @@ from app.core.database.connection import get_db
 from app.core.security.auth import get_current_user
 
 from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
+from app.modules.programacion_ahorro.application.consultar_programaciones import ConsultarProgramacionesUseCase
 from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
 from app.modules.programacion_ahorro.infrastructure.repository.sql_programacion_repository import SqlProgramacionRepository
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
+    AhorroAsociadoResponse,
     ProgramacionCreate,
     ProgramacionResponse,
     ProgramacionUpdate,
@@ -16,6 +18,8 @@ from app.modules.programacion_ahorro.presentation.schema.programacion_schema imp
 
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
+from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
+from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
 
 
 router = APIRouter(
@@ -37,14 +41,21 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
+def get_ahorro_repository(
+    db: Session = Depends(get_db),
+) -> AhorroRepository:
+    return SqlAhorroRepository(db)
+
+
 @router.post("/", response_model=ProgramacionResponse, status_code=201)
 def crear_programacion(
     programacion: ProgramacionCreate,
     current_user: object = Depends(get_current_user),
     repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    ahorro_repository: AhorroRepository = Depends(get_ahorro_repository),
 ):
-    caso_uso = CrearProgramacion(repository, cuenta_repository)
+    caso_uso = CrearProgramacion(repository, cuenta_repository, ahorro_repository)
     return caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
 
 @router.put("/", response_model=ProgramacionResponse, status_code=200)
@@ -60,3 +71,12 @@ def actualizar_estado(
         programacion.id_programacion_ahorro,
         programacion.estado,
     )
+
+@router.get("/", response_model=list[AhorroAsociadoResponse], status_code=200)
+def consultar_programaciones(
+    current_user: object = Depends(get_current_user),
+    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+):
+    caso_uso = ConsultarProgramacionesUseCase(repository, cuenta_repository)
+    return caso_uso.execute(current_user.id_usuario)

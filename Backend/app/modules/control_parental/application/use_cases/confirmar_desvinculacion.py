@@ -2,7 +2,7 @@ from ._servicios import hash_codigo
 from ...domain.entity.solicitud_control_parental import (
     SolicitudControlParental,
 )
-from app.shared.exceptions.control_parental_exception import (
+from app.shared.exceptions.control_parental_errors import (
     CodigoInvalido,
     VinculacionNoEncontrada,
 )

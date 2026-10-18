@@ -1,0 +1,91 @@
+.tarjeta-ritmo-ahorro {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.etiqueta-ritmo-ahorro {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cifra-ritmo-ahorro {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  flex: 1 1 auto;
+}
+
+.icono-cerdito {
+  font-size: 44px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.numero-ritmo-ahorro {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.carga-ritmo-ahorro {
+  color: var(--color-text-muted);
+}
+
+.error-ritmo-ahorro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.error-ritmo-ahorro p {
+  font-size: 13px;
+  color: var(--color-danger);
+}
+
+.bloque-aporte-programado {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.etiqueta-aporte-programado {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cifras-aporte-programado {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fecha-aporte-programado {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.monto-aporte-programado {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+@media (max-width: 640px) {
+  .numero-ritmo-ahorro {
+    font-size: 30px;
+  }
+}

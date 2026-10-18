@@ -1,4 +1,4 @@
-from app.shared.exceptions.business_exceptions import CuentaNoEncontrada
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerMetas:

@@ -1,15 +1,9 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
-from app.core.responses import ErrorResponse
-from app.shared.exceptions.business_exceptions import ChatInvalido
+from app.shared.exceptions.chat_ia_errors import ChatInvalido, ConsejoIANoDisponible
+from app.shared.exceptions.handlers._helpers import registrar_error_business
 
 
 def register_chat_ia_exception_handlers(app: FastAPI):
-
-    @app.exception_handler(ChatInvalido)
-    async def chat_invalido_handler(request: Request, exc: ChatInvalido):
-        return JSONResponse(
-            status_code=ChatInvalido.status_code,
-            content=ErrorResponse(message=exc.message).model_dump()
-        )
+    registrar_error_business(app, ChatInvalido, 400)
+    registrar_error_business(app, ConsejoIANoDisponible, 503)

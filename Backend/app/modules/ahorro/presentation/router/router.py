@@ -2,12 +2,17 @@
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 
 from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
 from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
 from app.modules.ahorro.application.use_cases.crear_meta import CrearMeta
 from app.modules.ahorro.application.use_cases.obtener_metas import ObtenerMetas
+from app.modules.ahorro.application.use_cases.obtener_resumen_global_metas import (
+    ObtenerResumenGlobalMetas
+)
 from app.modules.ahorro.application.use_cases.crear_limite import CrearLimite
 from app.modules.ahorro.application.use_cases.obtener_limites import ObtenerLimites
 from app.modules.ahorro.application.use_cases.obtener_alertas_presupuesto import ObtenerAlertasPresupuesto
@@ -23,10 +28,6 @@ from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import S
 from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
     RegistrarAbonoAhorro
 )
-from app.modules.transaccion.domain.interface.trans_repository import TransaccionRepository
-from app.modules.transaccion.infrastructure.repository.sql_transaccion_repository import (
-    SqlTransaccionesRepository
-)
 
 from app.modules.ahorro.presentation.schema.ahorro_schema import (
     AhorroCreate,
@@ -34,6 +35,7 @@ from app.modules.ahorro.presentation.schema.ahorro_schema import (
     MetaCreate,
     MetaResponse,
     AhorroProgresoResponse,
+    ResumenGlobalMetasResponse,
     LimiteCreate,
     LimiteResponse,
     AlertaResponse,
@@ -59,23 +61,19 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
-def get_transaccion_repository(
-    db: Session = Depends(get_db)
-) -> TransaccionRepository:
-    return SqlTransaccionesRepository(db)
-
-
 @router.post("/metas", response_model=MetaResponse, status_code=201)
 def crear_meta(
     meta: MetaCreate,
     current_user: object = Depends(get_current_user),
     repository: AhorroRepository = Depends(get_ahorro_repository),
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
-    transaccion_repository: TransaccionRepository = Depends(get_transaccion_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    registrar_abono = RegistrarAbonoAhorro(transaccion_repository)
+    registrar_abono = RegistrarAbonoAhorro(unit_of_work.transacciones)
     caso_uso = CrearMeta(repository, cuenta_repository, registrar_abono)
-    return caso_uso.execute(meta.model_dump(), current_user.id_usuario)
+    resultado = caso_uso.execute(meta.model_dump(), current_user.id_usuario)
+    unit_of_work.commit()
+    return resultado
 
 
 @router.get("/metas", response_model=list[MetaResponse])
@@ -85,6 +83,24 @@ def obtener_metas(
     cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
 ):
     caso_uso = ObtenerMetas(repository, cuenta_repository)
+    return caso_uso.execute(current_user.id_usuario)
+
+
+@router.get(
+    "/metas/resumen",
+    response_model=ResumenGlobalMetasResponse,
+    responses={
+        200: {"description": "Resumen global consolidado de todas las metas"},
+        404: {"description": "Cuenta no encontrada"},
+        500: {"description": "Error interno del servidor"},
+    },
+)
+def obtener_resumen_global_metas(
+    current_user: object = Depends(get_current_user),
+    repository: AhorroRepository = Depends(get_ahorro_repository),
+    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+):
+    caso_uso = ObtenerResumenGlobalMetas(repository, cuenta_repository)
     return caso_uso.execute(current_user.id_usuario)
 
 

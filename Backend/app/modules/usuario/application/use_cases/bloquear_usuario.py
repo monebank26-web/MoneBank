@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-from app.shared.exceptions.business_exceptions import (
-    UsuarioNotFoundException,
+from app.shared.exceptions.usuario_errors import (
     CuentaYaBloqueadaException,
     MotivoBloqueoRequeridoException,
 )
+from app.shared.exceptions.common import UsuarioNotFoundException
 
 
 class BloquearUsuario:

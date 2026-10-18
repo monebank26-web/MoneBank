@@ -5,12 +5,14 @@ from unittest.mock import Mock
 import pytest
 
 from app.modules.ahorro.application.use_cases.crear_meta import CrearMeta
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.ahorro_errors import (
     CategoriaNoCompatible,
-    CategoriaNoExiste,
-    CuentaNoEncontrada,
     FechaObjetivoPasada,
     FechaObjetivoRequerida,
+)
+from app.shared.exceptions.common import (
+    CategoriaInvalida,
+    CuentaNoEncontrada,
     SaldoInsuficiente,
 )
 
@@ -75,7 +77,7 @@ def test_categoria_inexistente_lanza_categoria_no_existe():
     repository, cuenta_repository, registrar_abono = repository_mock()
     repository.get_categoria.return_value = None
 
-    with pytest.raises(CategoriaNoExiste):
+    with pytest.raises(CategoriaInvalida):
         CrearMeta(repository, cuenta_repository, registrar_abono).execute(datos_validos(), 6)
 
     repository.create.assert_not_called()
