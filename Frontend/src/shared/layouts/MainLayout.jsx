@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Icon } from '@iconify/react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
 import { ROUTES } from '../../core/constants';
@@ -75,7 +76,7 @@ const MainLayout = ({ children }) => {
     {
       to: ROUTES.ADMIN,
       label: 'Usuarios',
-      icono: '👑',
+      icono: <Icon icon="mdi:shield-account-outline" />,
       visible: esAdmin,
     },
     {
