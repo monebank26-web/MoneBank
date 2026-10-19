@@ -1,4 +1,5 @@
 from app.shared.constants.codigos_error import (
+    CODIGO_CORREO_DUPLICADO,
     CODIGO_CUENTA_BLOQUEADA,
     CODIGO_CUENTA_INACTIVA,
 )
@@ -25,6 +26,7 @@ class CuentaInactivaException(BusinessError):
 
 class EmailAlreadyExistsException(BusinessError):
     message = "El correo ya está registrado"
+    code = CODIGO_CORREO_DUPLICADO
 
 
 class EmailNotFoundException(BusinessError):
