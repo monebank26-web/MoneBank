@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
-import { ROUTES, ROLES } from '../../core/constants';
+import { ROUTES } from '../../core/constants';
+import { esAdministrador } from '../../core/utils/permisos';
 import { controlParentalService } from '../../features/controlParental/services/controlParentalServices';
 
 import logoMonebank from '../assets/logo-monebank.png';
@@ -16,7 +17,7 @@ const MainLayout = ({ children }) => {
   const [analiticaAbierta, setAnaliticaAbierta] = useState(false);
   const [relacionesParentales, setRelacionesParentales] = useState([]);
 
-  const esAdmin = user?.rol === ROLES.ADMIN;
+  const esAdmin = esAdministrador(user);
 
   useEffect(() => {
     const cargarRelacionesParentales = async () => {
@@ -60,7 +61,7 @@ const MainLayout = ({ children }) => {
 
 
   const elementosNav = [
-    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
+    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: !esAdmin },
     { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
     { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
     { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
@@ -73,7 +74,7 @@ const MainLayout = ({ children }) => {
     },
     {
       to: ROUTES.ADMIN,
-      label: 'Administrador',
+      label: 'Usuarios',
       icono: '👑',
       visible: esAdmin,
     },
