@@ -2,17 +2,13 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 
-from app.core.database.connection import get_db
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 
 from app.modules.control_parental.application.use_cases.ejecutar_mesada import (
     EjecutarMesada,
-)
-
-from app.modules.control_parental.infrastructure.repository.sql_ejecucion_mesada_repository import (
-    SqlEjecucionMesadaRepository,
 )
 
 
@@ -22,12 +18,6 @@ router = APIRouter(
 )
 
 
-def get_repository(
-    db: Session = Depends(get_db),
-):
-    return SqlEjecucionMesadaRepository(db)
-
-
 @router.post(
     "/hijos/{id_hijo}/mesada/ejecutar"
 )
@@ -35,16 +25,17 @@ def ejecutar_mesada(
     id_hijo: int,
     fecha: date | None = Query(default=None),
     current_user=Depends(get_current_user),
-    repository=Depends(get_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     try:
         ejecucion, proxima = (
-            EjecutarMesada(repository).execute(
+            EjecutarMesada(unit_of_work.ejecuciones).execute(
                 current_user.id_usuario,
                 id_hijo,
                 fecha,
             )
         )
+        unit_of_work.commit()
 
         return {
             "mensaje": (
@@ -65,7 +56,7 @@ def ejecutar_mesada(
         }
 
     except PermissionError as error:
-        repository.rollback()
+        unit_of_work.rollback()
 
         raise HTTPException(
             status_code=403,
@@ -73,7 +64,7 @@ def ejecutar_mesada(
         ) from error
 
     except ValueError as error:
-        repository.rollback()
+        unit_of_work.rollback()
 
         raise HTTPException(
             status_code=400,
@@ -81,7 +72,7 @@ def ejecutar_mesada(
         ) from error
 
     except SQLAlchemyError as error:
-        repository.rollback()
+        unit_of_work.rollback()
 
         print(
             "ERROR REAL AL EJECUTAR MESADA:",

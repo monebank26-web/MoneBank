@@ -65,12 +65,14 @@ def get_cuenta_repository(
 def crear_meta(
     meta: MetaCreate,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     registrar_abono = RegistrarAbonoAhorro(unit_of_work.transacciones)
-    caso_uso = CrearMeta(repository, cuenta_repository, registrar_abono)
+    caso_uso = CrearMeta(
+        unit_of_work.ahorros,
+        unit_of_work.cuentas,
+        registrar_abono,
+    )
     resultado = caso_uso.execute(meta.model_dump(), current_user.id_usuario)
     unit_of_work.commit()
     return resultado
@@ -127,11 +129,12 @@ def obtener_progreso_meta(
 def crear_limite(
     limite: LimiteCreate,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = CrearLimite(repository, cuenta_repository)
-    return caso_uso.execute(limite.model_dump(), current_user.id_usuario)
+    caso_uso = CrearLimite(unit_of_work.ahorros, unit_of_work.cuentas)
+    resultado = caso_uso.execute(limite.model_dump(), current_user.id_usuario)
+    unit_of_work.commit()
+    return resultado
 
 
 @router.get("/limites", response_model=list[LimiteResponse])
@@ -180,19 +183,21 @@ def actualizar_ahorro(
     id_ahorro: int,
     ahorro: AhorroCreate,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = ActualizarAhorroUseCase(repository, cuenta_repository)
-    return caso_uso.execute(id_ahorro, ahorro.model_dump(), current_user.id_usuario)
+    caso_uso = ActualizarAhorroUseCase(unit_of_work.ahorros, unit_of_work.cuentas)
+    resultado = caso_uso.execute(id_ahorro, ahorro.model_dump(), current_user.id_usuario)
+    unit_of_work.commit()
+    return resultado
 
 
 @router.delete("/{id_ahorro}")
 def eliminar_ahorro(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = EliminarAhorroUseCase(repository, cuenta_repository)
-    return caso_uso.execute(id_ahorro, current_user.id_usuario)
+    caso_uso = EliminarAhorroUseCase(unit_of_work.ahorros, unit_of_work.cuentas)
+    resultado = caso_uso.execute(id_ahorro, current_user.id_usuario)
+    unit_of_work.commit()
+    return resultado

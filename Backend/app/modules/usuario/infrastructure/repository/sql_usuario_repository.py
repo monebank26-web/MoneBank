@@ -13,7 +13,7 @@ class SqlUsuarioRepository(UsuarioRepository):
     def create(self, usuario_data):
         usuario = UsuarioModel(**usuario_data)
         self.db.add(usuario)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(usuario)
         return usuario
 
@@ -48,7 +48,7 @@ class SqlUsuarioRepository(UsuarioRepository):
         for key, value in usuario_data.items():
             setattr(usuario, key, value)
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(usuario)
 
         return Usuario(
@@ -76,7 +76,7 @@ class SqlUsuarioRepository(UsuarioRepository):
             return None
 
         self.db.delete(usuario)
-        self.db.commit()
+        self.db.flush()
 
         return {"mensaje": "Usuario eliminado"}
 
@@ -100,7 +100,7 @@ class SqlUsuarioRepository(UsuarioRepository):
         usuario.intentos_fallidos = intentos_fallidos
         usuario.bloqueado_hasta = bloqueado_hasta
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(usuario)
         return usuario
 
@@ -116,6 +116,6 @@ class SqlUsuarioRepository(UsuarioRepository):
 
         usuario.contrasena = nuevo_hash
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(usuario)
         return usuario

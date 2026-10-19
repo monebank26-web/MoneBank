@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.modules.programacion_ahorro.application.actualizar_estado import ActualizarEstadoUseCase
 from app.core.database.connection import get_db
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 
 from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
@@ -18,8 +20,6 @@ from app.modules.programacion_ahorro.presentation.schema.programacion_schema imp
 
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
-from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
-from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
 
 
 router = APIRouter(
@@ -41,36 +41,38 @@ def get_cuenta_repository(
     return SqlCuentaRepository(db)
 
 
-def get_ahorro_repository(
-    db: Session = Depends(get_db),
-) -> AhorroRepository:
-    return SqlAhorroRepository(db)
-
-
 @router.post("/", response_model=ProgramacionResponse, status_code=201)
 def crear_programacion(
     programacion: ProgramacionCreate,
     current_user: object = Depends(get_current_user),
-    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
-    ahorro_repository: AhorroRepository = Depends(get_ahorro_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = CrearProgramacion(repository, cuenta_repository, ahorro_repository)
-    return caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
+    caso_uso = CrearProgramacion(
+        unit_of_work.programaciones,
+        unit_of_work.cuentas,
+        unit_of_work.ahorros,
+    )
+    resultado = caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
+    unit_of_work.commit()
+    return resultado
 
 @router.put("/", response_model=ProgramacionResponse, status_code=200)
 def actualizar_estado(
     programacion: ProgramacionUpdate,
     current_user: object = Depends(get_current_user),
-    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = ActualizarEstadoUseCase(repository, cuenta_repository)
-    return caso_uso.execute(
+    caso_uso = ActualizarEstadoUseCase(
+        unit_of_work.programaciones,
+        unit_of_work.cuentas,
+    )
+    resultado = caso_uso.execute(
         current_user.id_usuario,
         programacion.id_programacion_ahorro,
         programacion.estado,
     )
+    unit_of_work.commit()
+    return resultado
 
 @router.get("/", response_model=list[AhorroAsociadoResponse], status_code=200)
 def consultar_programaciones(
