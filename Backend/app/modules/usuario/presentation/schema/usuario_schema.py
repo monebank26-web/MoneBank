@@ -30,6 +30,8 @@ class UsuarioResponse(BaseModel):
     nombres: str
     apellidos: str
     correo: EmailStr
+    estado: str
+    id_rol: Optional[int] = None
     fecha_creacion: date
 
     class Config:

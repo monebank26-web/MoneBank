@@ -7,6 +7,14 @@ from fastapi.security import HTTPAuthorizationCredentials
 from app.core.security import auth
 from app.core.security.JwtManager import JwtManager
 from app.core.security.roles import ROL_USUARIO
+from app.shared.constants.codigos_error import (
+    CODIGO_CUENTA_BLOQUEADA,
+    CODIGO_CUENTA_INACTIVA,
+)
+from app.shared.exceptions.auth_errors import (
+    CuentaBloqueadaException,
+    CuentaInactivaException,
+)
 
 
 def credenciales(token):
@@ -68,3 +76,64 @@ def test_get_current_user_con_usuario_inexistente_rechaza():
             repository=repository
         )
     assert exc.value.status_code == 401
+
+
+def test_get_current_user_con_usuario_bloqueado_rechaza():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "BLOQUEADO"
+    repository.get_by_id.return_value = usuario
+
+    token = crear_token(6)
+    with pytest.raises(CuentaBloqueadaException) as exc:
+        auth.get_current_user(
+            credentials=credenciales(token),
+            repository=repository
+        )
+
+    assert exc.value.code == CODIGO_CUENTA_BLOQUEADA
+
+
+def test_get_current_user_con_usuario_inactivo_rechaza():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "INACTIVO"
+    repository.get_by_id.return_value = usuario
+
+    token = crear_token(6)
+    with pytest.raises(CuentaInactivaException) as exc:
+        auth.get_current_user(
+            credentials=credenciales(token),
+            repository=repository
+        )
+
+    assert exc.value.code == CODIGO_CUENTA_INACTIVA
+
+
+def test_get_current_user_normaliza_el_estado_del_usuario():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = " bloqueado "
+    repository.get_by_id.return_value = usuario
+
+    token = crear_token(6)
+    with pytest.raises(CuentaBloqueadaException):
+        auth.get_current_user(
+            credentials=credenciales(token),
+            repository=repository
+        )
+
+
+def test_get_current_user_con_usuario_activo_permite_el_acceso():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "ACTIVO"
+    repository.get_by_id.return_value = usuario
+
+    token = crear_token(6)
+    resultado = auth.get_current_user(
+        credentials=credenciales(token),
+        repository=repository
+    )
+
+    assert resultado.id_usuario == 6

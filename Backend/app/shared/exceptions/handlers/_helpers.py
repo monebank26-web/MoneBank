@@ -9,7 +9,10 @@ def registrar_error_business(app: FastAPI, exc_tipo: type, status_code: int):
     async def handler_error_business(request: Request, exc: Exception):
         return JSONResponse(
             status_code=status_code,
-            content=ErrorResponse(message=str(exc)).model_dump(),
+            content=ErrorResponse(
+                message=str(exc),
+                code=getattr(exc, "code", None),
+            ).model_dump(exclude_none=True),
         )
 
     return handler_error_business

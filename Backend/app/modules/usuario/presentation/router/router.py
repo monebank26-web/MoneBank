@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
@@ -53,7 +54,7 @@ def crear_usuario(
     return resultado
 
 
-@router.get("/")
+@router.get("/", response_model=List[UsuarioResponse])
 def obtener_usuarios(
     repository: UsuarioRepository = Depends(get_usuario_repository),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
@@ -62,7 +63,7 @@ def obtener_usuarios(
     return caso_uso.execute()
 
 
-@router.get("/{id_usuario}")
+@router.get("/{id_usuario}", response_model=UsuarioResponse)
 def obtener_usuario_por_id(
     id_usuario: int,
     repository: UsuarioRepository = Depends(get_usuario_repository),

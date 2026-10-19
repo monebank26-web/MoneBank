@@ -8,8 +8,10 @@ from app.core.config.settings import settings
 from app.core.security.JwtManager import JwtManager
 from app.core.security.PasswordHasher import PasswordHasher
 from app.modules.auth.application.use_cases.login_usuario import LoginUsuarioUseCase
+from app.shared.constants.codigos_error import CODIGO_CUENTA_INACTIVA
 from app.shared.exceptions.auth_errors import (
     AccountLockedException,
+    CuentaInactivaException,
     InvalidCredentialsException,
 )
 
@@ -100,3 +102,53 @@ def test_login_cuenta_bloqueada():
         use_case.execute("usuario@test.com", "password123")
 
     repository.register_failed_attempt.assert_not_called()
+
+
+def test_login_cuenta_bloqueada_por_el_administrador():
+    # Arrange
+    usuario = crear_usuario()
+    usuario.estado = "BLOQUEADO"
+    repository = Mock()
+    repository.login.return_value = usuario
+    repository.is_locked.return_value = False
+
+    use_case = LoginUsuarioUseCase(repository)
+
+    # Act & Assert
+    with pytest.raises(AccountLockedException):
+        use_case.execute("usuario@test.com", "password123")
+
+    repository.register_failed_attempt.assert_not_called()
+
+
+def test_login_cuenta_inactiva():
+    # Arrange
+    usuario = crear_usuario()
+    usuario.estado = "INACTIVO"
+    repository = Mock()
+    repository.login.return_value = usuario
+    repository.is_locked.return_value = False
+
+    use_case = LoginUsuarioUseCase(repository)
+
+    # Act & Assert
+    with pytest.raises(CuentaInactivaException) as exc:
+        use_case.execute("usuario@test.com", "password123")
+
+    assert exc.value.code == CODIGO_CUENTA_INACTIVA
+    repository.register_failed_attempt.assert_not_called()
+
+
+def test_login_normaliza_el_estado_del_usuario():
+    # Arrange
+    usuario = crear_usuario()
+    usuario.estado = " bloqueado "
+    repository = Mock()
+    repository.login.return_value = usuario
+    repository.is_locked.return_value = False
+
+    use_case = LoginUsuarioUseCase(repository)
+
+    # Act & Assert
+    with pytest.raises(AccountLockedException):
+        use_case.execute("usuario@test.com", "password123")

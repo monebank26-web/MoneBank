@@ -12,3 +12,4 @@ class SuccessResponse(BaseModel):
 class ErrorResponse(BaseModel):
     success: bool = False
     message: str
+    code: Optional[str] = None

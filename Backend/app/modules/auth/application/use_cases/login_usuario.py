@@ -1,8 +1,10 @@
 from app.core.security.JwtManager import JwtManager
 from app.core.security.PasswordHasher import PasswordHasher
 from app.core.config.settings import settings
+from app.shared.constants.estados import es_bloqueado, es_inactivo
 from app.shared.exceptions.auth_errors import (
     AccountLockedException,
+    CuentaInactivaException,
     InvalidCredentialsException,
 )
 
@@ -18,8 +20,11 @@ class LoginUsuarioUseCase:
         if not usuario:
             raise InvalidCredentialsException()
 
-        if (usuario.estado or "").lower() == "bloqueado":
+        if es_bloqueado(usuario.estado):
             raise AccountLockedException("Cuenta bloqueada por el administrador")
+
+        if es_inactivo(usuario.estado):
+            raise CuentaInactivaException()
 
         if self.repository.is_locked(usuario.id_usuario):
             raise AccountLockedException()

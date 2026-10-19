@@ -1,4 +1,36 @@
+import { STORAGE_KEYS } from '../constants';
+
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+const CODIGOS_SESION_INVALIDA = ['CUENTA_BLOQUEADA', 'CUENTA_INACTIVA'];
+
+const cerrarSesionInvalidada = (codigo) => {
+  if (!CODIGOS_SESION_INVALIDA.includes(codigo)) return;
+  localStorage.removeItem(STORAGE_KEYS.USER);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
+  if (window.location.pathname !== '/login') {
+    window.location.assign('/login');
+  }
+};
+
+const lanzarErrorDeRespuesta = async (res) => {
+  let cuerpo;
+  let mensaje;
+  try {
+    cuerpo = await res.json();
+    mensaje = cuerpo.message || cuerpo.detail || JSON.stringify(cuerpo);
+  } catch {
+    mensaje = await res.text();
+  }
+  if (cuerpo?.code) {
+    cerrarSesionInvalidada(cuerpo.code);
+  }
+  const error = new Error(mensaje);
+  if (cuerpo?.code) {
+    error.code = cuerpo.code;
+  }
+  throw error;
+};
 
 export const apiClient = {
   get: async (endpoint, params = {}) => {
@@ -13,11 +45,7 @@ export const apiClient = {
       ...(token && { Authorization: `Bearer ${token}` }),
     },
     });
-    if (!res.ok) {
-      let msg;
-      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
-      throw new Error(msg);
-    }
+    if (!res.ok) await lanzarErrorDeRespuesta(res);
     return res.json();
   },
 
@@ -31,11 +59,7 @@ export const apiClient = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      let msg;
-      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
-      throw new Error(msg);
-    }
+    if (!res.ok) await lanzarErrorDeRespuesta(res);
     return res.json();
   },
 
@@ -49,11 +73,7 @@ export const apiClient = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      let msg;
-      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
-      throw new Error(msg);
-    }
+    if (!res.ok) await lanzarErrorDeRespuesta(res);
     return res.json();
   },
 
@@ -66,11 +86,7 @@ export const apiClient = {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
-    if (!res.ok) {
-      let msg;
-      try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
-      throw new Error(msg);
-    }
+    if (!res.ok) await lanzarErrorDeRespuesta(res);
     return res.json();
   },
 
@@ -85,11 +101,7 @@ getBlob: async (endpoint, params = {}) => {
       ...(token && { Authorization: `Bearer ${token}` }),
     },
   });
-  if (!res.ok) {
-    let msg;
-    try { const b = await res.json(); msg = b.message || b.detail || JSON.stringify(b); } catch { msg = await res.text(); }
-    throw new Error(msg);
-  }
+  if (!res.ok) await lanzarErrorDeRespuesta(res);
   return res.blob();
 },
 };
