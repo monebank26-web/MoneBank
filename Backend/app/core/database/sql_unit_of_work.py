@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 
 from app.core.database.unit_of_work import UnitOfWork
+from app.modules.admin.infrastructure.repository.sql_registro_accion_admin_repository import (
+    SqlRegistroAccionAdminRepository,
+)
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
     SqlCuentaRepository,
 )
@@ -15,6 +18,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.session = session
         self.transacciones = SqlTransaccionesRepository(session)
         self.cuentas = SqlCuentaRepository(session)
+        self.registros_accion_admin = SqlRegistroAccionAdminRepository(session)
 
     def commit(self) -> None:
         self.session.commit()

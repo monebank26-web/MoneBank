@@ -8,6 +8,9 @@ ESTADOS_USUARIO = (
     ESTADO_BLOQUEADO,
 )
 
+# Patrón para validar el estado que llega como filtro en la URL.
+PATRON_ESTADO_USUARIO = "^(" + "|".join(ESTADOS_USUARIO) + ")$"
+
 
 def normalizar_estado(estado) -> str:
     """Devuelve el estado en mayúsculas y sin espacios sobrantes."""

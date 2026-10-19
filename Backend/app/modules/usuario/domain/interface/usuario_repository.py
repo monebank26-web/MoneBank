@@ -8,11 +8,15 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def exists_by_email(self, correo):
+    def exists_by_email(self, correo, excluir_id_usuario=None):
         pass
 
     @abstractmethod
     def get_all(self):
+        pass
+
+    @abstractmethod
+    def listar(self, filtros):
         pass
 
     @abstractmethod

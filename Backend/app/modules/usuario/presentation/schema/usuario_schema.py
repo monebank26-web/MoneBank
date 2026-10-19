@@ -1,6 +1,6 @@
 from datetime import date
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -36,6 +36,13 @@ class UsuarioResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UsuarioListResponse(BaseModel):
+    items: List[UsuarioResponse]
+    total: int
+    pagina: int
+    por_pagina: int
 
 
 class BloqueoUsuarioRequest(BaseModel):

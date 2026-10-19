@@ -12,7 +12,7 @@ from app.shared.constants.acciones import (
 )
 
 
-def test_registrar_crea_la_fila_y_hace_commit():
+def test_registrar_crea_la_fila_sin_confirmar_la_transaccion():
     db = Mock()
     repositorio = SqlRegistroAccionAdminRepository(db)
 
@@ -30,7 +30,8 @@ def test_registrar_crea_la_fila_y_hace_commit():
     assert registro.detalle == "Incumplimiento de normas"
 
     db.add.assert_called_once_with(registro)
-    db.commit.assert_called_once()
+    db.flush.assert_called_once()
+    db.commit.assert_not_called()
     db.refresh.assert_called_once_with(registro)
 
 

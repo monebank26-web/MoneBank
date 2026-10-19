@@ -28,7 +28,9 @@ class SqlRegistroAccionAdminRepository(RegistroAccionAdminRepository):
         )
 
         self.db.add(registro)
-        self.db.commit()
+        # No se confirma aquí: la ruta hace un único commit junto con la
+        # operación auditada, para que no quede auditoría de algo que falló.
+        self.db.flush()
         self.db.refresh(registro)
 
         return registro
