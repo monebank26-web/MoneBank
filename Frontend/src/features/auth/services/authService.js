@@ -7,8 +7,10 @@ const toFrontend = (u) => ({
   id_usuario: u.id_usuario,
   nombres: u.nombres,
   apellidos: u.apellidos,
+  nombre: [u.nombres, u.apellidos].filter(Boolean).join(' ').trim(),
   email: u.correo,
   rol: ROLES_MAP[u.id_rol] || 'normal',
+  id_rol: u.id_rol,
   fecha_creacion: u.fecha_creacion,
   estado: u.estado,
 });
@@ -49,9 +51,18 @@ export const authService = {
     return toFrontend(data);
   },
 
-  obtenerTodosLosUsuarios: async () => {
-    const data = await apiClient.get('/usuarios/');
-    return Array.isArray(data) ? data.map(toFrontend) : [];
+  // Paginado y filtrado en el servidor (HU-0036).
+  // Devuelve { items, total, pagina, porPagina }.
+  obtenerTodosLosUsuarios: async (filtros = {}) => {
+    const data = await apiClient.get('/usuarios/', filtros);
+    const items = (Array.isArray(data) ? data : data.items || []).map(toFrontend);
+
+    return {
+      items,
+      total: data.total ?? items.length,
+      pagina: data.pagina ?? 1,
+      porPagina: data.por_pagina ?? filtros.por_pagina ?? items.length,
+    };
   },
 
   eliminarUsuario: async (id) => {
@@ -61,6 +72,7 @@ export const authService = {
   actualizarUsuario: async (id, datos) => {
     const payload = {};
     if (datos.nombres !== undefined) payload.nombres = datos.nombres;
+    if (datos.apellidos !== undefined) payload.apellidos = datos.apellidos;
     if (datos.email !== undefined) payload.correo = datos.email;
     const data = await apiClient.put(`/usuarios/${id}`, payload);
     return toFrontend(data);

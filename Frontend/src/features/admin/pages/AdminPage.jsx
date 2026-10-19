@@ -1,6 +1,10 @@
 import React from 'react';
+import { Icon } from '@iconify/react';
+import Paginacion from '../../transacciones/components/Paginacion';
+import '../../../shared/styles/transacciones-modal.css';
 import { useUsuariosAdmin } from '../hooks/useUsuariosAdmin';
 import { useAccionesUsuarioAdmin } from '../hooks/useAccionesUsuarioAdmin';
+import { mensajeVacio, textoTotalUsuarios } from '../utils/usuariosAdmin';
 import BarraFiltrosUsuarios from '../components/BarraFiltrosUsuarios';
 import FilaUsuarioAdmin from '../components/FilaUsuarioAdmin';
 import ModalDetalleUsuario from '../components/ModalDetalleUsuario';
@@ -11,65 +15,98 @@ import './AdminPage.css';
 const AdminPage = () => {
   const {
     usuarios,
-    usuariosFiltrados,
+    total,
+    pagina,
+    totalPaginas,
     busqueda,
     setBusqueda,
-    filtroRol,
-    setFiltroRol,
-    cargarUsuarios,
-    obtenerUsuarioVinculado,
+    idRol,
+    setIdRol,
+    estado,
+    setEstado,
+    cargando,
+    error,
+    setPagina,
+    recargar,
+    limpiarFiltros,
   } = useUsuariosAdmin();
 
-  const acciones = useAccionesUsuarioAdmin({ cargarUsuarios });
+  const acciones = useAccionesUsuarioAdmin({ recargar });
 
   return (
-    <div className="pagina-admin">
-      <div className="encabezado-admin">
+    <div className="admin-pagina">
+      <div className="admin-encabezado">
         <div>
-          <h1 className="titulo-admin">Panel de administrador</h1>
-          <p className="subtitulo-admin">{usuarios.length} usuarios registrados</p>
+          <h1 className="admin-titulo">Panel de administrador</h1>
+          <p className="admin-subtitulo">Gestiona las cuentas de MoneBank.</p>
         </div>
-        {acciones.mensaje && <div className="mensaje-exito-admin">{acciones.mensaje}</div>}
+
+        <div className="admin-encabezado__lado">
+          {acciones.mensaje && (
+            <span className="admin-mensaje-exito">
+              <Icon icon="mdi:check-circle-outline" />
+              {acciones.mensaje}
+            </span>
+          )}
+          <span className="admin-total">{textoTotalUsuarios(total)}</span>
+        </div>
       </div>
 
       <BarraFiltrosUsuarios
         busqueda={busqueda}
         setBusqueda={setBusqueda}
-        filtroRol={filtroRol}
-        setFiltroRol={setFiltroRol}
+        idRol={idRol}
+        setIdRol={setIdRol}
+        estado={estado}
+        setEstado={setEstado}
+        onLimpiar={limpiarFiltros}
       />
 
-      {usuariosFiltrados.length === 0 ? (
+      {error ? (
+        <div className="error-formulario">
+          {error}
+          <button type="button" className="boton-reintentar" onClick={recargar}>
+            Reintentar
+          </button>
+        </div>
+      ) : cargando ? (
+        <p className="cargando-pagina">Cargando usuarios...</p>
+      ) : usuarios.length === 0 ? (
         <div className="admin-sin-resultados">
-          <p>No se encontraron usuarios con ese criterio.</p>
+          <Icon icon="mdi:account-search-outline" className="admin-sin-resultados__icono" />
+          <p>{mensajeVacio({ buscar: busqueda.trim(), estado, idRol })}</p>
         </div>
       ) : (
-        <div className="tabla-admin">
-          {usuariosFiltrados.map((usuario) => (
-            <FilaUsuarioAdmin
-              key={usuario.id}
-              usuario={usuario}
-              onVerDetalle={acciones.abrirDetalle}
-              onEditar={acciones.abrirEditar}
-              onEliminar={acciones.abrirEliminar}
-            />
-          ))}
-        </div>
+        <>
+          <div className="admin-lista">
+            {usuarios.map((usuario) => (
+              <FilaUsuarioAdmin
+                key={usuario.id}
+                usuario={usuario}
+                onVerDetalle={acciones.abrirDetalle}
+                onEditar={acciones.abrirEditar}
+              />
+            ))}
+          </div>
+
+          <Paginacion pagina={pagina} totalPaginas={totalPaginas} onChange={setPagina} />
+        </>
       )}
 
       <ModalDetalleUsuario
         open={acciones.modalDetalleAbierto}
         onClose={() => acciones.setModalDetalleAbierto(false)}
         usuario={acciones.usuarioSeleccionado}
-        usuarioVinculado={acciones.usuarioSeleccionado ? obtenerUsuarioVinculado(acciones.usuarioSeleccionado) : null}
       />
 
       <ModalEditarUsuario
         open={acciones.modalEditarAbierto}
-        onClose={() => acciones.setModalEditarAbierto(false)}
+        onClose={acciones.cerrarEditar}
         formulario={acciones.formularioEdicion}
         setFormulario={acciones.setFormularioEdicion}
         onGuardar={acciones.guardarEdicion}
+        error={acciones.errorEdicion}
+        guardando={acciones.guardando}
       />
 
       <ModalEliminarUsuario

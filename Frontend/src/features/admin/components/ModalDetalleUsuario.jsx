@@ -1,53 +1,52 @@
 import React from 'react';
 import Modal from '../../../shared/components/Modal';
-import { ROLES } from '../../../core/constants';
-import { formatMoney } from '../../../core/utils/format';
-import { etiquetaRol } from '../../../core/utils/roles';
+import {
+  claseEstadoAdmin,
+  etiquetaEstadoAdmin,
+  etiquetaRolAdmin,
+  fechaCreacionLegible,
+} from '../utils/usuariosAdmin';
 
-const ModalDetalleUsuario = ({ open, onClose, usuario, usuarioVinculado }) => {
-  return (
-    <Modal open={open} onClose={onClose} title="Detalle del usuario">
-      {usuario && (
-        <div className="detalle-usuario-admin">
-          <div className="avatar-detalle-admin">
-            {usuario.nombre.charAt(0).toUpperCase()}
-          </div>
-          <h2 className="nombre-detalle-admin">{usuario.nombre}</h2>
-          <p className="correo-detalle-admin">{usuario.email}</p>
-          <span className={`etiqueta-rol-admin etiqueta-rol-admin--${usuario.rol}`}>
-            {etiquetaRol(usuario.rol)}
+const ModalDetalleUsuario = ({ open, onClose, usuario }) => (
+  <Modal open={open} onClose={onClose} title="Detalle del usuario">
+    {usuario && (
+      <div className="admin-detalle">
+        <div className="admin-detalle__avatar">
+          {(usuario.nombres || usuario.email || '?').charAt(0).toUpperCase()}
+        </div>
+        <h2 className="admin-detalle__nombre">{usuario.nombre || usuario.email}</h2>
+        <p className="admin-detalle__correo">{usuario.email}</p>
+
+        <div className="admin-detalle__etiquetas">
+          <span className={`admin-etiqueta-rol admin-etiqueta-rol--${usuario.rol}`}>
+            {etiquetaRolAdmin(usuario.rol)}
           </span>
+          <span className={claseEstadoAdmin(usuario.estado)}>
+            {etiquetaEstadoAdmin(usuario.estado)}
+          </span>
+        </div>
 
-          <div className="campos-detalle-admin">
-            <div className="campo-detalle-admin">
-              <span className="etiqueta-campo-detalle">Saldo en cuenta</span>
-              <span className="valor-campo-detalle">{formatMoney(usuario.saldoCuenta)}</span>
-            </div>
-            <div className="campo-detalle-admin">
-              <span className="etiqueta-campo-detalle">Miembro desde</span>
-              <span className="valor-campo-detalle">
-                {new Date(usuario.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </span>
-            </div>
-            {usuario.esMenor && (
-              <div className="campo-detalle-admin">
-                <span className="etiqueta-campo-detalle">Menor de edad</span>
-                <span className="valor-campo-detalle">Sí</span>
-              </div>
-            )}
-            {usuarioVinculado && (
-              <div className="campo-detalle-admin">
-                <span className="etiqueta-campo-detalle">
-                  {usuario.rol === ROLES.PADRE ? 'Hijo/Hija vinculado' : 'Padre/Madre vinculado'}
-                </span>
-                <span className="valor-campo-detalle">{usuarioVinculado.nombre}</span>
-              </div>
-            )}
+        <div className="admin-detalle__campos">
+          <div className="admin-detalle__campo">
+            <span className="admin-detalle__etiqueta">Correo electrónico</span>
+            <span className="admin-detalle__valor">{usuario.email}</span>
+          </div>
+          <div className="admin-detalle__campo">
+            <span className="admin-detalle__etiqueta">Rol</span>
+            <span className="admin-detalle__valor">{etiquetaRolAdmin(usuario.rol)}</span>
+          </div>
+          <div className="admin-detalle__campo">
+            <span className="admin-detalle__etiqueta">Estado</span>
+            <span className="admin-detalle__valor">{etiquetaEstadoAdmin(usuario.estado)}</span>
+          </div>
+          <div className="admin-detalle__campo">
+            <span className="admin-detalle__etiqueta">Miembro desde</span>
+            <span className="admin-detalle__valor">{fechaCreacionLegible(usuario.fecha_creacion)}</span>
           </div>
         </div>
-      )}
-    </Modal>
-  );
-};
+      </div>
+    )}
+  </Modal>
+);
 
 export default ModalDetalleUsuario;

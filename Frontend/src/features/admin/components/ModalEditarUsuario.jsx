@@ -1,40 +1,49 @@
 import React from 'react';
 import Modal from '../../../shared/components/Modal';
-import { ROLES } from '../../../core/constants';
 
-const ModalEditarUsuario = ({ open, onClose, formulario, setFormulario, onGuardar }) => {
-  return (
-    <Modal open={open} onClose={onClose} title="Editar usuario">
-      <div className="formulario-modal">
-        <div className="grupo-campo">
-          <label className="etiqueta-campo">Nombre completo</label>
-          <input className="campo-entrada" type="text" value={formulario.nombre || ''}
-            onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })} />
-        </div>
-        <div className="grupo-campo">
-          <label className="etiqueta-campo">Correo electrónico</label>
-          <input className="campo-entrada" type="email" value={formulario.email || ''}
-            onChange={(e) => setFormulario({ ...formulario, email: e.target.value })} />
-        </div>
-        <div className="grupo-campo">
-          <label className="etiqueta-campo">Saldo en cuenta (COP)</label>
-          <input className="campo-entrada" type="number" value={formulario.saldoCuenta || 0}
-            onChange={(e) => setFormulario({ ...formulario, saldoCuenta: e.target.value })} />
-        </div>
-        <div className="grupo-campo">
-          <label className="etiqueta-campo">Rol</label>
-          <select className="campo-entrada" value={formulario.rol || ''}
-            onChange={(e) => setFormulario({ ...formulario, rol: e.target.value })}>
-            <option value={ROLES.NORMAL}>Normal</option>
-            <option value={ROLES.PADRE}>Padre/Madre</option>
-            <option value={ROLES.HIJO}>Hijo/Hija</option>
-            <option value={ROLES.ADMIN}>Administrador</option>
-          </select>
-        </div>
-        <button className="boton-principal" onClick={onGuardar}>Guardar cambios</button>
+const ModalEditarUsuario = ({ open, onClose, formulario, setFormulario, onGuardar, error, guardando }) => (
+  <Modal open={open} onClose={onClose} title="Editar usuario">
+    <div className="formulario-modal">
+      <div className="grupo-campo">
+        <label className="etiqueta-campo" htmlFor="admin-editar-nombres">Nombres</label>
+        <input
+          id="admin-editar-nombres"
+          className="campo-entrada"
+          type="text"
+          value={formulario.nombres || ''}
+          onChange={(e) => setFormulario({ ...formulario, nombres: e.target.value })}
+        />
       </div>
-    </Modal>
-  );
-};
+
+      <div className="grupo-campo">
+        <label className="etiqueta-campo" htmlFor="admin-editar-apellidos">Apellidos</label>
+        <input
+          id="admin-editar-apellidos"
+          className="campo-entrada"
+          type="text"
+          value={formulario.apellidos || ''}
+          onChange={(e) => setFormulario({ ...formulario, apellidos: e.target.value })}
+        />
+      </div>
+
+      <div className="grupo-campo">
+        <label className="etiqueta-campo" htmlFor="admin-editar-correo">Correo electrónico</label>
+        <input
+          id="admin-editar-correo"
+          className="campo-entrada"
+          type="email"
+          value={formulario.email || ''}
+          onChange={(e) => setFormulario({ ...formulario, email: e.target.value })}
+        />
+      </div>
+
+      {error && <div className="error-formulario">{error}</div>}
+
+      <button className="boton-principal" onClick={onGuardar} disabled={guardando}>
+        {guardando ? 'Guardando...' : 'Guardar cambios'}
+      </button>
+    </div>
+  </Modal>
+);
 
 export default ModalEditarUsuario;

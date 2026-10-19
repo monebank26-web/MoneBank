@@ -1,295 +1,492 @@
+/* ── PANEL DE USUARIOS DEL ADMINISTRADOR (HU-0036) ──
+   Estilos propios del panel. Todas las clases llevan prefijo `admin-` para no
+   pisar clases compartidas (cargando-pagina, error-formulario, formulario-modal,
+   campo-entrada...). Los colores y radios salen de los tokens de global.css. */
 
-.pagina-admin {
-  padding: 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.encabezado-admin {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.titulo-admin {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 0.25rem;
-}
-
-.subtitulo-admin {
-  font-size: 0.875rem;
-  color: var(--color-text-soft);
-  margin: 0;
-}
-
-.mensaje-exito-admin {
-  background: #e1f5ee;
-  color: #085041;
-  border: 0.5px solid #5dcaa5;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
-}
-
-.barra-filtros-admin {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.campo-busqueda-admin {
-  background: var(--color-surface);
-  border: 0.5px solid var(--color-border);
-  border-radius: 8px;
-  color: var(--color-text);
-  padding: 10px 14px;
-  font-size: 14px;
-  flex: 1;
-  min-width: 200px;
-  outline: none;
-}
-
-.campo-busqueda-admin:focus {
-  border-color: var(--color-accent);
-}
-
-.filtros-rol-admin {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.boton-filtro-admin {
-  background: var(--color-surface);
-  border: 0.5px solid var(--color-border);
-  border-radius: 99px;
-  color: var(--color-text-soft);
-  padding: 6px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.boton-filtro-admin--activo,
-.boton-filtro-admin:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  background: var(--color-surface-hover);
-}
-
-.tabla-admin {
+.admin-pagina {
+  width: 95%;
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+/* ── ENCABEZADO ── */
+.admin-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
-.fila-usuario-admin {
-  background: var(--color-surface);
-  border: 0.5px solid var(--color-border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  transition: border-color 0.15s;
-}
-
-.fila-usuario-admin:hover {
-  border-color: var(--color-accent);
-}
-
-.avatar-usuario-admin {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.admin-titulo {
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: 700;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-
-.informacion-usuario-admin {
-  flex: 1;
-  min-width: 150px;
-}
-
-.nombre-usuario-admin {
-  font-weight: 600;
   color: var(--color-text);
-  margin: 0 0 2px;
-  font-size: 15px;
+  margin: 0 0 4px;
 }
 
-.correo-usuario-admin {
-  color: var(--color-text-soft);
+.admin-subtitulo {
   font-size: 13px;
-  margin: 0 0 6px;
-}
-
-.etiqueta-rol-admin {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-weight: 500;
-}
-
-.etiqueta-rol-admin--administrador { background: #f0e6ff; color: #6b21a8; }
-.etiqueta-rol-admin--padre { background: #e0f2fe; color: #0369a1; }
-.etiqueta-rol-admin--hijo { background: #fef9c3; color: #854d0e; }
-.etiqueta-rol-admin--normal { background: var(--color-surface-hover); color: var(--color-text-soft); }
-
-.saldo-usuario-admin {
-  text-align: right;
-  min-width: 120px;
-}
-
-.valor-saldo-admin {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-accent);
-  margin: 0 0 2px;
-}
-
-.etiqueta-saldo-admin {
-  font-size: 11px;
-  color: var(--color-text-soft);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
-.acciones-usuario-admin {
+.admin-encabezado__lado {
   display: flex;
-  gap: 8px;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 12px;
 }
 
-.boton-accion-admin {
-  padding: 7px 14px;
-  border-radius: 8px;
+.admin-mensaje-exito {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-success-soft);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--color-success);
+  font-size: 13px;
+}
+
+.admin-total {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* ── FILTROS ── */
+.admin-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.admin-filtros__fila {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-filtros__busqueda {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  transition: border-color 0.2s;
+}
+
+.admin-filtros__busqueda:focus-within {
+  border-color: var(--color-accent);
+}
+
+.admin-filtros__icono {
+  color: var(--color-text-muted);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.admin-filtros__campo {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 10px 0;
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.admin-filtros__campo::placeholder {
+  color: var(--color-text-muted);
+}
+
+.admin-filtros__limpiar {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  color: var(--color-text-soft);
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  border: 0.5px solid;
-  transition: opacity 0.15s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.boton-accion-admin:hover { opacity: 0.8; }
+.admin-filtros__limpiar:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
 
-.boton-accion-admin--ver {
-  background: transparent;
+.admin-filtros__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.admin-filtros__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-filtros__etiqueta {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-grupo-botones {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.admin-grupo-botones__item {
+  background: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  color: var(--color-text-soft);
+  font-size: 13px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-grupo-botones__item:hover {
+  color: var(--color-accent);
+}
+
+.admin-grupo-botones__item--activo {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ── LISTA ── */
+.admin-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-fila {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.6fr) auto auto;
+  grid-template-areas: 'avatar datos etiquetas acciones';
+  align-items: center;
+  gap: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-fila:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-accent);
+}
+
+.admin-avatar {
+  grid-area: avatar;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-avatar--administrador {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.admin-avatar--normal {
+  background: var(--color-surface-2);
+  color: var(--color-text-soft);
+}
+
+.admin-fila__datos {
+  grid-area: datos;
+  min-width: 0;
+}
+
+.admin-fila__nombre {
+  margin: 0 0 2px;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-fila__correo {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-fila__etiquetas {
+  grid-area: etiquetas;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-etiqueta-rol {
+  border-radius: 99px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-etiqueta-rol--administrador {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.admin-etiqueta-rol--normal {
+  background: var(--color-surface-2);
+  color: var(--color-text-soft);
+}
+
+.admin-estado {
+  border-radius: 99px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-estado--activo {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.admin-estado--inactivo {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.admin-estado--bloqueado {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.admin-fila__acciones {
+  grid-area: acciones;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-boton-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.admin-boton-accion--ver {
+  background: none;
   border-color: var(--color-border);
   color: var(--color-text-soft);
 }
 
-.boton-accion-admin--editar {
+.admin-boton-accion--ver:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.admin-boton-accion--editar {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #000;
+  color: #080808;
 }
 
-.boton-accion-admin--eliminar {
-  background: transparent;
-  border-color: #ef4444;
-  color: #ef4444;
+.admin-boton-accion--editar:hover {
+  background: var(--color-accent-hover);
 }
 
+/* ── LISTA VACÍA ── */
 .admin-sin-resultados {
-  text-align: center;
-  padding: 3rem;
-  color: var(--color-text-soft);
-}
-
-/* Detalle modal */
-.detalle-usuario-admin {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  text-align: center;
 }
 
-.avatar-detalle-admin {
+.admin-sin-resultados__icono {
+  color: var(--color-text-muted);
+  font-size: 32px;
+}
+
+/* ── MODAL DE DETALLE ── */
+.admin-detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-detalle__avatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--color-accent);
-  color: #000;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
-.nombre-detalle-admin {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-text);
+.admin-detalle__nombre {
   margin: 0;
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.correo-detalle-admin {
+.admin-detalle__correo {
+  margin: 0;
+  color: var(--color-text-muted);
   font-size: 13px;
-  color: var(--color-text-soft);
-  margin: 0 0 4px;
 }
 
-.campos-detalle-admin {
+.admin-detalle__etiquetas {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.admin-detalle__campos {
   width: 100%;
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.campo-detalle-admin {
+.admin-detalle__campo {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
-  background: var(--color-surface-hover);
-  border-radius: 8px;
 }
 
-.etiqueta-campo-detalle {
+.admin-detalle__etiqueta {
+  color: var(--color-text-muted);
   font-size: 13px;
-  color: var(--color-text-soft);
 }
 
-.valor-campo-detalle {
-  font-size: 14px;
+.admin-detalle__valor {
+  color: var(--color-text);
+  font-size: 13px;
   font-weight: 500;
+  text-align: right;
+}
+
+/* ── BOTONES DE MODAL (HU-0037) ── */
+.admin-texto-confirmacion {
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: 14px;
+  text-align: center;
+}
+
+.admin-texto-confirmacion strong {
   color: var(--color-text);
 }
 
-.boton-peligro {
-  width: 100%;
-  padding: 12px;
-  background: #ef4444;
-  border: none;
-  border-radius: 8px;
-  color: white;
+.admin-boton-peligro {
+  background: var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: 13px;
+  color: var(--color-blanco);
   font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  font-weight: 700;
+  transition: opacity 0.2s;
 }
 
-.boton-peligro:hover { opacity: 0.85; }
+.admin-boton-peligro:hover {
+  opacity: 0.85;
+}
 
-@media (max-width: 640px) {
-  .pagina-admin { padding: 1rem; }
-  .fila-usuario-admin { flex-direction: column; align-items: flex-start; }
-  .saldo-usuario-admin { text-align: left; }
+.admin-boton-secundario {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  color: var(--color-text-soft);
+  font-size: 14px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.admin-boton-secundario:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .admin-pagina {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-fila {
+    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-areas:
+      'avatar datos'
+      'avatar etiquetas'
+      'avatar acciones';
+    gap: 8px 12px;
+  }
+
+  .admin-fila__acciones {
+    justify-content: flex-start;
+  }
 }
