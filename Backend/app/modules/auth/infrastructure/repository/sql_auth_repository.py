@@ -62,7 +62,7 @@ class SqlAuthRepository(AuthRepository):
             fecha_expiracion=fecha_expiracion
         )
         self.db.add(token)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(token)
         return token
 
@@ -95,11 +95,11 @@ class SqlAuthRepository(AuthRepository):
         )
         if token:
             token.usado = True
-            self.db.commit()
+            self.db.flush()
 
     def invalidate_user_tokens(self, usuario_id):
         self.db.query(ResetTokenModel).filter(
             ResetTokenModel.usuario_id == usuario_id,
             ResetTokenModel.usado == False
         ).update({"usado": True})
-        self.db.commit()
+        self.db.flush()

@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 from app.core.dependencies.email_service import EmailService
 
@@ -103,22 +105,24 @@ def manejar_error(error):
 def solicitar_vinculacion(
     data: SolicitarVinculacionRequest,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     email_service=Depends(get_email_service),
 ):
     """
     El padre solicita vincular una cuenta hija.
     """
     caso_uso = SolicitarVinculacionUseCase(
-        repository=repository,
+        repository=unit_of_work.parentales,
         email_service=email_service,
     )
 
-    return caso_uso.execute(
+    resultado = caso_uso.execute(
         id_padre=current_user.id_usuario,
         nombre_hijo=data.nombre_hijo,
         correo_hijo=data.correo_hijo,
     )
+    unit_of_work.commit()
+    return resultado
 
 
 @router.post(
@@ -128,17 +132,19 @@ def solicitar_vinculacion(
 def confirmar_vinculacion(
     data: ConfirmarCodigoRequest,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     """
     El hijo confirma el código de vinculación.
     """
-    caso_uso = ConfirmarVinculacionUseCase(repository)
+    caso_uso = ConfirmarVinculacionUseCase(unit_of_work.parentales)
 
-    return caso_uso.execute(
+    resultado = caso_uso.execute(
         current_user.id_usuario,
         data.codigo,
     )
+    unit_of_work.commit()
+    return resultado
 
 
 @router.get(
@@ -168,7 +174,7 @@ def obtener_vinculaciones(
 def solicitar_desvinculacion(
     data: SolicitarDesvinculacionRequest,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     email_service=Depends(get_email_service),
 ):
     """
@@ -178,12 +184,13 @@ def solicitar_desvinculacion(
     pero el hijo lo introduce y confirma.
     """
     solicitud = SolicitarDesvinculacionUseCase(
-        repository,
+        unit_of_work.parentales,
         email_service,
     ).execute(
         current_user.id_usuario,
         data.correo_padre,
     )
+    unit_of_work.commit()
 
     return SolicitudResponse(
         mensaje="Código enviado al correo del padre",
@@ -197,18 +204,19 @@ def solicitar_desvinculacion(
 def confirmar_desvinculacion(
     data: ConfirmarCodigoRequest,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     """
     El hijo confirma la desvinculación usando el código
     enviado al padre.
     """
     ConfirmarDesvinculacionUseCase(
-        repository
+        unit_of_work.parentales
     ).execute(
         current_user.id_usuario,
         data.codigo,
     )
+    unit_of_work.commit()
 
     return {
         "mensaje": "Cuenta desvinculada correctamente"
@@ -314,15 +322,17 @@ def actualizar_permisos_hijo(
     id_hijo: int,
     data: PermisosUpdate,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     try:
-        return ActualizarPermisosHijo(
-            repository
+        resultado = ActualizarPermisosHijo(
+            unit_of_work.parentales
         ).execute(
             current_user.id_usuario,
             id_hijo,
             data.permisos,
         )
+        unit_of_work.commit()
+        return resultado
     except Exception as error:
         manejar_error(error)

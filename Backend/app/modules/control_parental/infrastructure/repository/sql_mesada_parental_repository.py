@@ -38,12 +38,12 @@ class SqlMesadaParentalRepository:
 
     def crear(self, model):
         self.db.add(model)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(model)
         return model
 
     def guardar(self):
-        self.db.commit()
+        self.db.flush()
 
     def rollback(self):
         self.db.rollback()

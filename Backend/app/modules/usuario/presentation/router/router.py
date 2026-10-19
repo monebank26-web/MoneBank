@@ -44,10 +44,9 @@ def get_usuario_repository(
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(
     usuario: UsuarioCreate,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
-    caso_uso = CrearUsuario(repository, unit_of_work.cuentas)
+    caso_uso = CrearUsuario(unit_of_work.usuarios, unit_of_work.cuentas)
     resultado = caso_uso.execute(usuario.model_dump())
     unit_of_work.commit()
     return resultado
@@ -76,7 +75,7 @@ def obtener_usuario_por_id(
 def actualizar_usuario(
     id_usuario: int,
     usuario: UsuarioUpdate,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     current_user: object = Depends(get_current_user),
 ):
     if current_user.id_usuario != id_usuario:
@@ -85,13 +84,15 @@ def actualizar_usuario(
             detail="No puedes modificar otro usuario"
         )
 
-    caso_uso = ActualizarUsuarioUseCase(repository)
+    caso_uso = ActualizarUsuarioUseCase(unit_of_work.usuarios)
 
     try:
-        return caso_uso.execute(
+        resultado = caso_uso.execute(
             id_usuario,
             usuario.model_dump(exclude_unset=True)
         )
+        unit_of_work.commit()
+        return resultado
     except HTTPException:
         raise
     except Exception as e:
@@ -103,19 +104,23 @@ def actualizar_usuario(
 @router.delete("/{id_usuario}")
 def eliminar_usuario(
     id_usuario: int,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
 ):
-    caso_uso = EliminarUsuarioUseCase(repository)
-    return caso_uso.execute(id_usuario)
+    caso_uso = EliminarUsuarioUseCase(unit_of_work.usuarios)
+    resultado = caso_uso.execute(id_usuario)
+    unit_of_work.commit()
+    return resultado
 
 
 @router.put("/{id_usuario}/bloquear", response_model=BloqueoUsuarioResponse)
 def bloquear_usuario(
     id_usuario: int,
     datos: BloqueoUsuarioRequest,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
 ):
-    caso_uso = BloquearUsuario(repository)
-    return caso_uso.execute(id_usuario, datos.motivo)
+    caso_uso = BloquearUsuario(unit_of_work.usuarios)
+    resultado = caso_uso.execute(id_usuario, datos.motivo)
+    unit_of_work.commit()
+    return resultado

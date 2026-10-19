@@ -204,7 +204,7 @@ class SqlEjecucionMesadaRepository:
         mesada.proxima_ejecucion = proxima
 
         # Todo se confirma en una sola transacción
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(ejecucion)
 
         return ejecucion, proxima

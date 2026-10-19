@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
+from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 from app.modules.control_parental.application.use_cases.configurar_mesada import ConfigurarMesada
 from app.modules.control_parental.application.use_cases.obtener_mesada import ObtenerMesada
@@ -27,14 +29,16 @@ def crear_mesada(
     id_hijo: int,
     data: MesadaCreate,
     current_user=Depends(get_current_user),
-    repository=Depends(get_repository),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
 ):
     try:
-        return ConfigurarMesada(repository).execute(
+        resultado = ConfigurarMesada(unit_of_work.mesadas).execute(
             current_user.id_usuario,
             id_hijo,
             data.model_dump(),
         )
+        unit_of_work.commit()
+        return resultado
     except Exception as error:
         manejar_error(error)
 
