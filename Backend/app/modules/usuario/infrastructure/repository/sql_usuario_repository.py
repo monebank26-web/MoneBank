@@ -1,9 +1,11 @@
 from sqlalchemy import func, or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.modules.usuario.domain.entity.usuario import Usuario
 from app.modules.usuario.infrastructure.model.usuario_model import UsuarioModel
+from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
 
 
 # Restricción única del correo en la tabla `usuario`.
@@ -106,12 +108,16 @@ class SqlUsuarioRepository(UsuarioRepository):
         for key, value in usuario_data.items():
             setattr(usuario, key, value)
 
-        # `flush` deja el cambio dentro de la transacción abierta para que la
-        # ruta lo confirme junto con la auditoría en un único commit.
-        # El flush debe ir antes del refresh: con autoflush=False un refresh
-        # sobre atributos modificados descarta los cambios sin guardarlos.
-        self.db.flush()
-        self.db.refresh(usuario)
+        try:
+            self.db.flush()
+            self.db.refresh(usuario)
+        except IntegrityError as error:
+            self.db.rollback()
+
+            if es_conflicto_de_correo(error):
+                raise EmailAlreadyExistsException()
+
+            raise
 
         return Usuario(
             id_usuario=usuario.id_usuario,

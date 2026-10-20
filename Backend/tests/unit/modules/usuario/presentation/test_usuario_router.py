@@ -8,9 +8,6 @@ from sqlalchemy.exc import IntegrityError
 
 from app.core.security.auth import get_current_user
 from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
-from app.modules.usuario.infrastructure.repository.sql_usuario_repository import (
-    RESTRICCION_CORREO_USUARIO,
-)
 from app.modules.usuario.presentation.router.router import (
     actualizar_usuario,
     obtener_usuario_por_id,
@@ -182,11 +179,11 @@ def test_actualizar_usuario_con_correo_duplicado_responde_409_sin_commit():
     unit_of_work.registros_accion_admin.registrar.assert_not_called()
 
 
-def test_actualizar_usuario_convierte_el_choque_de_correo_en_409():
+def test_actualizar_usuario_propaga_el_error_de_correo_del_repositorio_con_rollback():
     repository = Mock()
     repository.get_by_id.return_value = Mock(id_usuario=9)
     repository.exists_by_email.return_value = False
-    repository.update.side_effect = error_de_integridad(RESTRICCION_CORREO_USUARIO)
+    repository.update.side_effect = EmailAlreadyExistsException()
     unit_of_work = Mock()
 
     with pytest.raises(EmailAlreadyExistsException):

@@ -1,7 +1,6 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
@@ -16,7 +15,6 @@ from app.shared.exceptions.common import UsuarioNotFoundException
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.modules.usuario.infrastructure.repository.sql_usuario_repository import (
     SqlUsuarioRepository,
-    es_conflicto_de_correo,
 )
 from app.modules.usuario.application.use_cases.actualizar_usuarios import (
     ActualizarUsuarioUseCase,
@@ -154,14 +152,8 @@ def actualizar_usuario(
     except EmailAlreadyExistsException:
         unit_of_work.rollback()
         raise
-    except IntegrityError as error:
+    except Exception:
         unit_of_work.rollback()
-
-        # Solo el choque de correo es 409; cualquier otro error de integridad
-        # se deja subir para que el manejador global responda 500.
-        if es_conflicto_de_correo(error):
-            raise EmailAlreadyExistsException()
-
         raise
 
     return resultado

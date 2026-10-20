@@ -130,21 +130,38 @@ def test_update_deja_el_cambio_en_la_transaccion_sin_confirmarlo():
     assert sesion.get(UsuarioModel, 1).nombres == "Ana"
 
 
-def test_update_se_guarda_cuando_el_llamador_confirma():
+def test_update_traduce_el_choque_de_correo_en_excepcion_de_negocio():
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    import pytest
+    from sqlalchemy.exc import IntegrityError
+
+    from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
+
     sesion = sesion_sqlite()
     agregar_usuario(sesion, 1, "ana@test.com")
+    agregar_usuario(sesion, 2, "bruno@test.com")
     sesion.commit()
 
     repositorio = SqlUsuarioRepository(sesion)
+    repositorio.db = Mock(wraps=sesion)
 
-    repositorio.update(1, {"nombres": "Ana Maria", "correo": "ana.maria@test.com"})
-    sesion.commit()
-    sesion.expire_all()
+    class ErrorDelMotor(Exception):
+        def __init__(self, restriccion=None, mensaje="error de integridad"):
+            super().__init__(mensaje)
+            if restriccion:
+                self.diag = SimpleNamespace(constraint_name=restriccion)
 
-    guardado = sesion.get(UsuarioModel, 1)
+    def _error_de_integridad(restriccion=None, mensaje="error de integridad"):
+        return IntegrityError("UPDATE usuario", {}, ErrorDelMotor(restriccion, mensaje))
 
-    assert guardado.nombres == "Ana Maria"
-    assert guardado.correo == "ana.maria@test.com"
+    repositorio.db.flush = Mock(side_effect=_error_de_integridad(RESTRICCION_CORREO_USUARIO))
+
+    with pytest.raises(EmailAlreadyExistsException):
+        repositorio.update(1, {"correo": "bruno@test.com"})
+
+    repositorio.db.rollback.assert_called_once()
 
 
 def test_update_devuelve_none_si_el_usuario_no_existe():
