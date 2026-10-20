@@ -12,7 +12,9 @@ class Usuario:
         id_tipo_usuario,
         fecha_creacion=None,
         motivo_bloqueo=None,
-        fecha_bloqueo=None
+        fecha_bloqueo=None,
+        intentos_fallidos=0,
+        bloqueado_hasta=None
     ):
         self.id_usuario = id_usuario
         self.nombres = nombres
@@ -25,3 +27,5 @@ class Usuario:
         self.fecha_creacion = fecha_creacion
         self.motivo_bloqueo = motivo_bloqueo
         self.fecha_bloqueo = fecha_bloqueo
+        self.intentos_fallidos = intentos_fallidos or 0
+        self.bloqueado_hasta = bloqueado_hasta

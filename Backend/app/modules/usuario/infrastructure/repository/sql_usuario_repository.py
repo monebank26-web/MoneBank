@@ -32,6 +32,26 @@ class SqlUsuarioRepository(UsuarioRepository):
     def __init__(self, db: Session):
         self.db = db
 
+    def _to_entity(self, modelo: UsuarioModel):
+        if not modelo:
+            return None
+
+        return Usuario(
+            id_usuario=modelo.id_usuario,
+            nombres=modelo.nombres,
+            apellidos=modelo.apellidos,
+            correo=modelo.correo,
+            contrasena=modelo.contrasena,
+            estado=modelo.estado,
+            id_rol=modelo.id_rol,
+            id_tipo_usuario=modelo.id_tipo_usuario,
+            fecha_creacion=modelo.fecha_creacion,
+            motivo_bloqueo=modelo.motivo_bloqueo,
+            fecha_bloqueo=modelo.fecha_bloqueo,
+            intentos_fallidos=getattr(modelo, "intentos_fallidos", 0) or 0,
+            bloqueado_hasta=getattr(modelo, "bloqueado_hasta", None),
+        )
+
     def create(self, usuario_data):
         usuario = UsuarioModel(**usuario_data)
         self.db.add(usuario)
@@ -86,14 +106,15 @@ class SqlUsuarioRepository(UsuarioRepository):
             .all()
         )
 
-        return items, total
+        return [self._to_entity(item) for item in items], total
 
     def get_by_id(self, id_usuario):
-        return (
+        usuario = (
             self.db.query(UsuarioModel)
             .filter(UsuarioModel.id_usuario == id_usuario)
             .first()
         )
+        return self._to_entity(usuario)
 
     def update(self, id_usuario, usuario_data):
         usuario = (
