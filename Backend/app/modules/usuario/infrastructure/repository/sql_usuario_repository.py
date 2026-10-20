@@ -55,24 +55,44 @@ class SqlUsuarioRepository(UsuarioRepository):
     def create(self, usuario_data):
         usuario = UsuarioModel(**usuario_data)
         self.db.add(usuario)
-        self.db.commit()
-        self.db.refresh(usuario)
-        return usuario
+
+        try:
+            self.db.flush()
+            self.db.refresh(usuario)
+        except IntegrityError as error:
+            self.db.rollback()
+
+            if es_conflicto_de_correo(error):
+                raise EmailAlreadyExistsException()
+
+            raise
+
+        return Usuario(
+            id_usuario=usuario.id_usuario,
+            nombres=usuario.nombres,
+            apellidos=usuario.apellidos,
+            correo=usuario.correo,
+            contrasena=usuario.contrasena,
+            estado=usuario.estado,
+            id_rol=usuario.id_rol,
+            id_tipo_usuario=usuario.id_tipo_usuario,
+            fecha_creacion=usuario.fecha_creacion,
+            motivo_bloqueo=usuario.motivo_bloqueo,
+            fecha_bloqueo=usuario.fecha_bloqueo,
+            intentos_fallidos=getattr(usuario, "intentos_fallidos", 0) or 0,
+            bloqueado_hasta=getattr(usuario, "bloqueado_hasta", None),
+        )
 
     def exists_by_email(self, correo, excluir_id_usuario=None):
-        if not correo:
-            return False
-
-        consulta = self.db.query(UsuarioModel).filter(
-            func.lower(func.trim(UsuarioModel.correo)) == correo.strip().lower()
+        correo_normalizado = (correo or "").strip().lower()
+        consulta = self.db.query(UsuarioModel.id_usuario).filter(
+            func.lower(func.trim(UsuarioModel.correo)) == correo_normalizado
         )
 
         if excluir_id_usuario is not None:
-            consulta = consulta.filter(
-                UsuarioModel.id_usuario != excluir_id_usuario
-            )
+            consulta = consulta.filter(UsuarioModel.id_usuario != excluir_id_usuario)
 
-        return consulta.first() is not None
+        return self.db.query(consulta.exists()).scalar()
 
     def get_all(self):
         return self.db.query(UsuarioModel).all()
@@ -80,14 +100,14 @@ class SqlUsuarioRepository(UsuarioRepository):
     def listar(self, filtros):
         consulta = self.db.query(UsuarioModel)
 
-        buscar = (filtros.get("buscar") or "").strip()
-        if buscar:
-            patron = f"%{buscar}%"
+        busqueda = filtros.get("busqueda") if filtros.get("busqueda") is not None else filtros.get("buscar")
+        if busqueda and str(busqueda).strip():
+            termino = f"%{str(busqueda).strip()}%"
             consulta = consulta.filter(
                 or_(
-                    UsuarioModel.nombres.ilike(patron),
-                    UsuarioModel.apellidos.ilike(patron),
-                    UsuarioModel.correo.ilike(patron),
+                    UsuarioModel.nombres.ilike(termino),
+                    UsuarioModel.apellidos.ilike(termino),
+                    UsuarioModel.correo.ilike(termino),
                 )
             )
 
@@ -97,14 +117,18 @@ class SqlUsuarioRepository(UsuarioRepository):
         if filtros.get("id_rol"):
             consulta = consulta.filter(UsuarioModel.id_rol == filtros["id_rol"])
 
+        if filtros.get("id_tipo_usuario"):
+            consulta = consulta.filter(
+                UsuarioModel.id_tipo_usuario == filtros["id_tipo_usuario"]
+            )
+
         total = consulta.count()
 
-        items = (
-            consulta.order_by(UsuarioModel.id_usuario.asc())
-            .offset((filtros["pagina"] - 1) * filtros["por_pagina"])
-            .limit(filtros["por_pagina"])
-            .all()
-        )
+        pagina = filtros.get("pagina", 1)
+        limite = filtros.get("limite") if filtros.get("limite") is not None else filtros.get("por_pagina", 10)
+        offset = (int(pagina) - 1) * int(limite)
+
+        items = consulta.order_by(UsuarioModel.id_usuario.asc()).offset(offset).limit(int(limite)).all()
 
         return [self._to_entity(item) for item in items], total
 
@@ -140,19 +164,7 @@ class SqlUsuarioRepository(UsuarioRepository):
 
             raise
 
-        return Usuario(
-            id_usuario=usuario.id_usuario,
-            nombres=usuario.nombres,
-            apellidos=usuario.apellidos,
-            correo=usuario.correo,
-            contrasena=usuario.contrasena,
-            estado=usuario.estado,
-            id_rol=usuario.id_rol,
-            id_tipo_usuario=usuario.id_tipo_usuario,
-            fecha_creacion=usuario.fecha_creacion,
-            motivo_bloqueo=usuario.motivo_bloqueo,
-            fecha_bloqueo=usuario.fecha_bloqueo,
-        )
+        return self._to_entity(usuario)
 
     def delete(self, id_usuario):
         usuario = (
@@ -208,3 +220,16 @@ class SqlUsuarioRepository(UsuarioRepository):
         self.db.commit()
         self.db.refresh(usuario)
         return usuario
+
+    def contar_admins_activos(self, excluir_id_usuario=None):
+        from app.core.security.roles import ROL_ADMIN
+
+        consulta = self.db.query(func.count(UsuarioModel.id_usuario)).filter(
+            UsuarioModel.estado == "ACTIVO",
+            UsuarioModel.id_rol == ROL_ADMIN,
+        )
+
+        if excluir_id_usuario is not None:
+            consulta = consulta.filter(UsuarioModel.id_usuario != excluir_id_usuario)
+
+        return consulta.scalar() or 0

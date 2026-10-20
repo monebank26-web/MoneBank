@@ -1,3 +1,7 @@
+from app.shared.constants.codigos_error import (
+    CODIGO_NO_PUEDE_BLOQUEARSE,
+    CODIGO_ULTIMO_ADMINISTRADOR,
+)
 from app.shared.exceptions.base import BusinessError
 
 
@@ -7,3 +11,13 @@ class CuentaYaBloqueadaException(BusinessError):
 
 class MotivoBloqueoRequeridoException(BusinessError):
     message = "El motivo del bloqueo es obligatorio"
+
+
+class NoPuedeBloquearseException(BusinessError):
+    message = "No puedes bloquear tu propia cuenta"
+    code = CODIGO_NO_PUEDE_BLOQUEARSE
+
+
+class UltimoAdministradorException(BusinessError):
+    message = "No se puede bloquear al último administrador activo"
+    code = CODIGO_ULTIMO_ADMINISTRADOR

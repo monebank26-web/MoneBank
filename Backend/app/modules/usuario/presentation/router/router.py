@@ -177,9 +177,13 @@ def bloquear_usuario(
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
 ):
-    caso_uso = BloquearUsuario(repository)
-    resultado = caso_uso.execute(id_usuario, datos.motivo)
-    # El repositorio ya no confirma: la ruta es la dueña del commit.
-    unit_of_work.commit()
+    caso_uso = BloquearUsuario(repository, unit_of_work.registros_accion_admin)
+
+    try:
+        resultado = caso_uso.execute(id_usuario, datos.motivo, id_admin=current_user.id_usuario)
+        unit_of_work.commit()
+    except Exception:
+        unit_of_work.rollback()
+        raise
 
     return resultado

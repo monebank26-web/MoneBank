@@ -42,3 +42,7 @@ class UsuarioRepository(ABC):
     @abstractmethod
     def update_password(self, usuario_id, nuevo_hash):
         pass
+
+    @abstractmethod
+    def contar_admins_activos(self, excluir_id_usuario=None):
+        pass
