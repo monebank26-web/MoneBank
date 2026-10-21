@@ -4,6 +4,9 @@ from app.core.database.unit_of_work import UnitOfWork
 from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import (
     SqlAhorroRepository,
 )
+from app.modules.analytics.infrastructure.repository.sql_analytics_repository import (
+    SqlAnalyticsRepository,
+)
 from app.modules.auth.infrastructure.repository.sql_auth_repository import (
     SqlAuthRepository,
 )
@@ -39,6 +42,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.usuarios = SqlUsuarioRepository(session)
         self.auth = SqlAuthRepository(session, self.usuarios)
         self.ahorros = SqlAhorroRepository(session)
+        self.analiticas = SqlAnalyticsRepository(session)
         self.programaciones = SqlProgramacionRepository(session)
         self.parentales = SqlControlParentalRepository(session)
         self.mesadas = SqlMesadaParentalRepository(session)

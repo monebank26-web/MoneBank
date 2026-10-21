@@ -1,60 +1,22 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Query
 
-from app.core.database.connection import get_db
-from app.core.database.unit_of_work import UnitOfWork
-from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
-from app.core.dependencies.email_service import EmailService
 
-from app.modules.control_parental.infrastructure.repository.sql_control_parental_repository import (
-    SqlControlParentalRepository,
+from app.modules.control_parental.presentation.controller.control_parental_controller import (
+    ControlParentalController,
+    get_control_parental_controller,
 )
-
-from app.modules.control_parental.application.use_cases.solicitar_vinculacion import (
-    SolicitarVinculacionUseCase,
-)
-
-from app.modules.control_parental.application.use_cases.confirmar_vinculacion import (
-    ConfirmarVinculacionUseCase,
-)
-
-from app.modules.control_parental.application.use_cases.solicitar_desvinculacion import (
-    SolicitarDesvinculacionUseCase,
-)
-
-from app.modules.control_parental.application.use_cases.confirmar_desvinculacion import (
-    ConfirmarDesvinculacionUseCase,
-)
-
-from app.modules.control_parental.application.use_cases.obtener_vinculaciones import (
-    ObtenerVinculacionesUseCase,
-)
-
-from app.modules.control_parental.application.use_cases.dashboard_parental import (
-    ListarHijosParentales,
-    ObtenerResumenHijo,
-    ObtenerTransaccionesHijo,
-    ObtenerPermisosHijo,
-    ActualizarPermisosHijo,
-)
-
 from app.modules.control_parental.presentation.schema.control_parental_schema import (
+    ConfirmarCodigoRequest,
     HijoParentalResponse,
-    ResumenHijoResponse,
-    TransaccionParentalResponse,
     PermisoResponse,
     PermisosUpdate,
-)
-
-# Estos esquemas deben existir en tu archivo actual.
-# Se conservan porque son utilizados por vinculación y desvinculación.
-from app.modules.control_parental.presentation.schema.control_parental_schema import (
-    SolicitarVinculacionRequest,
-    ConfirmarCodigoRequest,
-    SolicitarDesvinculacionRequest,
     RelacionResponse,
+    ResumenHijoResponse,
+    SolicitarDesvinculacionRequest,
+    SolicitarVinculacionRequest,
     SolicitudResponse,
+    TransaccionParentalResponse,
 )
 
 
@@ -62,36 +24,6 @@ router = APIRouter(
     prefix="/control-parental",
     tags=["Control parental"],
 )
-
-
-# ============================================================
-# DEPENDENCIAS
-# ============================================================
-
-def get_parental_repository(
-    db: Session = Depends(get_db),
-):
-
-    return SqlControlParentalRepository(db)
-
-
-def get_email_service():
-    return EmailService()
-
-
-def manejar_error(error):
-    status_code = getattr(error, "status_code", 403)
-
-    detail = getattr(
-        error,
-        "message",
-        str(error),
-    )
-
-    raise HTTPException(
-        status_code=status_code,
-        detail=detail,
-    )
 
 
 # ============================================================
@@ -105,24 +37,12 @@ def manejar_error(error):
 def solicitar_vinculacion(
     data: SolicitarVinculacionRequest,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
-    email_service=Depends(get_email_service),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
     """
     El padre solicita vincular una cuenta hija.
     """
-    caso_uso = SolicitarVinculacionUseCase(
-        repository=unit_of_work.parentales,
-        email_service=email_service,
-    )
-
-    resultado = caso_uso.execute(
-        id_padre=current_user.id_usuario,
-        nombre_hijo=data.nombre_hijo,
-        correo_hijo=data.correo_hijo,
-    )
-    unit_of_work.commit()
-    return resultado
+    return controller.solicitar_vinculacion(data, current_user)
 
 
 @router.post(
@@ -132,19 +52,12 @@ def solicitar_vinculacion(
 def confirmar_vinculacion(
     data: ConfirmarCodigoRequest,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
     """
     El hijo confirma el código de vinculación.
     """
-    caso_uso = ConfirmarVinculacionUseCase(unit_of_work.parentales)
-
-    resultado = caso_uso.execute(
-        current_user.id_usuario,
-        data.codigo,
-    )
-    unit_of_work.commit()
-    return resultado
+    return controller.confirmar_vinculacion(data, current_user)
 
 
 @router.get(
@@ -153,13 +66,9 @@ def confirmar_vinculacion(
 )
 def obtener_vinculaciones(
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    return ObtenerVinculacionesUseCase(
-        repository
-    ).execute(
-        current_user.id_usuario
-    )
+    return controller.obtener_vinculaciones(current_user)
 
 
 # ============================================================
@@ -174,8 +83,7 @@ def obtener_vinculaciones(
 def solicitar_desvinculacion(
     data: SolicitarDesvinculacionRequest,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
-    email_service=Depends(get_email_service),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
     """
     El hijo solicita desvincularse.
@@ -183,19 +91,7 @@ def solicitar_desvinculacion(
     El código se envía al correo del padre,
     pero el hijo lo introduce y confirma.
     """
-    solicitud = SolicitarDesvinculacionUseCase(
-        unit_of_work.parentales,
-        email_service,
-    ).execute(
-        current_user.id_usuario,
-        data.correo_padre,
-    )
-    unit_of_work.commit()
-
-    return SolicitudResponse(
-        mensaje="Código enviado al correo del padre",
-        id_solicitud=solicitud.id_solicitud,
-    )
+    return controller.solicitar_desvinculacion(data, current_user)
 
 
 @router.post(
@@ -204,23 +100,13 @@ def solicitar_desvinculacion(
 def confirmar_desvinculacion(
     data: ConfirmarCodigoRequest,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
     """
     El hijo confirma la desvinculación usando el código
     enviado al padre.
     """
-    ConfirmarDesvinculacionUseCase(
-        unit_of_work.parentales
-    ).execute(
-        current_user.id_usuario,
-        data.codigo,
-    )
-    unit_of_work.commit()
-
-    return {
-        "mensaje": "Cuenta desvinculada correctamente"
-    }
+    return controller.confirmar_desvinculacion(data, current_user)
 
 
 # ============================================================
@@ -233,17 +119,9 @@ def confirmar_desvinculacion(
 )
 def listar_hijos(
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository)
-,
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    try:
-        return ListarHijosParentales(
-            repository
-        ).execute(
-            current_user.id_usuario
-        )
-    except Exception as error:
-        manejar_error(error)
+    return controller.listar_hijos(current_user)
 
 
 @router.get(
@@ -253,18 +131,9 @@ def listar_hijos(
 def obtener_resumen_hijo(
     id_hijo: int,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository)
-,
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    try:
-        return ObtenerResumenHijo(
-            repository
-        ).execute(
-            current_user.id_usuario,
-            id_hijo,
-        )
-    except Exception as error:
-        manejar_error(error)
+    return controller.obtener_resumen_hijo(id_hijo, current_user)
 
 
 @router.get(
@@ -279,19 +148,9 @@ def obtener_transacciones_hijo(
         le=100,
     ),
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository)
-,
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    try:
-        return ObtenerTransaccionesHijo(
-            repository
-        ).execute(
-            current_user.id_usuario,
-            id_hijo,
-            limite,
-        )
-    except Exception as error:
-        manejar_error(error)
+    return controller.obtener_transacciones_hijo(id_hijo, limite, current_user)
 
 
 @router.get(
@@ -301,17 +160,9 @@ def obtener_transacciones_hijo(
 def obtener_permisos_hijo(
     id_hijo: int,
     current_user=Depends(get_current_user),
-    repository=Depends(get_parental_repository),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    try:
-        return ObtenerPermisosHijo(
-            repository
-        ).execute(
-            current_user.id_usuario,
-            id_hijo,
-        )
-    except Exception as error:
-        manejar_error(error)
+    return controller.obtener_permisos_hijo(id_hijo, current_user)
 
 
 @router.put(
@@ -322,17 +173,6 @@ def actualizar_permisos_hijo(
     id_hijo: int,
     data: PermisosUpdate,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
-    try:
-        resultado = ActualizarPermisosHijo(
-            unit_of_work.parentales
-        ).execute(
-            current_user.id_usuario,
-            id_hijo,
-            data.permisos,
-        )
-        unit_of_work.commit()
-        return resultado
-    except Exception as error:
-        manejar_error(error)
+    return controller.actualizar_permisos_hijo(id_hijo, data, current_user)

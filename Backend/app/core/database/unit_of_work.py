@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
 from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
+from app.modules.analytics.domain.interface.analytics_repository import (
+    AnalyticsRepository,
+)
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
 from app.modules.control_parental.domain.interface.control_parental_repository import (
     ControlParentalRepository,
@@ -28,6 +31,7 @@ class UnitOfWork(ABC):
     usuarios: UsuarioRepository
     auth: AuthRepository
     ahorros: AhorroRepository
+    analiticas: AnalyticsRepository
     programaciones: ProgramacionAhorroRepository
     parentales: ControlParentalRepository
     mesadas: MesadaParentalRepository
