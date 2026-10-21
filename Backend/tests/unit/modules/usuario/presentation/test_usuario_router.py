@@ -1,36 +1,24 @@
-from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
 from fastapi import HTTPException
 from fastapi.routing import APIRoute
-from sqlalchemy.exc import IntegrityError
 
 from app.core.security.auth import get_current_user
 from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
 from app.modules.usuario.presentation.router.router import (
     actualizar_usuario,
+    bloquear_usuario,
+    crear_usuario,
+    eliminar_usuario,
     obtener_usuario_por_id,
+    obtener_usuarios,
     router,
 )
-from app.modules.usuario.presentation.schema.usuario_schema import UsuarioUpdate
-from app.shared.constants.acciones import ACCION_MODIFICAR_USUARIO
-from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
-from app.shared.exceptions.common import UsuarioNotFoundException
-
-
-class ErrorDelMotor(Exception):
-    """Simula el error del motor: en Postgres el nombre va en `diag`."""
-
-    def __init__(self, restriccion=None, mensaje="error de integridad"):
-        super().__init__(mensaje)
-
-        if restriccion:
-            self.diag = SimpleNamespace(constraint_name=restriccion)
-
-
-def error_de_integridad(restriccion=None, mensaje="error de integridad"):
-    return IntegrityError("UPDATE usuario", {}, ErrorDelMotor(restriccion, mensaje))
+from app.modules.usuario.presentation.schema.usuario_schema import (
+    BloqueoUsuarioRequest,
+    UsuarioUpdate,
+)
 
 
 def buscar_ruta(metodo, path):
@@ -68,154 +56,100 @@ def test_listar_usuarios_sigue_exigiendo_rol_admin():
     assert dependencia_rol(usuario_actual(6, ROL_ADMIN)).id_usuario == 6
 
 
-def test_obtener_usuario_por_id_bloquea_a_otro_usuario():
-    repository = Mock()
+def test_listar_usuarios_conserva_los_filtros_de_la_url():
+    ruta = buscar_ruta("GET", "/usuarios/")
 
-    with pytest.raises(HTTPException) as exc:
-        obtener_usuario_por_id(
-            9,
-            repository=repository,
-            current_user=usuario_actual(5, ROL_USUARIO),
-        )
+    parametros = {parametro.name for parametro in ruta.dependant.query_params}
 
-    assert exc.value.status_code == 403
-    repository.get_by_id.assert_not_called()
-
-
-def test_obtener_usuario_por_id_permite_al_admin_y_al_propio_usuario():
-    for current_user in (
-        usuario_actual(6, ROL_ADMIN),
-        usuario_actual(9, ROL_USUARIO),
-    ):
-        repository = Mock()
-        repository.get_by_id.return_value = Mock(id_usuario=9)
-
-        resultado = obtener_usuario_por_id(
-            9,
-            repository=repository,
-            current_user=current_user,
-        )
-
-        assert resultado.id_usuario == 9
+    assert {
+        "buscar",
+        "estado",
+        "id_rol",
+        "pagina",
+        "por_pagina",
+    } <= parametros
 
 
-def test_obtener_usuario_por_id_lanza_404_si_no_existe():
-    repository = Mock()
-    repository.get_by_id.return_value = None
+def test_crear_usuario_delega_en_el_controller():
+    controller = Mock()
+    controller.crear_usuario.return_value = {"id_usuario": 1}
+    usuario = Mock()
 
-    with pytest.raises(UsuarioNotFoundException):
-        obtener_usuario_por_id(
-            99,
-            repository=repository,
-            current_user=usuario_actual(6, ROL_ADMIN),
-        )
+    resultado = crear_usuario(usuario, controller)
 
-
-def test_actualizar_usuario_bloquea_a_otro_usuario():
-    unit_of_work = Mock()
-
-    with pytest.raises(HTTPException) as exc:
-        actualizar_usuario(
-            9,
-            UsuarioUpdate(nombres="Ana"),
-            repository=Mock(),
-            unit_of_work=unit_of_work,
-            current_user=usuario_actual(5, ROL_USUARIO),
-        )
-
-    assert exc.value.status_code == 403
-    unit_of_work.commit.assert_not_called()
+    controller.crear_usuario.assert_called_once_with(usuario)
+    assert resultado == {"id_usuario": 1}
 
 
-def test_actualizar_usuario_confirma_una_sola_vez_y_audita():
-    repository = Mock()
-    repository.get_by_id.return_value = Mock(id_usuario=9)
-    repository.exists_by_email.return_value = False
+def test_obtener_usuarios_delega_los_filtros_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(6, ROL_ADMIN)
 
-    usuario_actualizado = Mock(id_usuario=9, nombres="Ana")
-    repository.update.return_value = usuario_actualizado
+    obtener_usuarios(
+        buscar="ana",
+        estado="ACTIVO",
+        id_rol=ROL_USUARIO,
+        pagina=2,
+        por_pagina=5,
+        current_user=current_user,
+        controller=controller,
+    )
 
-    unit_of_work = Mock()
+    controller.obtener_usuarios.assert_called_once_with(
+        current_user,
+        {
+            "buscar": "ana",
+            "estado": "ACTIVO",
+            "id_rol": ROL_USUARIO,
+            "pagina": 2,
+            "por_pagina": 5,
+        },
+    )
 
-    resultado = actualizar_usuario(
+
+def test_obtener_usuario_por_id_delega_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(9, ROL_USUARIO)
+
+    obtener_usuario_por_id(9, current_user=current_user, controller=controller)
+
+    controller.obtener_usuario_por_id.assert_called_once_with(9, current_user)
+
+
+def test_actualizar_usuario_delega_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(6, ROL_ADMIN)
+    usuario = UsuarioUpdate(nombres="Ana")
+
+    actualizar_usuario(
         9,
-        UsuarioUpdate(nombres="Ana", correo="ana@test.com"),
-        repository=repository,
-        unit_of_work=unit_of_work,
-        current_user=usuario_actual(6, ROL_ADMIN),
+        usuario,
+        current_user=current_user,
+        controller=controller,
     )
 
-    assert resultado is usuario_actualizado
-
-    unit_of_work.commit.assert_called_once()
-    unit_of_work.rollback.assert_not_called()
-
-    auditoria = unit_of_work.registros_accion_admin.registrar
-
-    assert auditoria.call_args.kwargs["id_admin"] == 6
-    assert auditoria.call_args.kwargs["accion"] == ACCION_MODIFICAR_USUARIO
-    assert auditoria.call_args.kwargs["id_usuario_afectado"] == 9
-    auditoria.assert_called_once()
+    controller.actualizar_usuario.assert_called_once_with(9, usuario, current_user)
 
 
-def test_actualizar_usuario_con_correo_duplicado_responde_409_sin_commit():
-    repository = Mock()
-    repository.get_by_id.return_value = Mock(id_usuario=9)
-    repository.exists_by_email.return_value = True
-    unit_of_work = Mock()
+def test_eliminar_usuario_delega_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(6, ROL_ADMIN)
 
-    with pytest.raises(EmailAlreadyExistsException):
-        actualizar_usuario(
-            9,
-            UsuarioUpdate(correo="David@gmail.com"),
-            repository=repository,
-            unit_of_work=unit_of_work,
-            current_user=usuario_actual(6, ROL_ADMIN),
-        )
+    eliminar_usuario(9, current_user=current_user, controller=controller)
 
-    unit_of_work.rollback.assert_called_once()
-    unit_of_work.commit.assert_not_called()
-    repository.update.assert_not_called()
-    unit_of_work.registros_accion_admin.registrar.assert_not_called()
+    controller.eliminar_usuario.assert_called_once_with(9, current_user)
 
 
-def test_actualizar_usuario_propaga_el_error_de_correo_del_repositorio_con_rollback():
-    repository = Mock()
-    repository.get_by_id.return_value = Mock(id_usuario=9)
-    repository.exists_by_email.return_value = False
-    repository.update.side_effect = EmailAlreadyExistsException()
-    unit_of_work = Mock()
+def test_bloquear_usuario_delega_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(6, ROL_ADMIN)
+    datos = BloqueoUsuarioRequest(motivo="incumplimiento")
 
-    with pytest.raises(EmailAlreadyExistsException):
-        actualizar_usuario(
-            9,
-            UsuarioUpdate(correo="david@gmail.com"),
-            repository=repository,
-            unit_of_work=unit_of_work,
-            current_user=usuario_actual(6, ROL_ADMIN),
-        )
-
-    unit_of_work.rollback.assert_called_once()
-    unit_of_work.commit.assert_not_called()
-
-
-def test_actualizar_usuario_deja_subir_los_errores_de_integridad_ajenos_al_correo():
-    repository = Mock()
-    repository.get_by_id.return_value = Mock(id_usuario=9)
-    repository.exists_by_email.return_value = False
-    repository.update.side_effect = error_de_integridad(
-        mensaje="viola la restricción usuario_estado_check"
+    bloquear_usuario(
+        9,
+        datos,
+        current_user=current_user,
+        controller=controller,
     )
-    unit_of_work = Mock()
 
-    with pytest.raises(IntegrityError):
-        actualizar_usuario(
-            9,
-            UsuarioUpdate(nombres="Ana"),
-            repository=repository,
-            unit_of_work=unit_of_work,
-            current_user=usuario_actual(6, ROL_ADMIN),
-        )
-
-    unit_of_work.rollback.assert_called_once()
-    unit_of_work.commit.assert_not_called()
+    controller.bloquear_usuario.assert_called_once_with(9, datos, current_user)

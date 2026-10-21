@@ -15,7 +15,7 @@ class SqlProgramacionRepository(ProgramacionAhorroRepository):
             **programacion_data
         )
         self.db.add(programacion)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(programacion)
         return programacion
 
@@ -31,7 +31,7 @@ class SqlProgramacionRepository(ProgramacionAhorroRepository):
     
             programacion.Estado = nuevo_estado
     
-            self.db.commit()
+            self.db.flush()
             self.db.refresh(programacion)
             return programacion
 
