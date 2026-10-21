@@ -16,9 +16,8 @@ import PerfilPage from '../../features/perfil/pages/PerfilPage';
 import MainLayout from '../../shared/layouts/MainLayout';
 import ControlParentalDashboardPage from '../../features/controlParental/pages/ControlParentalDashboardPage';
 
-import { GraficasPage } from '../../features/analytics/pages/GraficasPage';
+import { AnaliticaPage } from '../../features/analytics/pages/AnaliticaPage';
 import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemanalPage';
-import { ReportesPage } from '../../features/analytics/pages/ReportesPage';
 
 const RutaPrivada = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -64,9 +63,9 @@ const AppRouter = () => (
       <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
       <Route path="/control-parental"element={<RutaPrivada><ControlParentalDashboardPage /></RutaPrivada>}/>
 
-      <Route path={ROUTES.GRAFICAS} element={<RutaPrivada><GraficasPage /></RutaPrivada>} />
+      <Route path={ROUTES.GRAFICAS} element={<RutaPrivada><AnaliticaPage /></RutaPrivada>} />
       <Route path={ROUTES.RESUMEN_SEMANAL} element={<RutaPrivada><ResumenSemanalPage /></RutaPrivada>} />
-      <Route path={ROUTES.REPORTES} element={<RutaPrivada><ReportesPage /></RutaPrivada>} />
+      <Route path={ROUTES.REPORTES} element={<Navigate to={ROUTES.GRAFICAS} replace />} />
       
 
       {/* Solo admin */}
