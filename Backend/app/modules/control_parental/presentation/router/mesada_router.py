@@ -1,27 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
 
-from app.core.database.connection import get_db
-from app.core.database.unit_of_work import UnitOfWork
-from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
-from app.modules.control_parental.application.use_cases.configurar_mesada import ConfigurarMesada
-from app.modules.control_parental.application.use_cases.obtener_mesada import ObtenerMesada
-from app.modules.control_parental.infrastructure.repository.sql_mesada_parental_repository import SqlMesadaParentalRepository
-from app.modules.control_parental.presentation.schema.mesada_parental_schema import MesadaCreate, MesadaResponse
+
+from app.modules.control_parental.presentation.controller.mesada_controller import (
+    MesadaController,
+    get_mesada_controller,
+)
+from app.modules.control_parental.presentation.schema.mesada_parental_schema import (
+    MesadaCreate,
+    MesadaResponse,
+)
+
 
 router = APIRouter(prefix="/control-parental/dashboard", tags=["Mesadas parentales"])
-
-
-def get_repository(db: Session = Depends(get_db)):
-    return SqlMesadaParentalRepository(db)
-
-
-def manejar_error(error):
-    raise HTTPException(
-        status_code=getattr(error, "status_code", 403),
-        detail=getattr(error, "message", str(error)),
-    )
 
 
 @router.post("/hijos/{id_hijo}/mesada", response_model=MesadaResponse, status_code=201)
@@ -29,30 +20,15 @@ def crear_mesada(
     id_hijo: int,
     data: MesadaCreate,
     current_user=Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: MesadaController = Depends(get_mesada_controller),
 ):
-    try:
-        resultado = ConfigurarMesada(unit_of_work.mesadas).execute(
-            current_user.id_usuario,
-            id_hijo,
-            data.model_dump(),
-        )
-        unit_of_work.commit()
-        return resultado
-    except Exception as error:
-        manejar_error(error)
+    return controller.crear_mesada(id_hijo, data, current_user)
 
 
 @router.get("/hijos/{id_hijo}/mesada", response_model=MesadaResponse | None)
 def obtener_mesada(
     id_hijo: int,
     current_user=Depends(get_current_user),
-    repository=Depends(get_repository),
+    controller: MesadaController = Depends(get_mesada_controller),
 ):
-    try:
-        return ObtenerMesada(repository).execute(
-            current_user.id_usuario,
-            id_hijo,
-        )
-    except Exception as error:
-        manejar_error(error)
+    return controller.obtener_mesada(id_hijo, current_user)

@@ -1,44 +1,21 @@
 ﻿from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from app.core.database.connection import get_db
-from app.core.database.unit_of_work import UnitOfWork
-from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 
-from app.modules.ahorro.domain.interface.ahorro_repository import AhorroRepository
-from app.modules.ahorro.infrastructure.repository.sql_ahorro_repository import SqlAhorroRepository
-from app.modules.ahorro.application.use_cases.crear_meta import CrearMeta
-from app.modules.ahorro.application.use_cases.obtener_metas import ObtenerMetas
-from app.modules.ahorro.application.use_cases.obtener_resumen_global_metas import (
-    ObtenerResumenGlobalMetas
+from app.modules.ahorro.presentation.controller.ahorro_controller import (
+    AhorroController,
+    get_ahorro_controller,
 )
-from app.modules.ahorro.application.use_cases.crear_limite import CrearLimite
-from app.modules.ahorro.application.use_cases.obtener_limites import ObtenerLimites
-from app.modules.ahorro.application.use_cases.obtener_alertas_presupuesto import ObtenerAlertasPresupuesto
-from app.modules.ahorro.application.use_cases.obtener_progreso_meta import ObtenerProgresoMeta
-from app.modules.ahorro.application.use_cases.obtener_ahorro import ObtenerAhorrosUseCase
-from app.modules.ahorro.application.use_cases.obtener_ahorro_por_id import ObtenerAhorroPorIdUseCase
-from app.modules.ahorro.application.use_cases.actualizar_ahorro import ActualizarAhorroUseCase
-from app.modules.ahorro.application.use_cases.eliminar_ahorro import EliminarAhorroUseCase
-
-from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
-
-from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
-    RegistrarAbonoAhorro
-)
-
 from app.modules.ahorro.presentation.schema.ahorro_schema import (
     AhorroCreate,
     AhorroResponse,
-    MetaCreate,
-    MetaResponse,
+    AlertaResponse,
     AhorroProgresoResponse,
-    ResumenGlobalMetasResponse,
     LimiteCreate,
     LimiteResponse,
-    AlertaResponse,
+    MetaCreate,
+    MetaResponse,
+    ResumenGlobalMetasResponse,
 )
 
 
@@ -49,43 +26,21 @@ router = APIRouter(
 )
 
 
-def get_ahorro_repository(
-    db: Session = Depends(get_db)
-) -> AhorroRepository:
-    return SqlAhorroRepository(db)
-
-
-def get_cuenta_repository(
-    db: Session = Depends(get_db)
-) -> CuentaRepository:
-    return SqlCuentaRepository(db)
-
-
 @router.post("/metas", response_model=MetaResponse, status_code=201)
 def crear_meta(
     meta: MetaCreate,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    registrar_abono = RegistrarAbonoAhorro(unit_of_work.transacciones)
-    caso_uso = CrearMeta(
-        unit_of_work.ahorros,
-        unit_of_work.cuentas,
-        registrar_abono,
-    )
-    resultado = caso_uso.execute(meta.model_dump(), current_user.id_usuario)
-    unit_of_work.commit()
-    return resultado
+    return controller.crear_meta(meta, current_user)
 
 
 @router.get("/metas", response_model=list[MetaResponse])
 def obtener_metas(
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerMetas(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.obtener_metas(current_user)
 
 
 @router.get(
@@ -99,11 +54,9 @@ def obtener_metas(
 )
 def obtener_resumen_global_metas(
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerResumenGlobalMetas(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.obtener_resumen_global_metas(current_user)
 
 
 @router.get(
@@ -118,64 +71,51 @@ def obtener_resumen_global_metas(
 def obtener_progreso_meta(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerProgresoMeta(repository, cuenta_repository)
-    return caso_uso.execute(id_ahorro, current_user.id_usuario)
+    return controller.obtener_progreso_meta(id_ahorro, current_user)
 
 
 @router.post("/limites", response_model=LimiteResponse, status_code=201)
 def crear_limite(
     limite: LimiteCreate,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = CrearLimite(unit_of_work.ahorros, unit_of_work.cuentas)
-    resultado = caso_uso.execute(limite.model_dump(), current_user.id_usuario)
-    unit_of_work.commit()
-    return resultado
+    return controller.crear_limite(limite, current_user)
 
 
 @router.get("/limites", response_model=list[LimiteResponse])
 def obtener_limites(
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerLimites(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.obtener_limites(current_user)
 
 
 @router.get("/limites/alertas", response_model=list[AlertaResponse])
 def obtener_alertas_presupuesto(
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerAlertasPresupuesto(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.obtener_alertas_presupuesto(current_user)
 
 
 @router.get("/", response_model=list[AhorroResponse])
 def obtener_ahorros(
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerAhorrosUseCase(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.obtener_ahorros(current_user)
 
 
 @router.get("/{id_ahorro}", response_model=AhorroResponse)
 def obtener_ahorro_por_id(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
-    repository: AhorroRepository = Depends(get_ahorro_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ObtenerAhorroPorIdUseCase(repository, cuenta_repository)
-    return caso_uso.execute(id_ahorro, current_user.id_usuario)
+    return controller.obtener_ahorro_por_id(id_ahorro, current_user)
 
 
 @router.put("/{id_ahorro}", response_model=AhorroResponse)
@@ -183,21 +123,15 @@ def actualizar_ahorro(
     id_ahorro: int,
     ahorro: AhorroCreate,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = ActualizarAhorroUseCase(unit_of_work.ahorros, unit_of_work.cuentas)
-    resultado = caso_uso.execute(id_ahorro, ahorro.model_dump(), current_user.id_usuario)
-    unit_of_work.commit()
-    return resultado
+    return controller.actualizar_ahorro(id_ahorro, ahorro, current_user)
 
 
 @router.delete("/{id_ahorro}")
 def eliminar_ahorro(
     id_ahorro: int,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: AhorroController = Depends(get_ahorro_controller),
 ):
-    caso_uso = EliminarAhorroUseCase(unit_of_work.ahorros, unit_of_work.cuentas)
-    resultado = caso_uso.execute(id_ahorro, current_user.id_usuario)
-    unit_of_work.commit()
-    return resultado
+    return controller.eliminar_ahorro(id_ahorro, current_user)

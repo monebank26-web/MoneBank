@@ -1,25 +1,17 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from app.modules.programacion_ahorro.application.actualizar_estado import ActualizarEstadoUseCase
-from app.core.database.connection import get_db
-from app.core.database.unit_of_work import UnitOfWork
-from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.auth import get_current_user
 
-from app.modules.programacion_ahorro.application.crear_programacion import CrearProgramacion
-from app.modules.programacion_ahorro.application.consultar_programaciones import ConsultarProgramacionesUseCase
-from app.modules.programacion_ahorro.domain.interface.programacion_repository import ProgramacionAhorroRepository
-from app.modules.programacion_ahorro.infrastructure.repository.sql_programacion_repository import SqlProgramacionRepository
+from app.modules.programacion_ahorro.presentation.controller.programacion_controller import (
+    ProgramacionController,
+    get_programacion_controller,
+)
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
     AhorroAsociadoResponse,
     ProgramacionCreate,
     ProgramacionResponse,
     ProgramacionUpdate,
 )
-
-from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
 
 
 router = APIRouter(
@@ -29,56 +21,27 @@ router = APIRouter(
 )
 
 
-def get_programacion_repository(
-    db: Session = Depends(get_db),
-) -> ProgramacionAhorroRepository:
-    return SqlProgramacionRepository(db)
-
-
-def get_cuenta_repository(
-    db: Session = Depends(get_db),
-) -> CuentaRepository:
-    return SqlCuentaRepository(db)
-
-
 @router.post("/", response_model=ProgramacionResponse, status_code=201)
 def crear_programacion(
     programacion: ProgramacionCreate,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: ProgramacionController = Depends(get_programacion_controller),
 ):
-    caso_uso = CrearProgramacion(
-        unit_of_work.programaciones,
-        unit_of_work.cuentas,
-        unit_of_work.ahorros,
-    )
-    resultado = caso_uso.execute(programacion.model_dump(), current_user.id_usuario)
-    unit_of_work.commit()
-    return resultado
+    return controller.crear_programacion(programacion, current_user)
+
 
 @router.put("/", response_model=ProgramacionResponse, status_code=200)
 def actualizar_estado(
     programacion: ProgramacionUpdate,
     current_user: object = Depends(get_current_user),
-    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    controller: ProgramacionController = Depends(get_programacion_controller),
 ):
-    caso_uso = ActualizarEstadoUseCase(
-        unit_of_work.programaciones,
-        unit_of_work.cuentas,
-    )
-    resultado = caso_uso.execute(
-        current_user.id_usuario,
-        programacion.id_programacion_ahorro,
-        programacion.estado,
-    )
-    unit_of_work.commit()
-    return resultado
+    return controller.actualizar_estado(programacion, current_user)
+
 
 @router.get("/", response_model=list[AhorroAsociadoResponse], status_code=200)
 def consultar_programaciones(
     current_user: object = Depends(get_current_user),
-    repository: ProgramacionAhorroRepository = Depends(get_programacion_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: ProgramacionController = Depends(get_programacion_controller),
 ):
-    caso_uso = ConsultarProgramacionesUseCase(repository, cuenta_repository)
-    return caso_uso.execute(current_user.id_usuario)
+    return controller.consultar_programaciones(current_user)
