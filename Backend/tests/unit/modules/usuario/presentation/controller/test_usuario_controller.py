@@ -62,6 +62,25 @@ def test_crear_usuario_usa_uow_y_commitea(mock_use_case):
 
 @patch(
     "app.modules.usuario.presentation.controller."
+    "usuario_controller.CrearUsuario"
+)
+def test_crear_usuario_con_error_hace_rollback_sin_commit(mock_use_case):
+
+    repository, unit_of_work = mocks()
+    controller = UsuarioController(repository, unit_of_work)
+    usuario = Mock()
+    usuario.model_dump.return_value = {"nombres": "Ana"}
+    mock_use_case.return_value.execute.side_effect = RuntimeError("boom")
+
+    with pytest.raises(RuntimeError, match="boom"):
+        controller.crear_usuario(usuario)
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()
+
+
+@patch(
+    "app.modules.usuario.presentation.controller."
     "usuario_controller.ObtenerUsuariosUseCase"
 )
 def test_obtener_usuarios_pasa_los_filtros_al_caso_de_uso(mock_use_case):

@@ -48,8 +48,14 @@ class UsuarioController:
 
     def crear_usuario(self, usuario: UsuarioCreate):
         caso_uso = CrearUsuario(self.repository, self.unit_of_work.cuentas)
-        resultado = caso_uso.execute(usuario.model_dump())
-        self.unit_of_work.commit()
+
+        try:
+            resultado = caso_uso.execute(usuario.model_dump())
+            self.unit_of_work.commit()
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
         return resultado
 
     def obtener_usuarios(self, current_user, filtros: Optional[dict] = None):
