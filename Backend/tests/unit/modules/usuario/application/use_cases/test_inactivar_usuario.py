@@ -7,8 +7,16 @@ from app.modules.usuario.application.use_cases.inactivar_usuario import (
     InactivarUsuario,
 )
 from app.shared.constants.acciones import ACCION_DESACTIVAR_USUARIO
+from app.shared.constants.codigos_error import (
+    CODIGO_NO_PUEDE_DESACTIVARSE,
+    CODIGO_ULTIMO_ADMINISTRADOR,
+)
 from app.shared.constants.estados import ESTADO_ACTIVO, ESTADO_INACTIVO
 from app.shared.exceptions.common import UsuarioNotFoundException
+from app.shared.exceptions.usuario_errors import (
+    NoPuedeDesactivarseException,
+    UltimoAdministradorDesactivacionException,
+)
 
 
 def crear_caso_uso(repository=None, registro_repository=None):
@@ -54,3 +62,34 @@ def test_inactivar_usuario_inexistente_lanza_404():
 
     with pytest.raises(UsuarioNotFoundException):
         caso_uso.execute(99, id_admin=1)
+
+
+def test_inactivar_usuario_a_si_mismo_lanza_error_propio():
+
+    repository = crear_repository()
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    with pytest.raises(NoPuedeDesactivarseException) as excinfo:
+        caso_uso.execute(10, id_admin=10)
+
+    assert excinfo.value.code == CODIGO_NO_PUEDE_DESACTIVARSE
+    assert "desactivar" in excinfo.value.message
+    repository.update.assert_not_called()
+    registro_repository.registrar.assert_not_called()
+
+
+def test_inactivar_ultimo_admin_activo_lanza_error_propio():
+
+    repository = crear_repository()
+    repository.contar_admins_activos.return_value = 0
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    with pytest.raises(UltimoAdministradorDesactivacionException) as excinfo:
+        caso_uso.execute(10, id_admin=1)
+
+    assert excinfo.value.code == CODIGO_ULTIMO_ADMINISTRADOR
+    assert "desactivar" in excinfo.value.message
+    repository.update.assert_not_called()
+    registro_repository.registrar.assert_not_called()

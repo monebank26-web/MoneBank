@@ -1,5 +1,6 @@
 from app.shared.constants.codigos_error import (
     CODIGO_NO_PUEDE_BLOQUEARSE,
+    CODIGO_NO_PUEDE_DESACTIVARSE,
     CODIGO_ULTIMO_ADMINISTRADOR,
 )
 from app.shared.exceptions.base import BusinessError
@@ -20,4 +21,14 @@ class NoPuedeBloquearseException(BusinessError):
 
 class UltimoAdministradorException(BusinessError):
     message = "No se puede bloquear al último administrador activo"
+    code = CODIGO_ULTIMO_ADMINISTRADOR
+
+
+class NoPuedeDesactivarseException(BusinessError):
+    message = "No puedes desactivar tu propia cuenta"
+    code = CODIGO_NO_PUEDE_DESACTIVARSE
+
+
+class UltimoAdministradorDesactivacionException(BusinessError):
+    message = "No se puede desactivar al último administrador activo"
     code = CODIGO_ULTIMO_ADMINISTRADOR

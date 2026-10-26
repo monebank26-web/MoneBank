@@ -9,8 +9,8 @@ from app.shared.constants.acciones import ACCION_DESACTIVAR_USUARIO
 from app.shared.constants.estados import ESTADO_INACTIVO, normalizar_estado
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
-    NoPuedeBloquearseException,
-    UltimoAdministradorException,
+    NoPuedeDesactivarseException,
+    UltimoAdministradorDesactivacionException,
 )
 
 
@@ -23,7 +23,7 @@ class InactivarUsuario:
     def execute(self, id_usuario, id_admin):
 
         if id_admin == id_usuario:
-            raise NoPuedeBloquearseException()
+            raise NoPuedeDesactivarseException()
 
         usuario = self.repository.get_by_id(id_usuario)
 
@@ -33,7 +33,7 @@ class InactivarUsuario:
         if usuario.id_rol == ROL_ADMIN:
             admins_activos = self.repository.contar_admins_activos(excluir_id_usuario=id_usuario)
             if admins_activos == 0:
-                raise UltimoAdministradorException()
+                raise UltimoAdministradorDesactivacionException()
 
         usuario_actualizado = self.repository.update(id_usuario, {
             "estado": ESTADO_INACTIVO,
