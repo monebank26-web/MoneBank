@@ -22,6 +22,19 @@ from app.modules.auth.presentation.schema.password_recovery_request import (
     PasswordRecoveryConfirmRequest,
     PasswordRecoveryRequest,
 )
+from app.shared.exceptions.auth_errors import (
+    AccountLockedException,
+    CuentaInactivaException,
+    InvalidCredentialsException,
+)
+
+# Ramas de login que pueden escribir antes de lanzar (registro del intento
+# fallido). El controller debe commitear para que ese registro no se pierda.
+ERRORES_NEGOCIO_LOGIN = (
+    InvalidCredentialsException,
+    AccountLockedException,
+    CuentaInactivaException,
+)
 
 
 def get_email_service() -> EmailService:
@@ -42,7 +55,18 @@ class AuthController:
 
     def login(self, request: LoginRequest):
         caso_uso = LoginUsuarioUseCase(self.repository)
-        resultado = caso_uso.execute(request.correo, request.contrasena)
+
+        try:
+            resultado = caso_uso.execute(request.correo, request.contrasena)
+        except ERRORES_NEGOCIO_LOGIN:
+            # La rama de credenciales inválidas registra el intento fallido.
+            # Se confirma antes de relanzar para que el contador persista.
+            self.unit_of_work.commit()
+            raise
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
         self.unit_of_work.commit()
         return resultado
 
