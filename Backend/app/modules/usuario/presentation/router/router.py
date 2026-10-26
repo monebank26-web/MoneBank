@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
 from app.shared.constants.estados import PATRON_ESTADO_USUARIO
+from app.shared.constants.motivo_bloqueo import DESCRIPCION_MOTIVO_BLOQUEO
 
 from app.modules.usuario.presentation.controller.usuario_controller import (
     UsuarioController,
@@ -84,6 +85,14 @@ def actualizar_usuario(
 @router.delete(
     "/{id_usuario}",
     response_model=UsuarioDesactivadoResponse,
+    responses={
+        400: {"description": "No puedes desactivar tu propia cuenta"},
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {"description": "La cuenta ya está inactiva"},
+        422: {"description": "Datos de entrada inválidos"},
+    },
 )
 def eliminar_usuario(
     id_usuario: int,
@@ -93,7 +102,28 @@ def eliminar_usuario(
     return controller.eliminar_usuario(id_usuario, current_user)
 
 
-@router.put("/{id_usuario}/bloquear", response_model=BloqueoUsuarioResponse)
+@router.put(
+    "/{id_usuario}/bloquear",
+    response_model=BloqueoUsuarioResponse,
+    responses={
+        400: {"description": "No puedes bloquear tu propia cuenta"},
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {
+            "description": (
+                "La cuenta ya está bloqueada, está inactiva o es el último "
+                "administrador activo"
+            )
+        },
+        422: {
+            "description": (
+                "Datos de entrada inválidos. "
+                f"{DESCRIPCION_MOTIVO_BLOQUEO}"
+            )
+        },
+    },
+)
 def bloquear_usuario(
     id_usuario: int,
     datos: BloqueoUsuarioRequest,

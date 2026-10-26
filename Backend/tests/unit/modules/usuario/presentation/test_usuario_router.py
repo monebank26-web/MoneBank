@@ -19,6 +19,7 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
     BloqueoUsuarioRequest,
     UsuarioUpdate,
 )
+from app.shared.constants.motivo_bloqueo import DESCRIPCION_MOTIVO_BLOQUEO
 
 
 def buscar_ruta(metodo, path):
@@ -153,3 +154,16 @@ def test_bloquear_usuario_delega_en_el_controller():
     )
 
     controller.bloquear_usuario.assert_called_once_with(9, datos, current_user)
+
+
+def test_bloquear_usuario_documenta_las_respuestas_de_error():
+    ruta = buscar_ruta("PUT", "/usuarios/{id_usuario}/bloquear")
+
+    assert {400, 401, 403, 404, 409, 422} <= set(ruta.responses)
+    assert DESCRIPCION_MOTIVO_BLOQUEO in ruta.responses[422]["description"]
+
+
+def test_eliminar_usuario_documenta_las_respuestas_de_error():
+    ruta = buscar_ruta("DELETE", "/usuarios/{id_usuario}")
+
+    assert {400, 401, 403, 404, 409, 422} <= set(ruta.responses)
