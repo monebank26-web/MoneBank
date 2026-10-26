@@ -1,46 +1,54 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
-import { claseEstadoAdmin, etiquetaEstadoAdmin, etiquetaRolAdmin } from '../utils/usuariosAdmin';
+import {
+  claseEstadoAdmin,
+  etiquetaEstadoAdmin,
+  etiquetaRolAdmin,
+  iconoEstadoAdmin,
+} from '../utils/usuariosAdmin';
 
-const FilaUsuarioAdmin = ({ usuario, onVerDetalle, onEditar }) => (
-  <div className="admin-fila">
-    <div className={`admin-avatar admin-avatar--${usuario.rol}`}>
-      {(usuario.nombres || usuario.email || '?').charAt(0).toUpperCase()}
-    </div>
+const FilaUsuarioAdmin = ({ usuario, onVerDetalle }) => {
+  const estadoClase = String(usuario.estado || '').toLowerCase();
+  const estaBloqueado = usuario.estado === 'BLOQUEADO';
+  const nombre = usuario.nombre || usuario.email || 'usuario';
 
-    <div className="admin-fila__datos">
-      <p className="admin-fila__nombre">{usuario.nombre || usuario.email}</p>
-      <p className="admin-fila__correo">{usuario.email}</p>
-    </div>
-
-    <div className="admin-fila__etiquetas">
-      <span className={`admin-etiqueta-rol admin-etiqueta-rol--${usuario.rol}`}>
-        {etiquetaRolAdmin(usuario.rol)}
+  return (
+    <button
+      type="button"
+      className={`admin-fila${estadoClase ? ` admin-fila--${estadoClase}` : ''}`}
+      onClick={() => onVerDetalle(usuario)}
+      aria-label={`Abrir detalle de ${nombre}`}
+    >
+      <span className={`admin-avatar admin-avatar--${usuario.rol}`}>
+        {(usuario.nombres || usuario.email || '?').charAt(0).toUpperCase()}
       </span>
-      <span className={claseEstadoAdmin(usuario.estado)}>
-        {etiquetaEstadoAdmin(usuario.estado)}
-      </span>
-    </div>
 
-    <div className="admin-fila__acciones">
-      <button
-        type="button"
-        className="admin-boton-accion admin-boton-accion--ver"
-        onClick={() => onVerDetalle(usuario)}
-      >
-        <Icon icon="mdi:eye-outline" />
-        Ver
-      </button>
-      <button
-        type="button"
-        className="admin-boton-accion admin-boton-accion--editar"
-        onClick={() => onEditar(usuario)}
-      >
-        <Icon icon="mdi:pencil-outline" />
-        Editar
-      </button>
-    </div>
-  </div>
-);
+      <span className="admin-fila__datos">
+        <span className="admin-fila__nombre">{nombre}</span>
+        <span className="admin-fila__correo">{usuario.email}</span>
+        {estaBloqueado && usuario.motivo_bloqueo && (
+          <span className="admin-fila__motivo">
+            <Icon icon="mdi:lock-outline" />
+            <span>{usuario.motivo_bloqueo}</span>
+          </span>
+        )}
+      </span>
+
+      <span className="admin-fila__etiquetas">
+        <span className={`admin-etiqueta-rol admin-etiqueta-rol--${usuario.rol}`}>
+          {etiquetaRolAdmin(usuario.rol)}
+        </span>
+        <span className={claseEstadoAdmin(usuario.estado)}>
+          <Icon icon={iconoEstadoAdmin(usuario.estado)} />
+          {etiquetaEstadoAdmin(usuario.estado)}
+        </span>
+      </span>
+
+      <span className="admin-fila__chevron" aria-hidden="true">
+        <Icon icon="mdi:chevron-right" />
+      </span>
+    </button>
+  );
+};
 
 export default FilaUsuarioAdmin;

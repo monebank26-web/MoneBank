@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { authService } from '../../auth/services/authService';
-import { esCorreoDuplicado } from '../utils/usuariosAdmin';
+import {
+  LONGITUD_MAXIMA_MOTIVO_BLOQUEO,
+  LONGITUD_MINIMA_MOTIVO_BLOQUEO,
+  esCorreoDuplicado,
+  mensajeErrorBloqueo,
+  mensajeErrorDesactivacion,
+  motivoBloqueoValido,
+} from '../utils/usuariosAdmin';
 
 export const useAccionesUsuarioAdmin = ({ recargar }) => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
@@ -11,7 +18,11 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
   const [formularioEdicion, setFormularioEdicion] = useState({});
   const [motivoBloqueo, setMotivoBloqueo] = useState('');
   const [errorEdicion, setErrorEdicion] = useState('');
+  const [errorBloqueo, setErrorBloqueo] = useState('');
+  const [errorEliminar, setErrorEliminar] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const [bloqueando, setBloqueando] = useState(false);
+  const [desactivando, setDesactivando] = useState(false);
   const [mensaje, setMensaje] = useState('');
 
   const mostrarMensaje = (texto) => {
@@ -70,49 +81,74 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
   };
 
   // ---------------------------------------------------------------------
-  // HU-0037 (Bloqueo Temporal de Cuentas): se conservan las acciones y los
-  // modales para reactivarlos cuando llegue su backend. Por ahora la fila de
-  // usuarios no ofrece estos botones.
+  // HU-0037 (Bloqueo y desactivación de cuentas): las acciones se concentran
+  // en el modal de detalle para no saturar la fila del listado.
   // ---------------------------------------------------------------------
   const abrirEliminar = (usuario) => {
     setUsuarioSeleccionado(usuario);
+    setErrorEliminar('');
     setModalEliminarAbierto(true);
   };
 
   const abrirBloquear = (usuario) => {
     setUsuarioSeleccionado(usuario);
     setMotivoBloqueo('');
+    setErrorBloqueo('');
     setModalBloquearAbierto(true);
   };
 
-  const confirmarBloqueo = async () => {
-    if (!usuarioSeleccionado) return;
+  const cambiarMotivoBloqueo = (valor) => {
+    setMotivoBloqueo(valor);
+    if (errorBloqueo) setErrorBloqueo('');
+  };
 
-    if (!motivoBloqueo.trim()) {
-      mostrarMensaje('Escribe el motivo del bloqueo');
+  const confirmarBloqueo = async () => {
+    if (bloqueando || !usuarioSeleccionado) return;
+
+    if (!motivoBloqueoValido(motivoBloqueo)) {
+      const longitud = motivoBloqueo.trim().length;
+
+      setErrorBloqueo(
+        longitud > LONGITUD_MAXIMA_MOTIVO_BLOQUEO
+          ? `El motivo no puede superar ${LONGITUD_MAXIMA_MOTIVO_BLOQUEO} caracteres.`
+          : `Escribe un motivo de al menos ${LONGITUD_MINIMA_MOTIVO_BLOQUEO} caracteres.`
+      );
       return;
     }
+
+    setBloqueando(true);
+    setErrorBloqueo('');
 
     try {
       await authService.bloquearUsuario(usuarioSeleccionado.id, motivoBloqueo.trim());
       setModalBloquearAbierto(false);
-      mostrarMensaje('Usuario bloqueado correctamente');
+      setMotivoBloqueo('');
+      mostrarMensaje('Cuenta bloqueada correctamente');
       recargar();
     } catch (err) {
-      mostrarMensaje('No se pudo bloquear el usuario');
+      setErrorBloqueo(mensajeErrorBloqueo(err));
+      if (err?.status === 404 || err?.status === 409) recargar();
+    } finally {
+      setBloqueando(false);
     }
   };
 
   const eliminarUsuario = async () => {
-    if (!usuarioSeleccionado) return;
+    if (desactivando || !usuarioSeleccionado) return;
+
+    setDesactivando(true);
+    setErrorEliminar('');
 
     try {
       await authService.eliminarUsuario(usuarioSeleccionado.id);
       setModalEliminarAbierto(false);
-      mostrarMensaje('Usuario eliminado correctamente');
+      mostrarMensaje('Usuario desactivado correctamente');
       recargar();
-    } catch {
-      mostrarMensaje('No se pudo eliminar el usuario');
+    } catch (err) {
+      setErrorEliminar(mensajeErrorDesactivacion(err));
+      if (err?.status === 404 || err?.status === 409) recargar();
+    } finally {
+      setDesactivando(false);
     }
   };
 
@@ -130,7 +166,11 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     motivoBloqueo,
     setMotivoBloqueo,
     errorEdicion,
+    errorBloqueo,
+    errorEliminar,
     guardando,
+    bloqueando,
+    desactivando,
     mensaje,
     abrirDetalle,
     abrirEditar,
@@ -139,6 +179,7 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     abrirEliminar,
     eliminarUsuario,
     abrirBloquear,
+    cambiarMotivoBloqueo,
     confirmarBloqueo,
   };
 };

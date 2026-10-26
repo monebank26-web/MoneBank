@@ -56,6 +56,7 @@ const BarraFiltrosUsuarios = ({
       </div>
 
       <button type="button" className="admin-filtros__limpiar" onClick={onLimpiar}>
+        <Icon icon="mdi:filter-off-outline" />
         Limpiar
       </button>
     </div>

@@ -13,6 +13,8 @@ const toFrontend = (u) => ({
   id_rol: u.id_rol,
   fecha_creacion: u.fecha_creacion,
   estado: u.estado,
+  motivo_bloqueo: u.motivo_bloqueo,
+  fecha_bloqueo: u.fecha_bloqueo,
 });
 
 

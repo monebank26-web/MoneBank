@@ -26,6 +26,7 @@ const lanzarErrorDeRespuesta = async (res) => {
     cerrarSesionInvalidada(cuerpo.code);
   }
   const error = new Error(mensaje);
+  error.status = res.status;
   if (cuerpo?.code) {
     error.code = cuerpo.code;
   }
