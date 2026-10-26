@@ -1,4 +1,5 @@
 from app.shared.constants.codigos_error import (
+    CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_BLOQUEARSE,
     CODIGO_NO_PUEDE_DESACTIVARSE,
     CODIGO_ULTIMO_ADMINISTRADOR,
@@ -8,6 +9,11 @@ from app.shared.exceptions.base import BusinessError
 
 class CuentaYaBloqueadaException(BusinessError):
     message = "La cuenta ya se encuentra bloqueada"
+
+
+class CuentaYaInactivaException(BusinessError):
+    message = "No se puede desactivar una cuenta ya inactiva"
+    code = CODIGO_CUENTA_YA_INACTIVA
 
 
 class MotivoBloqueoRequeridoException(BusinessError):

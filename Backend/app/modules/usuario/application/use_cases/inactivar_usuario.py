@@ -9,6 +9,7 @@ from app.shared.constants.acciones import ACCION_DESACTIVAR_USUARIO
 from app.shared.constants.estados import ESTADO_INACTIVO, normalizar_estado
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
+    CuentaYaInactivaException,
     NoPuedeDesactivarseException,
     UltimoAdministradorDesactivacionException,
 )
@@ -29,6 +30,9 @@ class InactivarUsuario:
 
         if not usuario:
             raise UsuarioNotFoundException()
+
+        if normalizar_estado(usuario.estado) == ESTADO_INACTIVO:
+            raise CuentaYaInactivaException()
 
         if usuario.id_rol == ROL_ADMIN:
             admins_activos = self.repository.contar_admins_activos(excluir_id_usuario=id_usuario)

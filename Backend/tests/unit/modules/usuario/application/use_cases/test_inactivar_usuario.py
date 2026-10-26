@@ -8,12 +8,14 @@ from app.modules.usuario.application.use_cases.inactivar_usuario import (
 )
 from app.shared.constants.acciones import ACCION_DESACTIVAR_USUARIO
 from app.shared.constants.codigos_error import (
+    CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_DESACTIVARSE,
     CODIGO_ULTIMO_ADMINISTRADOR,
 )
 from app.shared.constants.estados import ESTADO_ACTIVO, ESTADO_INACTIVO
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
+    CuentaYaInactivaException,
     NoPuedeDesactivarseException,
     UltimoAdministradorDesactivacionException,
 )
@@ -52,6 +54,22 @@ def test_inactivar_usuario_exitoso_desactiva_y_audita_una_vez():
     assert llamada["id_admin"] == 1
     assert llamada["accion"] == ACCION_DESACTIVAR_USUARIO
     assert llamada["id_usuario_afectado"] == 10
+
+
+def test_inactivar_usuario_ya_inactivo_lanza_error_propio():
+
+    repository = crear_repository(Mock(id_usuario=10, estado=ESTADO_INACTIVO, id_rol=ROL_ADMIN))
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    with pytest.raises(CuentaYaInactivaException) as excinfo:
+        caso_uso.execute(10, id_admin=1)
+
+    assert excinfo.value.code == CODIGO_CUENTA_YA_INACTIVA
+    assert "desactivar" in excinfo.value.message
+    repository.update.assert_not_called()
+    repository.contar_admins_activos.assert_not_called()
+    registro_repository.registrar.assert_not_called()
 
 
 def test_inactivar_usuario_inexistente_lanza_404():
