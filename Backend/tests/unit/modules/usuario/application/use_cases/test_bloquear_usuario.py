@@ -62,12 +62,22 @@ def test_bloquear_usuario_exitoso_bloquea_con_fecha_y_audita():
     assert llamada["id_usuario_afectado"] == 10
 
 
-def test_bloquear_usuario_sin_motivo_lanza_422():
+@pytest.mark.parametrize("motivo", [None, "", "   ", "abcd"])
+def test_bloquear_usuario_sin_motivo_lanza_422(motivo):
     repository = crear_repository()
     caso_uso = crear_caso_uso(repository)
 
     with pytest.raises(MotivoBloqueoRequeridoException):
-        caso_uso.execute(10, "   ", id_admin=1)
+        caso_uso.execute(10, motivo, id_admin=1)
+
+
+def test_bloquear_usuario_guarda_el_motivo_sin_espacios():
+    repository = crear_repository()
+    caso_uso = crear_caso_uso(repository)
+
+    caso_uso.execute(10, "  Fraude  ", id_admin=1)
+
+    assert repository.update.call_args.args[1]["motivo_bloqueo"] == "Fraude"
 
 
 def test_bloquear_usuario_ya_bloqueada_lanza_409():

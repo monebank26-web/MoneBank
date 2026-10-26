@@ -5,6 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.security.password_policy import validate_password
+from app.shared.constants.motivo_bloqueo import DESCRIPCION_MOTIVO_BLOQUEO
 
 
 class UsuarioCreate(BaseModel):
@@ -50,7 +51,16 @@ class UsuarioDesactivadoResponse(BaseModel):
 
 
 class BloqueoUsuarioRequest(BaseModel):
-    motivo: str = Field(..., min_length=5, max_length=255)
+    motivo: Optional[str] = Field(
+        None,
+        max_length=255,
+        description=DESCRIPCION_MOTIVO_BLOQUEO,
+    )
+
+    @field_validator("motivo", mode="before")
+    @classmethod
+    def limpiar_motivo(cls, value):
+        return value.strip() if isinstance(value, str) else value
 
 
 class BloqueoUsuarioResponse(BaseModel):

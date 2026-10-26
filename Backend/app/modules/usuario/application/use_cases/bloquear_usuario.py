@@ -11,6 +11,7 @@ from app.shared.constants.estados import (
     ESTADO_INACTIVO,
     normalizar_estado,
 )
+from app.shared.constants.motivo_bloqueo import LONGITUD_MINIMA_MOTIVO_BLOQUEO
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
     CuentaInactivaNoBloqueableException,
@@ -29,7 +30,9 @@ class BloquearUsuario:
 
     def execute(self, id_usuario, motivo, id_admin):
 
-        if not motivo or not motivo.strip():
+        motivo_limpio = (motivo or "").strip()
+
+        if len(motivo_limpio) < LONGITUD_MINIMA_MOTIVO_BLOQUEO:
             raise MotivoBloqueoRequeridoException()
 
         if id_admin == id_usuario:
@@ -53,7 +56,7 @@ class BloquearUsuario:
 
         usuario_actualizado = self.repository.update(id_usuario, {
             "estado": ESTADO_BLOQUEADO,
-            "motivo_bloqueo": motivo.strip(),
+            "motivo_bloqueo": motivo_limpio,
             "fecha_bloqueo": datetime.utcnow(),
         })
 
