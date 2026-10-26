@@ -3,12 +3,21 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.core.security.roles import ROL_ADMIN
+from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
 from app.modules.usuario.application.use_cases.bloquear_usuario import BloquearUsuario
 from app.shared.constants.acciones import ACCION_BLOQUEAR_USUARIO
-from app.shared.constants.estados import ESTADO_ACTIVO, ESTADO_BLOQUEADO
+from app.shared.constants.codigos_error import (
+    CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE,
+    CODIGO_CUENTA_YA_BLOQUEADA,
+)
+from app.shared.constants.estados import (
+    ESTADO_ACTIVO,
+    ESTADO_BLOQUEADO,
+    ESTADO_INACTIVO,
+)
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
+    CuentaInactivaNoBloqueableException,
     CuentaYaBloqueadaException,
     MotivoBloqueoRequeridoException,
     NoPuedeBloquearseException,
@@ -63,10 +72,33 @@ def test_bloquear_usuario_sin_motivo_lanza_422():
 
 def test_bloquear_usuario_ya_bloqueada_lanza_409():
     repository = crear_repository(Mock(id_usuario=10, estado="bloqueado", id_rol=ROL_ADMIN))
-    caso_uso = crear_caso_uso(repository)
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
 
-    with pytest.raises(CuentaYaBloqueadaException):
+    with pytest.raises(CuentaYaBloqueadaException) as excinfo:
         caso_uso.execute(10, "Motivo valido", id_admin=1)
+
+    assert excinfo.value.code == CODIGO_CUENTA_YA_BLOQUEADA
+    repository.update.assert_not_called()
+    repository.contar_admins_activos.assert_not_called()
+    registro_repository.registrar.assert_not_called()
+
+
+def test_bloquear_usuario_inactivo_lanza_409():
+    repository = crear_repository(
+        Mock(id_usuario=10, estado=ESTADO_INACTIVO, id_rol=ROL_USUARIO)
+    )
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    with pytest.raises(CuentaInactivaNoBloqueableException) as excinfo:
+        caso_uso.execute(10, "Motivo valido", id_admin=1)
+
+    assert excinfo.value.code == CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE
+    assert "bloquear" in excinfo.value.message
+    repository.update.assert_not_called()
+    repository.contar_admins_activos.assert_not_called()
+    registro_repository.registrar.assert_not_called()
 
 
 def test_bloquear_usuario_a_si_mismo_lanza_400():

@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.core.security.roles import ROL_ADMIN
+from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
 from app.modules.usuario.application.use_cases.inactivar_usuario import (
     InactivarUsuario,
 )
@@ -12,7 +12,11 @@ from app.shared.constants.codigos_error import (
     CODIGO_NO_PUEDE_DESACTIVARSE,
     CODIGO_ULTIMO_ADMINISTRADOR,
 )
-from app.shared.constants.estados import ESTADO_ACTIVO, ESTADO_INACTIVO
+from app.shared.constants.estados import (
+    ESTADO_ACTIVO,
+    ESTADO_BLOQUEADO,
+    ESTADO_INACTIVO,
+)
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
     CuentaYaInactivaException,
@@ -54,6 +58,27 @@ def test_inactivar_usuario_exitoso_desactiva_y_audita_una_vez():
     assert llamada["id_admin"] == 1
     assert llamada["accion"] == ACCION_DESACTIVAR_USUARIO
     assert llamada["id_usuario_afectado"] == 10
+
+
+def test_inactivar_usuario_bloqueado_conserva_los_metadatos_de_bloqueo():
+
+    usuario = Mock(
+        id_usuario=10,
+        estado=ESTADO_BLOQUEADO,
+        id_rol=ROL_USUARIO,
+        motivo_bloqueo="Fraude",
+        fecha_bloqueo="2026-01-01",
+    )
+    repository = crear_repository(usuario)
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    resultado = caso_uso.execute(10, id_admin=1)
+
+    assert resultado.estado == ESTADO_INACTIVO
+    repository.update.assert_called_once_with(10, {"estado": ESTADO_INACTIVO})
+    repository.contar_admins_activos.assert_not_called()
+    registro_repository.registrar.assert_called_once()
 
 
 def test_inactivar_usuario_ya_inactivo_lanza_error_propio():

@@ -6,9 +6,14 @@ from app.modules.admin.domain.interface.registro_accion_admin_repository import 
 )
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.shared.constants.acciones import ACCION_BLOQUEAR_USUARIO
-from app.shared.constants.estados import ESTADO_BLOQUEADO, normalizar_estado
+from app.shared.constants.estados import (
+    ESTADO_BLOQUEADO,
+    ESTADO_INACTIVO,
+    normalizar_estado,
+)
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
+    CuentaInactivaNoBloqueableException,
     CuentaYaBloqueadaException,
     MotivoBloqueoRequeridoException,
     NoPuedeBloquearseException,
@@ -37,6 +42,9 @@ class BloquearUsuario:
 
         if normalizar_estado(usuario.estado) == ESTADO_BLOQUEADO:
             raise CuentaYaBloqueadaException()
+
+        if normalizar_estado(usuario.estado) == ESTADO_INACTIVO:
+            raise CuentaInactivaNoBloqueableException()
 
         if usuario.id_rol == ROL_ADMIN:
             admins_activos = self.repository.contar_admins_activos(excluir_id_usuario=id_usuario)
