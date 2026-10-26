@@ -58,7 +58,7 @@ def test_bloquear_usuario_sin_motivo_lanza_422():
     caso_uso = crear_caso_uso(repository)
 
     with pytest.raises(MotivoBloqueoRequeridoException):
-        caso_uso.execute(10, "   ")
+        caso_uso.execute(10, "   ", id_admin=1)
 
 
 def test_bloquear_usuario_ya_bloqueada_lanza_409():
@@ -66,7 +66,7 @@ def test_bloquear_usuario_ya_bloqueada_lanza_409():
     caso_uso = crear_caso_uso(repository)
 
     with pytest.raises(CuentaYaBloqueadaException):
-        caso_uso.execute(10, "Motivo valido")
+        caso_uso.execute(10, "Motivo valido", id_admin=1)
 
 
 def test_bloquear_usuario_a_si_mismo_lanza_400():
@@ -92,4 +92,4 @@ def test_bloquear_usuario_inexistente_lanza_404():
     caso_uso = crear_caso_uso(repository)
 
     with pytest.raises(UsuarioNotFoundException):
-        caso_uso.execute(99, "Motivo valido")
+        caso_uso.execute(99, "Motivo valido", id_admin=1)

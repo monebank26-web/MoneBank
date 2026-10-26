@@ -18,16 +18,16 @@ from app.shared.exceptions.usuario_errors import (
 
 class BloquearUsuario:
 
-    def __init__(self, repository: UsuarioRepository, registro_repository: RegistroAccionAdminRepository = None):
+    def __init__(self, repository: UsuarioRepository, registro_repository: RegistroAccionAdminRepository):
         self.repository = repository
         self.registro_repository = registro_repository
 
-    def execute(self, id_usuario, motivo, id_admin=None):
+    def execute(self, id_usuario, motivo, id_admin):
 
         if not motivo or not motivo.strip():
             raise MotivoBloqueoRequeridoException()
 
-        if id_admin is not None and id_admin == id_usuario:
+        if id_admin == id_usuario:
             raise NoPuedeBloquearseException()
 
         usuario = self.repository.get_by_id(id_usuario)
@@ -49,12 +49,11 @@ class BloquearUsuario:
             "fecha_bloqueo": datetime.utcnow(),
         })
 
-        if self.registro_repository and id_admin is not None:
-            self.registro_repository.registrar(
-                id_admin=id_admin,
-                accion=ACCION_BLOQUEAR_USUARIO,
-                id_usuario_afectado=id_usuario,
-                detalle="Usuario bloqueado",
-            )
+        self.registro_repository.registrar(
+            id_admin=id_admin,
+            accion=ACCION_BLOQUEAR_USUARIO,
+            id_usuario_afectado=id_usuario,
+            detalle="Usuario bloqueado",
+        )
 
         return usuario_actualizado

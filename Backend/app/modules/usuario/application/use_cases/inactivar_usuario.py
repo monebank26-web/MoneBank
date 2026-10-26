@@ -16,13 +16,13 @@ from app.shared.exceptions.usuario_errors import (
 
 class InactivarUsuario:
 
-    def __init__(self, repository: UsuarioRepository, registro_repository: RegistroAccionAdminRepository = None):
+    def __init__(self, repository: UsuarioRepository, registro_repository: RegistroAccionAdminRepository):
         self.repository = repository
         self.registro_repository = registro_repository
 
-    def execute(self, id_usuario, id_admin=None):
+    def execute(self, id_usuario, id_admin):
 
-        if id_admin is not None and id_admin == id_usuario:
+        if id_admin == id_usuario:
             raise NoPuedeBloquearseException()
 
         usuario = self.repository.get_by_id(id_usuario)
@@ -39,12 +39,11 @@ class InactivarUsuario:
             "estado": ESTADO_INACTIVO,
         })
 
-        if self.registro_repository and id_admin is not None:
-            self.registro_repository.registrar(
-                id_admin=id_admin,
-                accion=ACCION_DESACTIVAR_USUARIO,
-                id_usuario_afectado=id_usuario,
-                detalle="Usuario desactivado",
-            )
+        self.registro_repository.registrar(
+            id_admin=id_admin,
+            accion=ACCION_DESACTIVAR_USUARIO,
+            id_usuario_afectado=id_usuario,
+            detalle="Usuario desactivado",
+        )
 
         return usuario_actualizado
