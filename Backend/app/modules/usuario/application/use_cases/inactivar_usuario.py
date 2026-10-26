@@ -31,7 +31,9 @@ class InactivarUsuario:
         if not usuario:
             raise UsuarioNotFoundException()
 
-        if normalizar_estado(usuario.estado) == ESTADO_INACTIVO:
+        estado_anterior = normalizar_estado(usuario.estado)
+
+        if estado_anterior == ESTADO_INACTIVO:
             raise CuentaYaInactivaException()
 
         if usuario.id_rol == ROL_ADMIN:
@@ -47,7 +49,7 @@ class InactivarUsuario:
             id_admin=id_admin,
             accion=ACCION_DESACTIVAR_USUARIO,
             id_usuario_afectado=id_usuario,
-            detalle="Usuario desactivado",
+            detalle=f"Usuario desactivado desde estado {estado_anterior}",
         )
 
         return usuario_actualizado

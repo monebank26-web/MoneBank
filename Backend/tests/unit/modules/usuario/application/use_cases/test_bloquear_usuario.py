@@ -60,6 +60,24 @@ def test_bloquear_usuario_exitoso_bloquea_con_fecha_y_audita():
     assert llamada["id_admin"] == 1
     assert llamada["accion"] == ACCION_BLOQUEAR_USUARIO
     assert llamada["id_usuario_afectado"] == 10
+    assert "Fraude detectado" in llamada["detalle"]
+
+
+def test_bloquear_usuario_no_audita_la_contrasena():
+    usuario = Mock(
+        id_usuario=10,
+        estado=ESTADO_ACTIVO,
+        id_rol=ROL_USUARIO,
+        contrasena="hash-secreto",
+    )
+    repository = crear_repository(usuario)
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    caso_uso.execute(10, "Fraude detectado", id_admin=1)
+
+    llamada = registro_repository.registrar.call_args.kwargs
+    assert "hash-secreto" not in llamada["detalle"]
 
 
 @pytest.mark.parametrize("motivo", [None, "", "   ", "abcd"])

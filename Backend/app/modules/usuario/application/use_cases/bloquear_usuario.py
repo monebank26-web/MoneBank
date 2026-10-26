@@ -64,7 +64,7 @@ class BloquearUsuario:
             id_admin=id_admin,
             accion=ACCION_BLOQUEAR_USUARIO,
             id_usuario_afectado=id_usuario,
-            detalle="Usuario bloqueado",
+            detalle=f"Usuario bloqueado. Motivo: {motivo_limpio}",
         )
 
         return usuario_actualizado

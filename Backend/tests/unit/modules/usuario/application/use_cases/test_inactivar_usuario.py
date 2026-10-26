@@ -58,6 +58,25 @@ def test_inactivar_usuario_exitoso_desactiva_y_audita_una_vez():
     assert llamada["id_admin"] == 1
     assert llamada["accion"] == ACCION_DESACTIVAR_USUARIO
     assert llamada["id_usuario_afectado"] == 10
+    assert "ACTIVO" in llamada["detalle"]
+
+
+def test_inactivar_usuario_no_audita_la_contrasena():
+
+    usuario = Mock(
+        id_usuario=10,
+        estado=ESTADO_ACTIVO,
+        id_rol=ROL_USUARIO,
+        contrasena="hash-secreto",
+    )
+    repository = crear_repository(usuario)
+    registro_repository = Mock()
+    caso_uso = crear_caso_uso(repository, registro_repository)
+
+    caso_uso.execute(10, id_admin=1)
+
+    llamada = registro_repository.registrar.call_args.kwargs
+    assert "hash-secreto" not in llamada["detalle"]
 
 
 def test_inactivar_usuario_bloqueado_conserva_los_metadatos_de_bloqueo():
@@ -79,6 +98,8 @@ def test_inactivar_usuario_bloqueado_conserva_los_metadatos_de_bloqueo():
     repository.update.assert_called_once_with(10, {"estado": ESTADO_INACTIVO})
     repository.contar_admins_activos.assert_not_called()
     registro_repository.registrar.assert_called_once()
+    llamada = registro_repository.registrar.call_args.kwargs
+    assert "BLOQUEADO" in llamada["detalle"]
 
 
 def test_inactivar_usuario_ya_inactivo_lanza_error_propio():
