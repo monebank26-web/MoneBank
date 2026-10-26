@@ -39,8 +39,13 @@ class UsuarioResponse(BaseModel):
         from_attributes = True
 
 
+class UsuarioAdminResponse(UsuarioResponse):
+    motivo_bloqueo: Optional[str] = None
+    fecha_bloqueo: Optional[datetime] = None
+
+
 class UsuarioListResponse(BaseModel):
-    items: List[UsuarioResponse]
+    items: List[UsuarioAdminResponse]
     total: int
     pagina: int
     por_pagina: int

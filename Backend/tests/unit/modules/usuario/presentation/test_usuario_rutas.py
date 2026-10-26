@@ -335,9 +335,21 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     assert respuesta.status_code == 200
     assert_sin_contrasena(respuesta.json())
 
+    bloqueado = next(
+        item
+        for item in respuesta.json()["items"]
+        if item["id_usuario"] == USUARIO_BLOQUEADO_ID
+    )
+    assert bloqueado["motivo_bloqueo"] == "Fraude"
+    assert bloqueado["fecha_bloqueo"] is not None
+
     respuesta = cliente.get(f"/usuarios/{USUARIO_BLOQUEADO_ID}")
     assert respuesta.status_code == 200
     assert_sin_contrasena(respuesta.json())
+
+    detalle = respuesta.json()
+    assert "motivo_bloqueo" not in detalle
+    assert "fecha_bloqueo" not in detalle
 
     respuesta = cliente.delete(f"/usuarios/{USUARIO_ACTIVO_ID}")
     assert respuesta.status_code == 200
