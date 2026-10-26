@@ -284,9 +284,9 @@ def test_eliminar_usuario_commitea(mock_use_case):
     repository, unit_of_work = mocks()
     controller = UsuarioController(repository, unit_of_work)
     current_user = usuario_actual(1, ROL_USUARIO)
-    mock_use_case.return_value.execute.return_value = {
-        "mensaje": "Usuario desactivado correctamente"
-    }
+    mock_use_case.return_value.execute.return_value = Mock(
+        contrasena="hash-secreto"
+    )
 
     resultado = controller.eliminar_usuario(1, current_user)
 
@@ -300,6 +300,25 @@ def test_eliminar_usuario_commitea(mock_use_case):
     )
     unit_of_work.commit.assert_called_once()
     assert resultado == {"mensaje": "Usuario desactivado correctamente"}
+    assert "contrasena" not in resultado
+
+
+@patch(
+    "app.modules.usuario.presentation.controller."
+    "usuario_controller.InactivarUsuario"
+)
+def test_eliminar_usuario_inexistente_propaga_el_404(mock_use_case):
+
+    repository, unit_of_work = mocks()
+    controller = UsuarioController(repository, unit_of_work)
+    current_user = usuario_actual(1, ROL_USUARIO)
+    mock_use_case.return_value.execute.side_effect = UsuarioNotFoundException()
+
+    with pytest.raises(UsuarioNotFoundException):
+        controller.eliminar_usuario(99, current_user)
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()
 
 
 @patch(

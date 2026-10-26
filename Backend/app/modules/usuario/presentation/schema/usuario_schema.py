@@ -45,6 +45,10 @@ class UsuarioListResponse(BaseModel):
     por_pagina: int
 
 
+class UsuarioDesactivadoResponse(BaseModel):
+    mensaje: str
+
+
 class BloqueoUsuarioRequest(BaseModel):
     motivo: str = Field(..., min_length=5, max_length=255)
 

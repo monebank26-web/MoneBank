@@ -113,7 +113,7 @@ class UsuarioController:
         )
 
         try:
-            resultado = caso_uso.execute(
+            caso_uso.execute(
                 id_usuario,
                 id_admin=current_user.id_usuario,
             )
@@ -122,7 +122,8 @@ class UsuarioController:
             self.unit_of_work.rollback()
             raise
 
-        return resultado
+        # La entidad trae `contrasena`; el endpoint solo expone este mensaje.
+        return {"mensaje": "Usuario desactivado correctamente"}
 
     def bloquear_usuario(
         self,

@@ -4,6 +4,7 @@ from fastapi.routing import APIRoute
 
 from app.modules.usuario.presentation.router.router import router
 from app.modules.usuario.presentation.schema.usuario_schema import (
+    UsuarioDesactivadoResponse,
     UsuarioListResponse,
     UsuarioResponse,
 )
@@ -65,6 +66,13 @@ def test_get_usuario_por_id_declara_response_model_sin_campos_sensibles():
 
     for campo in CAMPOS_SENSIBLES:
         assert campo not in campos
+
+
+def test_delete_usuario_devuelve_solo_el_mensaje():
+    ruta = buscar_ruta("DELETE", "/usuarios/{id_usuario}")
+
+    assert ruta.response_model is UsuarioDesactivadoResponse
+    assert set(ruta.response_model.model_fields) == {"mensaje"}
 
 
 def test_usuario_response_conserva_los_campos_que_usa_el_panel():

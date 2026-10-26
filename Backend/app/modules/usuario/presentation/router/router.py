@@ -14,6 +14,7 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
     BloqueoUsuarioRequest,
     BloqueoUsuarioResponse,
     UsuarioCreate,
+    UsuarioDesactivadoResponse,
     UsuarioListResponse,
     UsuarioResponse,
     UsuarioUpdate,
@@ -80,7 +81,10 @@ def actualizar_usuario(
     return controller.actualizar_usuario(id_usuario, usuario, current_user)
 
 
-@router.delete("/{id_usuario}")
+@router.delete(
+    "/{id_usuario}",
+    response_model=UsuarioDesactivadoResponse,
+)
 def eliminar_usuario(
     id_usuario: int,
     current_user: object = Depends(require_rol(ROL_ADMIN)),
