@@ -801,22 +801,27 @@
   font-size: 15px;
 }
 
-.admin-boton-peligro {
+.admin-boton-peligro,
+.admin-boton-primario {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  background: var(--color-danger);
   border-radius: var(--radius-sm);
   padding: 13px;
-  color: var(--color-blanco);
   font-size: 15px;
   font-weight: 700;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background 0.2s;
 }
 
-.admin-boton-peligro svg {
+.admin-boton-peligro {
+  background: var(--color-danger);
+  color: var(--color-blanco);
+}
+
+.admin-boton-peligro svg,
+.admin-boton-primario svg {
   font-size: 17px;
 }
 
@@ -852,6 +857,37 @@
 .admin-boton-secundario:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* ── HU-0038: DESBLOQUEO Y REACTIVACIÓN ── */
+.admin-modal-icono--primario {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  box-shadow: 0 0 0 6px var(--color-accent-soft);
+}
+
+.admin-boton-primario {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+[data-theme="light"] .admin-boton-primario {
+  color: var(--color-text-hard);
+}
+
+.admin-boton-primario:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.admin-boton-primario:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-confirmacion .admin-boton-confirmar:focus-visible,
+.admin-confirmacion .admin-boton-secundario:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* ── RESPONSIVE ── */

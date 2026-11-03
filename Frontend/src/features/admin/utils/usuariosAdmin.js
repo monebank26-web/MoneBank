@@ -30,10 +30,14 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
+export const ACCION_DESBLOQUEAR = 'desbloquear';
+export const ACCION_REACTIVAR = 'reactivar';
+
 // El backend marca el 409 del correo repetido con este codigo. El texto queda
 // solo como respaldo por si la respuesta llegara sin `code`.
 const CODIGO_CORREO_DUPLICADO = 'CORREO_DUPLICADO';
 const MENSAJE_CORREO_DUPLICADO = 'El correo ya está registrado';
+export const CODIGO_CUENTA_NO_BLOQUEADA = 'CUENTA_NO_BLOQUEADA';
 
 const MENSAJES_ERROR_ACCION = {
   NO_PUEDE_BLOQUEARSE: 'No puedes bloquear tu propia cuenta.',
@@ -57,6 +61,54 @@ export const puedeBloquearUsuario = (estado) => estado === 'ACTIVO';
 
 export const puedeDesactivarUsuario = (estado) =>
   estado === 'ACTIVO' || estado === 'BLOQUEADO';
+
+export const tieneBloqueoTemporalAdmin = (usuario) =>
+  usuario?.estado === 'ACTIVO' && Boolean(usuario.bloqueo_temporal);
+
+export const accionCuentaAdmin = (usuario) => {
+  if (usuario?.estado === 'INACTIVO') return ACCION_REACTIVAR;
+  if (usuario?.estado === 'BLOQUEADO') return ACCION_DESBLOQUEAR;
+  if (tieneBloqueoTemporalAdmin(usuario)) return ACCION_DESBLOQUEAR;
+
+  return null;
+};
+
+export const textoConfirmacionDesbloqueo = (usuario) => {
+  if (usuario?.estado === 'BLOQUEADO') {
+    return (
+      'La cuenta podrá iniciar sesión de nuevo. Se borrará el motivo del ' +
+      'bloqueo. La acción quedará registrada.'
+    );
+  }
+
+  if (usuario?.estado === 'INACTIVO') {
+    return (
+      'La cuenta volverá a estar activa y podrá iniciar sesión. ' +
+      'La acción quedará registrada.'
+    );
+  }
+
+  if (tieneBloqueoTemporalAdmin(usuario)) {
+    return (
+      'Se reiniciarán los intentos fallidos y la cuenta podrá iniciar ' +
+      'sesión de nuevo.'
+    );
+  }
+
+  return '';
+};
+
+export const mensajeExitoDesbloqueo = (accion) => {
+  if (accion === ACCION_DESBLOQUEAR) return 'Cuenta desbloqueada correctamente';
+  if (accion === ACCION_REACTIVAR) return 'Cuenta reactivada correctamente';
+
+  return '';
+};
+
+export const mensajeErrorDesbloqueo = (error) =>
+  error?.code === CODIGO_CUENTA_NO_BLOQUEADA
+    ? 'La cuenta no se encuentra bloqueada ni desactivada'
+    : 'No se pudo desbloquear ni reactivar la cuenta. Inténtalo de nuevo.';
 
 export const motivoBloqueoValido = (motivo) => {
   const longitud = String(motivo || '').trim().length;

@@ -2,7 +2,7 @@ import { apiClient } from '../../../core/api/client';
 
 const ROLES_MAP = { 1: 'administrador', 2: 'normal' };
 
-const toFrontend = (u) => ({
+export const toFrontend = (u) => ({
   id: u.id_usuario,
   id_usuario: u.id_usuario,
   nombres: u.nombres,
@@ -15,6 +15,8 @@ const toFrontend = (u) => ({
   estado: u.estado,
   motivo_bloqueo: u.motivo_bloqueo,
   fecha_bloqueo: u.fecha_bloqueo,
+  fecha_desbloqueo: u.fecha_desbloqueo,
+  bloqueo_temporal: Boolean(u.bloqueo_temporal),
 });
 
 
@@ -85,6 +87,10 @@ export const authService = {
   // ---------------------------------------------------------------------
   bloquearUsuario: async (id, motivo) => {
     return apiClient.put(`/usuarios/${id}/bloquear`, { motivo });
+  },
+
+  desbloquearUsuario: async (id) => {
+    return apiClient.put(`/usuarios/${id}/desbloquear`);
   },
 
   cambiarPassword: async (contrasenaActual, contrasenaNueva) => {

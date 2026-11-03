@@ -1,4 +1,7 @@
 import {
+  ACCION_DESBLOQUEAR,
+  ACCION_REACTIVAR,
+  accionCuentaAdmin,
   calcularTotalPaginas,
   esCorreoDuplicado,
   etiquetaEstadoAdmin,
@@ -8,11 +11,15 @@ import {
   iconoEstadoAdmin,
   mensajeErrorBloqueo,
   mensajeErrorDesactivacion,
+  mensajeErrorDesbloqueo,
+  mensajeExitoDesbloqueo,
   mensajeVacio,
   motivoBloqueoValido,
   puedeBloquearUsuario,
   puedeDesactivarUsuario,
+  textoConfirmacionDesbloqueo,
   textoTotalUsuarios,
+  tieneBloqueoTemporalAdmin,
 } from './usuariosAdmin';
 
 describe('esCorreoDuplicado', () => {
@@ -127,6 +134,62 @@ describe('acciones segun el estado', () => {
     expect(iconoEstadoAdmin('BLOQUEADO')).toBe('mdi:lock-outline');
     expect(iconoEstadoAdmin('INACTIVO')).toBe('mdi:minus-circle-outline');
     expect(iconoEstadoAdmin('OTRO')).toBe('mdi:circle-outline');
+  });
+});
+
+describe('acciones de desbloqueo y reactivacion', () => {
+  it('detecta el bloqueo temporal solo en cuentas activas', () => {
+    expect(tieneBloqueoTemporalAdmin({ estado: 'ACTIVO', bloqueo_temporal: true })).toBe(true);
+    expect(tieneBloqueoTemporalAdmin({ estado: 'ACTIVO', bloqueo_temporal: false })).toBe(false);
+    expect(tieneBloqueoTemporalAdmin({ estado: 'BLOQUEADO', bloqueo_temporal: true })).toBe(false);
+    expect(tieneBloqueoTemporalAdmin(undefined)).toBe(false);
+  });
+
+  it('elige la accion segun el estado y el bloqueo temporal', () => {
+    expect(accionCuentaAdmin({ estado: 'ACTIVO', bloqueo_temporal: false })).toBeNull();
+    expect(accionCuentaAdmin({ estado: 'ACTIVO', bloqueo_temporal: true }))
+      .toBe(ACCION_DESBLOQUEAR);
+    expect(accionCuentaAdmin({ estado: 'BLOQUEADO', bloqueo_temporal: false }))
+      .toBe(ACCION_DESBLOQUEAR);
+    expect(accionCuentaAdmin({ estado: 'INACTIVO', bloqueo_temporal: false }))
+      .toBe(ACCION_REACTIVAR);
+    expect(accionCuentaAdmin(undefined)).toBeNull();
+  });
+
+  it('describe la consecuencia de cada accion', () => {
+    expect(textoConfirmacionDesbloqueo({ estado: 'BLOQUEADO' })).toBe(
+      'La cuenta podrá iniciar sesión de nuevo. Se borrará el motivo del ' +
+      'bloqueo. La acción quedará registrada.'
+    );
+    expect(textoConfirmacionDesbloqueo({ estado: 'INACTIVO' })).toBe(
+      'La cuenta volverá a estar activa y podrá iniciar sesión. ' +
+      'La acción quedará registrada.'
+    );
+    expect(textoConfirmacionDesbloqueo({
+      estado: 'ACTIVO',
+      bloqueo_temporal: true,
+    })).toBe(
+      'Se reiniciarán los intentos fallidos y la cuenta podrá iniciar ' +
+      'sesión de nuevo.'
+    );
+    expect(textoConfirmacionDesbloqueo({ estado: 'ACTIVO' })).toBe('');
+  });
+
+  it('elige el mensaje de exito segun la accion', () => {
+    expect(mensajeExitoDesbloqueo(ACCION_DESBLOQUEAR))
+      .toBe('Cuenta desbloqueada correctamente');
+    expect(mensajeExitoDesbloqueo(ACCION_REACTIVAR))
+      .toBe('Cuenta reactivada correctamente');
+    expect(mensajeExitoDesbloqueo(null)).toBe('');
+  });
+
+  it('traduce el codigo de cuenta no bloqueada y deja un generico distinto', () => {
+    expect(mensajeErrorDesbloqueo({ code: 'CUENTA_NO_BLOQUEADA' }))
+      .toBe('La cuenta no se encuentra bloqueada ni desactivada');
+    expect(mensajeErrorDesbloqueo({ code: 'OTRO' }))
+      .toBe('No se pudo desbloquear ni reactivar la cuenta. Inténtalo de nuevo.');
+    expect(mensajeErrorDesbloqueo(new Error('Failed to fetch')))
+      .toBe('No se pudo desbloquear ni reactivar la cuenta. Inténtalo de nuevo.');
   });
 });
 
