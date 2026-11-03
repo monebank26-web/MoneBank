@@ -397,6 +397,23 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     assert bloqueado["motivo_bloqueo"] == "Fraude"
     assert bloqueado["fecha_bloqueo"] is not None
     assert "fecha_desbloqueo" in bloqueado
+    assert bloqueado["bloqueo_temporal"] is True
+    assert "bloqueado_hasta" not in bloqueado
+    assert "intentos_fallidos" not in bloqueado
+
+    temporal = next(
+        item
+        for item in respuesta.json()["items"]
+        if item["id_usuario"] == USUARIO_ACTIVO_TEMPORAL_ID
+    )
+    assert temporal["bloqueo_temporal"] is True
+
+    activo = next(
+        item
+        for item in respuesta.json()["items"]
+        if item["id_usuario"] == USUARIO_ACTIVO_ID
+    )
+    assert activo["bloqueo_temporal"] is False
 
     respuesta = cliente.get(f"/usuarios/{USUARIO_BLOQUEADO_ID}")
     assert respuesta.status_code == 200
@@ -406,6 +423,7 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     assert "motivo_bloqueo" not in detalle
     assert "fecha_bloqueo" not in detalle
     assert "fecha_desbloqueo" not in detalle
+    assert "bloqueo_temporal" not in detalle
 
     respuesta = cliente.delete(f"/usuarios/{USUARIO_ACTIVO_ID}")
     assert respuesta.status_code == 200

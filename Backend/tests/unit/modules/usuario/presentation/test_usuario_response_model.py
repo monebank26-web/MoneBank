@@ -21,6 +21,7 @@ CAMPOS_SOLO_ADMIN = (
     "motivo_bloqueo",
     "fecha_bloqueo",
     "fecha_desbloqueo",
+    "bloqueo_temporal",
 )
 CAMPOS_SENSIBLES = CAMPOS_SENSIBLES_SIEMPRE + CAMPOS_SOLO_ADMIN
 
@@ -95,6 +96,12 @@ def test_fecha_desbloqueo_es_opcional_en_usuario_admin_response():
 
     assert campo.default is None
     assert campo.is_required() is False
+
+
+def test_bloqueo_temporal_es_booleano_en_usuario_admin_response():
+    campo = UsuarioAdminResponse.model_fields["bloqueo_temporal"]
+
+    assert campo.annotation is bool
 
 
 def test_get_usuario_por_id_no_expone_fecha_desbloqueo():

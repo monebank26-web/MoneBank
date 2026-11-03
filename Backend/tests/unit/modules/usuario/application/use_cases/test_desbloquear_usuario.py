@@ -40,6 +40,7 @@ def test_desbloquear_bloqueado_actualiza_limpia_y_audita():
         estado=ESTADO_BLOQUEADO,
         motivo_bloqueo="Fraude",
         bloqueado_hasta=None,
+        bloqueo_temporal=False,
         contrasena="hash-secreto",
     )
     repository = crear_repository(usuario)
@@ -75,6 +76,7 @@ def test_desbloquear_inactivo_audita_estado_y_sin_motivo():
         estado=ESTADO_INACTIVO,
         motivo_bloqueo=None,
         bloqueado_hasta=None,
+        bloqueo_temporal=False,
     )
     repository = crear_repository(usuario)
     registro_repository = Mock()
@@ -93,6 +95,7 @@ def test_desbloquear_activo_con_bloqueo_temporal_vigente():
         estado=ESTADO_ACTIVO,
         motivo_bloqueo=None,
         bloqueado_hasta=datetime.now() + timedelta(minutes=5),
+        bloqueo_temporal=True,
     )
     repository = crear_repository(usuario)
     registro_repository = Mock()
@@ -111,6 +114,7 @@ def test_desbloquear_activo_con_bloqueado_hasta_none_lanza_409():
         estado=ESTADO_ACTIVO,
         motivo_bloqueo=None,
         bloqueado_hasta=None,
+        bloqueo_temporal=False,
     )
     repository = crear_repository(usuario)
     registro_repository = Mock()
@@ -133,6 +137,7 @@ def test_desbloquear_activo_con_bloqueo_temporal_vencido_lanza_409():
         estado=ESTADO_ACTIVO,
         motivo_bloqueo=None,
         bloqueado_hasta=datetime.now() - timedelta(seconds=1),
+        bloqueo_temporal=False,
     )
     repository = crear_repository(usuario)
     registro_repository = Mock()
@@ -171,6 +176,7 @@ def test_desbloquear_propaga_el_error_de_auditoria():
         estado=ESTADO_BLOQUEADO,
         motivo_bloqueo="Fraude",
         bloqueado_hasta=None,
+        bloqueo_temporal=False,
     )
     repository = crear_repository(usuario)
     registro_repository = Mock()

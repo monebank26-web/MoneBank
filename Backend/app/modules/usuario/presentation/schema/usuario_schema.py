@@ -43,6 +43,7 @@ class UsuarioAdminResponse(UsuarioResponse):
     motivo_bloqueo: Optional[str] = None
     fecha_bloqueo: Optional[datetime] = None
     fecha_desbloqueo: Optional[datetime] = None
+    bloqueo_temporal: bool
 
 
 class UsuarioListResponse(BaseModel):

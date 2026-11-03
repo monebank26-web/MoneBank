@@ -33,10 +33,7 @@ class DesbloquearUsuario:
             raise UsuarioNotFoundException()
 
         estado_anterior = normalizar_estado(usuario.estado)
-        bloqueo_temporal_vigente = (
-            usuario.bloqueado_hasta is not None
-            and usuario.bloqueado_hasta > datetime.now(usuario.bloqueado_hasta.tzinfo)
-        )
+        bloqueo_temporal_vigente = usuario.bloqueo_temporal
 
         if not (
             estado_anterior in (ESTADO_BLOQUEADO, ESTADO_INACTIVO)

@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class Usuario:
 
     def __init__(
@@ -31,3 +34,10 @@ class Usuario:
         self.intentos_fallidos = intentos_fallidos or 0
         self.bloqueado_hasta = bloqueado_hasta
         self.fecha_desbloqueo = fecha_desbloqueo
+
+    @property
+    def bloqueo_temporal(self):
+        if self.bloqueado_hasta is None:
+            return False
+
+        return self.bloqueado_hasta > datetime.now(self.bloqueado_hasta.tzinfo)
