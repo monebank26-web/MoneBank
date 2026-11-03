@@ -42,6 +42,7 @@ class UsuarioResponse(BaseModel):
 class UsuarioAdminResponse(UsuarioResponse):
     motivo_bloqueo: Optional[str] = None
     fecha_bloqueo: Optional[datetime] = None
+    fecha_desbloqueo: Optional[datetime] = None
 
 
 class UsuarioListResponse(BaseModel):
@@ -73,6 +74,15 @@ class BloqueoUsuarioResponse(BaseModel):
     estado: str
     motivo_bloqueo: str
     fecha_bloqueo: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DesbloqueoUsuarioResponse(BaseModel):
+    id_usuario: int
+    estado: str
+    fecha_desbloqueo: datetime
 
     class Config:
         from_attributes = True

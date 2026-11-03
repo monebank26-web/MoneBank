@@ -14,6 +14,7 @@ from app.modules.usuario.presentation.controller.usuario_controller import (
 from app.modules.usuario.presentation.schema.usuario_schema import (
     BloqueoUsuarioRequest,
     BloqueoUsuarioResponse,
+    DesbloqueoUsuarioResponse,
     UsuarioCreate,
     UsuarioDesactivadoResponse,
     UsuarioListResponse,
@@ -131,3 +132,26 @@ def bloquear_usuario(
     controller: UsuarioController = Depends(get_usuario_controller),
 ):
     return controller.bloquear_usuario(id_usuario, datos, current_user)
+
+
+@router.put(
+    "/{id_usuario}/desbloquear",
+    response_model=DesbloqueoUsuarioResponse,
+    responses={
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {
+            "description": (
+                "La cuenta no se encuentra bloqueada ni desactivada"
+            )
+        },
+        422: {"description": "Datos de entrada inválidos"},
+    },
+)
+def desbloquear_usuario(
+    id_usuario: int,
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
+):
+    return controller.desbloquear_usuario(id_usuario, current_user)

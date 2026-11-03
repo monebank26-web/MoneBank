@@ -10,6 +10,7 @@ from app.modules.usuario.presentation.router.router import (
     actualizar_usuario,
     bloquear_usuario,
     crear_usuario,
+    desbloquear_usuario,
     eliminar_usuario,
     obtener_usuario_por_id,
     obtener_usuarios,
@@ -161,6 +162,21 @@ def test_bloquear_usuario_documenta_las_respuestas_de_error():
 
     assert {400, 401, 403, 404, 409, 422} <= set(ruta.responses)
     assert DESCRIPCION_MOTIVO_BLOQUEO in ruta.responses[422]["description"]
+
+
+def test_desbloquear_usuario_delega_en_el_controller():
+    controller = Mock()
+    current_user = usuario_actual(6, ROL_ADMIN)
+
+    desbloquear_usuario(9, current_user=current_user, controller=controller)
+
+    controller.desbloquear_usuario.assert_called_once_with(9, current_user)
+
+
+def test_desbloquear_usuario_documenta_las_respuestas_de_error():
+    ruta = buscar_ruta("PUT", "/usuarios/{id_usuario}/desbloquear")
+
+    assert {401, 403, 404, 409, 422} <= set(ruta.responses)
 
 
 def test_eliminar_usuario_documenta_las_respuestas_de_error():

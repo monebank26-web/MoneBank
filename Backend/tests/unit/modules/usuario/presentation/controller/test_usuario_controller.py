@@ -365,3 +365,46 @@ def test_bloquear_usuario_envia_motivo(mock_use_case):
     )
     unit_of_work.commit.assert_called_once()
     assert resultado == {"estado": "BLOQUEADO"}
+
+
+@patch(
+    "app.modules.usuario.presentation.controller."
+    "usuario_controller.DesbloquearUsuario"
+)
+def test_desbloquear_usuario_commitea(mock_use_case):
+
+    repository, unit_of_work = mocks()
+    controller = UsuarioController(repository, unit_of_work)
+    current_user = usuario_actual(1, ROL_ADMIN)
+    mock_use_case.return_value.execute.return_value = {"estado": "ACTIVO"}
+
+    resultado = controller.desbloquear_usuario(5, current_user)
+
+    mock_use_case.assert_called_once_with(
+        repository,
+        unit_of_work.registros_accion_admin,
+    )
+    mock_use_case.return_value.execute.assert_called_once_with(
+        5,
+        id_admin=current_user.id_usuario,
+    )
+    unit_of_work.commit.assert_called_once()
+    assert resultado == {"estado": "ACTIVO"}
+
+
+@patch(
+    "app.modules.usuario.presentation.controller."
+    "usuario_controller.DesbloquearUsuario"
+)
+def test_desbloquear_usuario_con_error_hace_rollback_sin_commit(mock_use_case):
+
+    repository, unit_of_work = mocks()
+    controller = UsuarioController(repository, unit_of_work)
+    current_user = usuario_actual(1, ROL_ADMIN)
+    mock_use_case.return_value.execute.side_effect = RuntimeError("boom")
+
+    with pytest.raises(RuntimeError, match="boom"):
+        controller.desbloquear_usuario(5, current_user)
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()

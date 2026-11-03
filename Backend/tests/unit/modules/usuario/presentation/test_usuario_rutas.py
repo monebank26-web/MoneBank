@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
@@ -13,8 +14,10 @@ from app.modules.admin.infrastructure.model.registro_accion_admin_model import (
     RegistroAccionAdminModel,
 )
 from app.modules.usuario.presentation.router.router import router
+from app.shared.constants.acciones import ACCION_DESBLOQUEAR_USUARIO
 from app.shared.constants.codigos_error import (
     CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE,
+    CODIGO_CUENTA_NO_BLOQUEADA,
     CODIGO_CUENTA_YA_BLOQUEADA,
     CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_DESACTIVARSE,
@@ -35,6 +38,7 @@ USUARIO_ACTIVO_ID = 2
 USUARIO_INACTIVO_ID = 3
 USUARIO_BLOQUEADO_ID = 4
 OTRO_ACTIVO_ID = 5
+USUARIO_ACTIVO_TEMPORAL_ID = 6
 USUARIO_INEXISTENTE_ID = 999
 
 
@@ -88,6 +92,7 @@ def insertar_usuario(conexion, id_usuario, correo, estado, id_rol, **extra):
         "bloqueado_hasta": None,
         "motivo_bloqueo": None,
         "fecha_bloqueo": None,
+        "fecha_desbloqueo": None,
     }
     datos.update(extra)
 
@@ -105,7 +110,8 @@ def insertar_usuario(conexion, id_usuario, correo, estado, id_rol, **extra):
             intentos_fallidos,
             bloqueado_hasta,
             motivo_bloqueo,
-            fecha_bloqueo
+            fecha_bloqueo,
+            fecha_desbloqueo
         ) VALUES (
             :id_usuario,
             :nombres,
@@ -119,7 +125,8 @@ def insertar_usuario(conexion, id_usuario, correo, estado, id_rol, **extra):
             :intentos_fallidos,
             :bloqueado_hasta,
             :motivo_bloqueo,
-            :fecha_bloqueo
+            :fecha_bloqueo,
+            :fecha_desbloqueo
         )
     """), datos)
 
@@ -155,6 +162,10 @@ def sembrar_usuarios(engine):
             ROL_USUARIO,
             motivo_bloqueo="Fraude",
             fecha_bloqueo="2026-01-02 10:30:00",
+            intentos_fallidos=5,
+            bloqueado_hasta=(
+                datetime.now() + timedelta(minutes=30)
+            ).strftime("%Y-%m-%d %H:%M:%S"),
         )
         insertar_usuario(
             conexion,
@@ -162,6 +173,17 @@ def sembrar_usuarios(engine):
             "otro@example.com",
             "ACTIVO",
             ROL_USUARIO,
+        )
+        insertar_usuario(
+            conexion,
+            USUARIO_ACTIVO_TEMPORAL_ID,
+            "temporal@example.com",
+            "ACTIVO",
+            ROL_USUARIO,
+            intentos_fallidos=5,
+            bloqueado_hasta=(
+                datetime.now() + timedelta(minutes=30)
+            ).strftime("%Y-%m-%d %H:%M:%S"),
         )
 
 
@@ -219,6 +241,37 @@ def autenticar_usuario(app):
 def contar_auditorias(session_factory):
     with session_factory() as sesion:
         return sesion.query(RegistroAccionAdminModel).count()
+
+
+def obtener_usuario(session_factory, id_usuario):
+    with session_factory() as sesion:
+        return sesion.execute(text("""
+            SELECT
+                estado,
+                motivo_bloqueo,
+                fecha_bloqueo,
+                fecha_desbloqueo,
+                intentos_fallidos,
+                bloqueado_hasta
+            FROM usuario
+            WHERE id_usuario = :id_usuario
+        """), {"id_usuario": id_usuario}).mappings().one()
+
+
+def obtener_ultima_auditoria(session_factory):
+    with session_factory() as sesion:
+        auditoria = (
+            sesion.query(RegistroAccionAdminModel)
+            .order_by(RegistroAccionAdminModel.id_registro_accion.desc())
+            .first()
+        )
+
+        return {
+            "id_admin": auditoria.id_admin,
+            "accion": auditoria.accion,
+            "id_usuario_afectado": auditoria.id_usuario_afectado,
+            "detalle": auditoria.detalle,
+        }
 
 
 def assert_sin_contrasena(payload):
@@ -343,6 +396,7 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     )
     assert bloqueado["motivo_bloqueo"] == "Fraude"
     assert bloqueado["fecha_bloqueo"] is not None
+    assert "fecha_desbloqueo" in bloqueado
 
     respuesta = cliente.get(f"/usuarios/{USUARIO_BLOQUEADO_ID}")
     assert respuesta.status_code == 200
@@ -351,6 +405,7 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     detalle = respuesta.json()
     assert "motivo_bloqueo" not in detalle
     assert "fecha_bloqueo" not in detalle
+    assert "fecha_desbloqueo" not in detalle
 
     respuesta = cliente.delete(f"/usuarios/{USUARIO_ACTIVO_ID}")
     assert respuesta.status_code == 200
@@ -364,3 +419,143 @@ def test_las_respuestas_no_exponen_contrasena(entorno):
     assert respuesta.status_code == 200
     assert respuesta.json()["motivo_bloqueo"] == "Fraude"
     assert_sin_contrasena(respuesta.json())
+
+
+def test_desbloquear_sin_token_devuelve_401(entorno):
+    cliente, _, _ = entorno
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_BLOQUEADO_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 401
+    assert respuesta.json()["detail"] == "Token no proporcionado"
+
+
+def test_desbloquear_usuario_no_admin_devuelve_403(entorno):
+    cliente, app, _ = entorno
+    autenticar_usuario(app)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_BLOQUEADO_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 403
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_desbloquear_usuario_inexistente_devuelve_404(entorno):
+    cliente, app, _ = entorno
+    autenticar_admin(app)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_INEXISTENTE_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 404
+    assert respuesta.json()["message"] == "Usuario no encontrado"
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_desbloquear_activo_sin_bloqueo_devuelve_409_con_codigo(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 409
+    assert respuesta.json()["code"] == CODIGO_CUENTA_NO_BLOQUEADA
+    assert respuesta.json()["message"] == (
+        "La cuenta no se encuentra bloqueada ni desactivada"
+    )
+    assert_sin_contrasena(respuesta.json())
+    assert contar_auditorias(session_factory) == auditorias_antes
+
+
+def test_desbloquear_bloqueado_actualiza_limpia_y_audita(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_BLOQUEADO_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert set(cuerpo) == {
+        "id_usuario",
+        "estado",
+        "fecha_desbloqueo",
+    }
+    assert cuerpo["id_usuario"] == USUARIO_BLOQUEADO_ID
+    assert cuerpo["estado"] == "ACTIVO"
+    assert cuerpo["fecha_desbloqueo"] is not None
+    assert_sin_contrasena(cuerpo)
+
+    usuario = obtener_usuario(session_factory, USUARIO_BLOQUEADO_ID)
+    assert usuario["estado"] == "ACTIVO"
+    assert usuario["motivo_bloqueo"] is None
+    assert usuario["fecha_bloqueo"] is None
+    assert usuario["fecha_desbloqueo"] is not None
+    assert usuario["intentos_fallidos"] == 0
+    assert usuario["bloqueado_hasta"] is None
+
+    assert contar_auditorias(session_factory) == auditorias_antes + 1
+    auditoria = obtener_ultima_auditoria(session_factory)
+    assert auditoria["id_admin"] == ADMIN_ID
+    assert auditoria["accion"] == ACCION_DESBLOQUEAR_USUARIO
+    assert auditoria["id_usuario_afectado"] == USUARIO_BLOQUEADO_ID
+    assert "BLOQUEADO" in auditoria["detalle"]
+    assert "Fraude" in auditoria["detalle"]
+
+
+def test_desbloquear_inactivo_actualiza_y_audita(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_INACTIVO_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["estado"] == "ACTIVO"
+    assert_sin_contrasena(respuesta.json())
+
+    usuario = obtener_usuario(session_factory, USUARIO_INACTIVO_ID)
+    assert usuario["estado"] == "ACTIVO"
+    assert usuario["motivo_bloqueo"] is None
+    assert usuario["fecha_bloqueo"] is None
+    assert usuario["intentos_fallidos"] == 0
+    assert usuario["bloqueado_hasta"] is None
+
+    auditoria = obtener_ultima_auditoria(session_factory)
+    assert auditoria["accion"] == ACCION_DESBLOQUEAR_USUARIO
+    assert "INACTIVO" in auditoria["detalle"]
+    assert "Sin motivo" in auditoria["detalle"]
+
+
+def test_desbloquear_activo_con_bloqueo_temporal_vigente(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+
+    respuesta = cliente.put(
+        f"/usuarios/{USUARIO_ACTIVO_TEMPORAL_ID}/desbloquear"
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["estado"] == "ACTIVO"
+    assert_sin_contrasena(respuesta.json())
+
+    usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_TEMPORAL_ID)
+    assert usuario["estado"] == "ACTIVO"
+    assert usuario["intentos_fallidos"] == 0
+    assert usuario["bloqueado_hasta"] is None
+
+    auditoria = obtener_ultima_auditoria(session_factory)
+    assert auditoria["accion"] == ACCION_DESBLOQUEAR_USUARIO
+    assert "ACTIVO" in auditoria["detalle"]
+    assert "bloqueo temporal por intentos fallidos" in auditoria["detalle"]

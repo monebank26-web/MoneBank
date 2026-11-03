@@ -10,6 +10,9 @@ from app.modules.usuario.application.use_cases.actualizar_usuarios import (
 )
 from app.modules.usuario.application.use_cases.bloquear_usuario import BloquearUsuario
 from app.modules.usuario.application.use_cases.crear_usuario import CrearUsuario
+from app.modules.usuario.application.use_cases.desbloquear_usuario import (
+    DesbloquearUsuario,
+)
 from app.modules.usuario.application.use_cases.inactivar_usuario import (
     InactivarUsuario,
 )
@@ -146,6 +149,24 @@ class UsuarioController:
             resultado = caso_uso.execute(
                 id_usuario,
                 datos.motivo,
+                id_admin=current_user.id_usuario,
+            )
+            self.unit_of_work.commit()
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
+        return resultado
+
+    def desbloquear_usuario(self, id_usuario: int, current_user):
+        caso_uso = DesbloquearUsuario(
+            self.repository,
+            self.unit_of_work.registros_accion_admin,
+        )
+
+        try:
+            resultado = caso_uso.execute(
+                id_usuario,
                 id_admin=current_user.id_usuario,
             )
             self.unit_of_work.commit()
