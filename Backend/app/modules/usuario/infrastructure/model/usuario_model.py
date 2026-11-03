@@ -28,3 +28,4 @@ class UsuarioModel(Base):
 
     motivo_bloqueo = Column(String(255), nullable=True)
     fecha_bloqueo = Column(DateTime, nullable=True)
+    fecha_desbloqueo = Column(DateTime, nullable=True)

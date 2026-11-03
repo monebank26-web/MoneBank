@@ -55,6 +55,7 @@ def crear_tablas(engine):
                 bloqueado_hasta DATETIME,
                 motivo_bloqueo VARCHAR(255),
                 fecha_bloqueo DATETIME,
+                fecha_desbloqueo DATETIME,
                 CONSTRAINT usuario_estado_check CHECK (
                     estado IN ('ACTIVO', 'INACTIVO', 'BLOQUEADO')
                 )

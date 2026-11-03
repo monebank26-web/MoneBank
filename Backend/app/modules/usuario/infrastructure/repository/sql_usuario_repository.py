@@ -50,6 +50,7 @@ class SqlUsuarioRepository(UsuarioRepository):
             fecha_bloqueo=modelo.fecha_bloqueo,
             intentos_fallidos=getattr(modelo, "intentos_fallidos", 0) or 0,
             bloqueado_hasta=getattr(modelo, "bloqueado_hasta", None),
+            fecha_desbloqueo=modelo.fecha_desbloqueo,
         )
 
     def create(self, usuario_data):
@@ -140,19 +141,7 @@ class SqlUsuarioRepository(UsuarioRepository):
 
             raise
 
-        return Usuario(
-            id_usuario=usuario.id_usuario,
-            nombres=usuario.nombres,
-            apellidos=usuario.apellidos,
-            correo=usuario.correo,
-            contrasena=usuario.contrasena,
-            estado=usuario.estado,
-            id_rol=usuario.id_rol,
-            id_tipo_usuario=usuario.id_tipo_usuario,
-            fecha_creacion=usuario.fecha_creacion,
-            motivo_bloqueo=usuario.motivo_bloqueo,
-            fecha_bloqueo=usuario.fecha_bloqueo,
-        )
+        return self._to_entity(usuario)
 
     def delete(self, id_usuario):
         usuario = (

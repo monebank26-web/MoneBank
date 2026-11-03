@@ -1,3 +1,4 @@
+from datetime import datetime
 from types import SimpleNamespace
 
 from sqlalchemy import create_engine
@@ -27,6 +28,13 @@ def sesion_sqlite():
     UsuarioModel.__table__.create(engine)
 
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)()
+
+
+def fabrica_sesiones_sqlite(tmp_path):
+    engine = create_engine(f"sqlite:///{tmp_path / 'usuarios.db'}")
+    UsuarioModel.__table__.create(engine)
+
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def agregar_usuario(
@@ -128,6 +136,26 @@ def test_update_deja_el_cambio_en_la_transaccion_sin_confirmarlo():
     sesion.expire_all()
 
     assert sesion.get(UsuarioModel, 1).nombres == "Ana"
+
+
+def test_fecha_desbloqueo_persiste_y_se_lee_desde_otra_sesion(tmp_path):
+    fabrica = fabrica_sesiones_sqlite(tmp_path)
+    fecha = datetime(2026, 2, 3, 4, 5, 6)
+
+    with fabrica() as sesion:
+        agregar_usuario(sesion, 1, "ana@test.com")
+        sesion.commit()
+
+        repositorio = SqlUsuarioRepository(sesion)
+        resultado = repositorio.update(1, {"fecha_desbloqueo": fecha})
+
+        assert resultado.fecha_desbloqueo == fecha
+        sesion.commit()
+
+    with fabrica() as sesion:
+        usuario = SqlUsuarioRepository(sesion).get_by_id(1)
+
+        assert usuario.fecha_desbloqueo == fecha
 
 
 def test_update_traduce_el_choque_de_correo_en_excepcion_de_negocio():
