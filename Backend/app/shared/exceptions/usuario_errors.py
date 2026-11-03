@@ -1,5 +1,6 @@
 from app.shared.constants.codigos_error import (
     CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE,
+    CODIGO_CUENTA_NO_BLOQUEADA,
     CODIGO_CUENTA_YA_BLOQUEADA,
     CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_BLOQUEARSE,
@@ -17,6 +18,11 @@ class CuentaYaBloqueadaException(BusinessError):
 class CuentaInactivaNoBloqueableException(BusinessError):
     message = "No se puede bloquear una cuenta inactiva"
     code = CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE
+
+
+class CuentaNoBloqueadaException(BusinessError):
+    message = "La cuenta no se encuentra bloqueada ni desactivada"
+    code = CODIGO_CUENTA_NO_BLOQUEADA
 
 
 class CuentaYaInactivaException(BusinessError):
