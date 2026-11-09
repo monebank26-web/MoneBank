@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
+from app.modules.usuario.application.use_cases import bloquear_usuario as modulo_bloquear
 from app.modules.usuario.application.use_cases.bloquear_usuario import BloquearUsuario
 from app.shared.constants.acciones import ACCION_BLOQUEAR_USUARIO
 from app.shared.constants.codigos_error import (
@@ -42,10 +43,12 @@ def crear_repository(usuario=None):
     return repository
 
 
-def test_bloquear_usuario_exitoso_bloquea_con_fecha_y_audita():
+def test_bloquear_usuario_exitoso_bloquea_con_fecha_y_audita(monkeypatch):
     repository = crear_repository()
     registro_repository = Mock()
     caso_uso = crear_caso_uso(repository, registro_repository)
+    fijo = datetime(2026, 11, 2, 22, 54)
+    monkeypatch.setattr(modulo_bloquear, "ahora_colombia", lambda: fijo)
 
     resultado = caso_uso.execute(10, "Fraude detectado", id_admin=1)
 
@@ -53,7 +56,8 @@ def test_bloquear_usuario_exitoso_bloquea_con_fecha_y_audita():
     datos = repository.update.call_args.args[1]
     assert datos["estado"] == ESTADO_BLOQUEADO
     assert datos["motivo_bloqueo"] == "Fraude detectado"
-    assert isinstance(datos["fecha_bloqueo"], datetime)
+    assert datos["fecha_bloqueo"] == fijo
+    assert datos["fecha_bloqueo"].tzinfo is None
 
     registro_repository.registrar.assert_called_once()
     llamada = registro_repository.registrar.call_args.kwargs

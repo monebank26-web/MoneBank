@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from app.core.security.roles import ROL_ADMIN
 from app.modules.admin.domain.interface.registro_accion_admin_repository import (
     RegistroAccionAdminRepository,
@@ -20,6 +18,7 @@ from app.shared.exceptions.usuario_errors import (
     NoPuedeBloquearseException,
     UltimoAdministradorException,
 )
+from app.shared.utils.fechas import ahora_colombia
 
 
 class BloquearUsuario:
@@ -57,7 +56,7 @@ class BloquearUsuario:
         usuario_actualizado = self.repository.update(id_usuario, {
             "estado": ESTADO_BLOQUEADO,
             "motivo_bloqueo": motivo_limpio,
-            "fecha_bloqueo": datetime.utcnow(),
+            "fecha_bloqueo": ahora_colombia(),
         })
 
         self.registro_repository.registrar(

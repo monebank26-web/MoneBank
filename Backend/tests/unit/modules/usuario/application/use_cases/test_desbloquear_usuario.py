@@ -3,6 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 
+from app.modules.usuario.application.use_cases import (
+    desbloquear_usuario as modulo_desbloquear,
+)
 from app.modules.usuario.application.use_cases.desbloquear_usuario import (
     DesbloquearUsuario,
 )
@@ -34,7 +37,7 @@ def crear_repository(usuario):
     return repository
 
 
-def test_desbloquear_bloqueado_actualiza_limpia_y_audita():
+def test_desbloquear_bloqueado_actualiza_limpia_y_audita(monkeypatch):
     usuario = Mock(
         id_usuario=10,
         estado=ESTADO_BLOQUEADO,
@@ -46,10 +49,10 @@ def test_desbloquear_bloqueado_actualiza_limpia_y_audita():
     repository = crear_repository(usuario)
     registro_repository = Mock()
     caso_uso = crear_caso_uso(repository, registro_repository)
+    fijo = datetime(2026, 11, 2, 22, 54)
+    monkeypatch.setattr(modulo_desbloquear, "ahora_colombia", lambda: fijo)
 
-    antes = datetime.utcnow()
     resultado = caso_uso.execute(10, id_admin=1)
-    despues = datetime.utcnow()
 
     assert resultado is repository.update.return_value
 
@@ -57,7 +60,8 @@ def test_desbloquear_bloqueado_actualiza_limpia_y_audita():
     assert datos["estado"] == ESTADO_ACTIVO
     assert datos["motivo_bloqueo"] is None
     assert datos["fecha_bloqueo"] is None
-    assert antes <= datos["fecha_desbloqueo"] <= despues
+    assert datos["fecha_desbloqueo"] == fijo
+    assert datos["fecha_desbloqueo"].tzinfo is None
     assert datos["intentos_fallidos"] == 0
     assert datos["bloqueado_hasta"] is None
 

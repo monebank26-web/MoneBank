@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from app.modules.admin.domain.interface.registro_accion_admin_repository import (
     RegistroAccionAdminRepository,
 )
@@ -13,6 +11,7 @@ from app.shared.constants.estados import (
 )
 from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import CuentaNoBloqueadaException
+from app.shared.utils.fechas import ahora_colombia
 
 
 class DesbloquearUsuario:
@@ -41,7 +40,7 @@ class DesbloquearUsuario:
         ):
             raise CuentaNoBloqueadaException()
 
-        fecha_desbloqueo = datetime.utcnow()
+        fecha_desbloqueo = ahora_colombia()
 
         usuario_actualizado = self.repository.update(id_usuario, {
             "estado": ESTADO_ACTIVO,
