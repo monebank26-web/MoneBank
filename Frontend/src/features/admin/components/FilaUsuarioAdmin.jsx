@@ -5,6 +5,7 @@ import {
   etiquetaEstadoAdmin,
   etiquetaRolAdmin,
   iconoEstadoAdmin,
+  tieneBloqueoTemporalAdmin,
 } from '../utils/usuariosAdmin';
 
 const FilaUsuarioAdmin = ({ usuario, onVerDetalle }) => {
@@ -42,6 +43,12 @@ const FilaUsuarioAdmin = ({ usuario, onVerDetalle }) => {
           <Icon icon={iconoEstadoAdmin(usuario.estado)} />
           {etiquetaEstadoAdmin(usuario.estado)}
         </span>
+        {tieneBloqueoTemporalAdmin(usuario) && (
+          <span className="admin-etiqueta-temporal">
+            <Icon icon="mdi:clock-outline" aria-hidden="true" />
+            Bloqueo temporal
+          </span>
+        )}
       </span>
 
       <span className="admin-fila__chevron" aria-hidden="true">

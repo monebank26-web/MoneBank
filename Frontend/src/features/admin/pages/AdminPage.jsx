@@ -11,6 +11,7 @@ import ModalDetalleUsuario from '../components/ModalDetalleUsuario';
 import ModalEditarUsuario from '../components/ModalEditarUsuario';
 import ModalEliminarUsuario from '../components/ModalEliminarUsuario';
 import ModalBloquearUsuario from '../components/ModalBloquearUsuario';
+import ModalDesbloquearUsuario from '../components/ModalDesbloquearUsuario';
 import './AdminPage.css';
 
 const AdminPage = () => {
@@ -53,8 +54,19 @@ const AdminPage = () => {
 
         <div className="admin-encabezado__lado">
           {acciones.mensaje && (
-            <span className="admin-mensaje-exito" role="status" aria-live="polite">
-              <Icon icon="mdi:check-circle-outline" />
+            <span
+              className={acciones.mensajeEsError ? 'admin-mensaje-error' : 'admin-mensaje-exito'}
+              role={acciones.mensajeEsError ? 'alert' : 'status'}
+              aria-live="polite"
+            >
+              <Icon
+                icon={
+                  acciones.mensajeEsError
+                    ? 'mdi:alert-circle-outline'
+                    : 'mdi:check-circle-outline'
+                }
+                aria-hidden="true"
+              />
               {acciones.mensaje}
             </span>
           )}
@@ -118,6 +130,10 @@ const AdminPage = () => {
           acciones.setModalDetalleAbierto(false);
           acciones.abrirEliminar(usuario);
         }}
+        onDesbloquear={(usuario) => {
+          acciones.setModalDetalleAbierto(false);
+          acciones.abrirDesbloquear(usuario);
+        }}
       />
 
       <ModalEditarUsuario
@@ -148,6 +164,15 @@ const AdminPage = () => {
         onConfirmar={acciones.eliminarUsuario}
         error={acciones.errorEliminar}
         desactivando={acciones.desactivando}
+      />
+
+      <ModalDesbloquearUsuario
+        open={acciones.modalDesbloquearAbierto}
+        onClose={acciones.cerrarDesbloquear}
+        usuario={acciones.usuarioSeleccionado}
+        onConfirmar={acciones.confirmarDesbloqueo}
+        error={acciones.errorDesbloquear}
+        desbloqueando={acciones.desbloqueando}
       />
     </div>
   );

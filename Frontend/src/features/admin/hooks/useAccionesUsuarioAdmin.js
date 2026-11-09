@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { authService } from '../../auth/services/authService';
 import {
+  CODIGO_CUENTA_NO_BLOQUEADA,
   LONGITUD_MAXIMA_MOTIVO_BLOQUEO,
   LONGITUD_MINIMA_MOTIVO_BLOQUEO,
+  accionCuentaAdmin,
   esCorreoDuplicado,
   mensajeErrorBloqueo,
   mensajeErrorDesactivacion,
+  mensajeErrorDesbloqueo,
+  mensajeExitoDesbloqueo,
   motivoBloqueoValido,
 } from '../utils/usuariosAdmin';
 
@@ -15,19 +19,27 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false);
   const [modalBloquearAbierto, setModalBloquearAbierto] = useState(false);
+  const [modalDesbloquearAbierto, setModalDesbloquearAbierto] = useState(false);
   const [formularioEdicion, setFormularioEdicion] = useState({});
   const [motivoBloqueo, setMotivoBloqueo] = useState('');
   const [errorEdicion, setErrorEdicion] = useState('');
   const [errorBloqueo, setErrorBloqueo] = useState('');
   const [errorEliminar, setErrorEliminar] = useState('');
+  const [errorDesbloquear, setErrorDesbloquear] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [bloqueando, setBloqueando] = useState(false);
   const [desactivando, setDesactivando] = useState(false);
+  const [desbloqueando, setDesbloqueando] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [mensajeEsError, setMensajeEsError] = useState(false);
 
-  const mostrarMensaje = (texto) => {
+  const mostrarMensaje = (texto, tipo = 'exito') => {
     setMensaje(texto);
-    setTimeout(() => setMensaje(''), 3000);
+    setMensajeEsError(tipo === 'error');
+    setTimeout(() => {
+      setMensaje('');
+      setMensajeEsError(false);
+    }, 3000);
   };
 
   const abrirDetalle = (usuario) => {
@@ -133,6 +145,55 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     }
   };
 
+  // ---------------------------------------------------------------------
+  // HU-0038 (Desbloqueo y reactivación de cuentas): una sola acción cubre
+  // el bloqueo explícito, el bloqueo temporal y la cuenta inactiva.
+  // ---------------------------------------------------------------------
+  const abrirDesbloquear = (usuario) => {
+    setUsuarioSeleccionado(usuario);
+    setErrorDesbloquear('');
+    setModalDesbloquearAbierto(true);
+  };
+
+  const cerrarDesbloquear = () => {
+    if (desbloqueando) return;
+
+    setModalDesbloquearAbierto(false);
+    setErrorDesbloquear('');
+  };
+
+  const confirmarDesbloqueo = async () => {
+    if (desbloqueando || !usuarioSeleccionado) return;
+
+    const accion = accionCuentaAdmin(usuarioSeleccionado);
+    if (!accion) {
+      setErrorDesbloquear(mensajeErrorDesbloqueo());
+      return;
+    }
+
+    setDesbloqueando(true);
+    setErrorDesbloquear('');
+
+    try {
+      await authService.desbloquearUsuario(usuarioSeleccionado.id);
+      setModalDesbloquearAbierto(false);
+      setModalDetalleAbierto(false);
+      mostrarMensaje(mensajeExitoDesbloqueo(accion));
+      recargar();
+    } catch (err) {
+      if (err?.code === CODIGO_CUENTA_NO_BLOQUEADA) {
+        setModalDesbloquearAbierto(false);
+        setModalDetalleAbierto(false);
+        mostrarMensaje(mensajeErrorDesbloqueo(err), 'error');
+        recargar();
+      } else {
+        setErrorDesbloquear(mensajeErrorDesbloqueo(err));
+      }
+    } finally {
+      setDesbloqueando(false);
+    }
+  };
+
   const eliminarUsuario = async () => {
     if (desactivando || !usuarioSeleccionado) return;
 
@@ -161,6 +222,7 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     setModalEliminarAbierto,
     modalBloquearAbierto,
     setModalBloquearAbierto,
+    modalDesbloquearAbierto,
     formularioEdicion,
     setFormularioEdicion,
     motivoBloqueo,
@@ -168,10 +230,13 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     errorEdicion,
     errorBloqueo,
     errorEliminar,
+    errorDesbloquear,
     guardando,
     bloqueando,
     desactivando,
+    desbloqueando,
     mensaje,
+    mensajeEsError,
     abrirDetalle,
     abrirEditar,
     cerrarEditar,
@@ -181,5 +246,8 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     abrirBloquear,
     cambiarMotivoBloqueo,
     confirmarBloqueo,
+    abrirDesbloquear,
+    cerrarDesbloquear,
+    confirmarDesbloqueo,
   };
 };

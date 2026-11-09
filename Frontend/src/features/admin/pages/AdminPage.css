@@ -89,16 +89,20 @@
   gap: 12px;
 }
 
-.admin-mensaje-exito {
+.admin-mensaje-exito,
+.admin-mensaje-error {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--color-success-soft);
-  border: 1px solid var(--color-success);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
-  color: var(--color-success);
   font-size: 13px;
+}
+
+.admin-mensaje-exito {
+  background: var(--color-success-soft);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
 }
 
 .admin-total {
@@ -488,6 +492,7 @@
 .admin-detalle__etiquetas {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   margin-top: 4px;
 }
@@ -886,6 +891,43 @@
 
 .admin-confirmacion .admin-boton-confirmar:focus-visible,
 .admin-confirmacion .admin-boton-secundario:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.admin-mensaje-error {
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.admin-etiqueta-temporal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 99px;
+  padding: 4px 10px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-etiqueta-temporal svg {
+  flex-shrink: 0;
+}
+
+.admin-detalle__boton--desbloquear {
+  background: none;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.admin-detalle__boton--desbloquear:hover {
+  background: var(--color-accent-soft);
+}
+
+.admin-detalle__boton--desbloquear:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
