@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from app.core.database.unit_of_work import UnitOfWork
-from app.core.dependencies.email_service import EmailService
+from app.core.dependencies.email_service import EmailService, get_email_service
 from app.core.dependencies.repositories import get_unit_of_work
 from app.modules.auth.application.use_cases.actualizar_contrasena import (
     ActualizarContrasenaUseCase,
@@ -35,10 +35,6 @@ ERRORES_NEGOCIO_LOGIN = (
     AccountLockedException,
     CuentaInactivaException,
 )
-
-
-def get_email_service() -> EmailService:
-    return EmailService()
 
 
 class AuthController:

@@ -48,3 +48,7 @@ class EmailService:
         except Exception as error:
             logging.getLogger(__name__).error("Error enviando código parental: %s", error)
             return False
+
+
+def get_email_service() -> EmailService:
+    return EmailService()
