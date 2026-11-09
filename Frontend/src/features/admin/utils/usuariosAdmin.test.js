@@ -109,6 +109,10 @@ describe('fechaBloqueoLegible', () => {
     expect(fechaBloqueoLegible('2026-10-25T14:30:00')).toBe('25 de octubre de 2026');
   });
 
+  it('conserva el dia local en una hora nocturna', () => {
+    expect(fechaBloqueoLegible('2026-11-02T22:54:00')).toBe('2 de noviembre de 2026');
+  });
+
   it('devuelve vacio cuando no hay fecha de bloqueo', () => {
     expect(fechaBloqueoLegible(null)).toBe('');
     expect(fechaBloqueoLegible('')).toBe('');
