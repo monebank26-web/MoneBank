@@ -3,6 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 from app.core.config.settings import settings
+from app.core.constants import MINUTOS_TOKEN_RECUPERACION
 
 
 class EmailService:
@@ -31,6 +32,45 @@ class EmailService:
             return True
         except Exception as e:
             logger.error(f"Error al enviar email a {correo}: {e}")
+            return False
+
+    def send_password_reset_by_admin(self, correo: str, token: str):
+        logger = logging.getLogger(__name__)
+
+        link = f"http://localhost:3000/recuperar?token={token}"
+
+        msg = MIMEText(
+            "<h2>MoneBank - Restablecimiento de contraseña</h2>"
+            "<p>Un administrador restableció la contraseña de tu cuenta.</p>"
+            "<p>Tu contraseña anterior ya no funciona. Para crear una nueva, "
+            "usa el siguiente enlace:</p>"
+            f"<p><a href='{link}'>{link}</a></p>"
+            f"<p>Este enlace expira en {MINUTOS_TOKEN_RECUPERACION} minutos.</p>"
+            "<p>Si no esperabas este cambio, contacta al soporte de MoneBank "
+            "de inmediato.</p>",
+            "html"
+        )
+        msg["Subject"] = (
+            "MoneBank - Restablecimiento de contraseña por administrador"
+        )
+        msg["From"] = settings.EMAIL_USER
+        msg["To"] = correo
+
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                server.login(settings.EMAIL_USER, settings.EMAIL_PASSWORD)
+                server.send_message(msg)
+            logger.info(
+                "Email de restablecimiento administrativo enviado a %s",
+                correo,
+            )
+            return True
+        except Exception as error:
+            logger.error(
+                "Error al enviar email de restablecimiento a %s: %s",
+                correo,
+                error,
+            )
             return False
 
     def send_parental_code(self, correo: str, codigo: str, operacion: str):

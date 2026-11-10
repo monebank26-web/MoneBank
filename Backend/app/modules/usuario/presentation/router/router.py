@@ -15,6 +15,7 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
     BloqueoUsuarioRequest,
     BloqueoUsuarioResponse,
     DesbloqueoUsuarioResponse,
+    RestablecimientoPasswordResponse,
     UsuarioCreate,
     UsuarioDesactivadoResponse,
     UsuarioListResponse,
@@ -155,3 +156,36 @@ def desbloquear_usuario(
     controller: UsuarioController = Depends(get_usuario_controller),
 ):
     return controller.desbloquear_usuario(id_usuario, current_user)
+
+
+@router.post(
+    "/{id_usuario}/restablecer-password",
+    response_model=RestablecimientoPasswordResponse,
+    summary="Restablecer contraseña de un usuario",
+    description=(
+        "Invalida la contraseña del usuario, genera un enlace de "
+        "restablecimiento y envía el correo al usuario."
+    ),
+    responses={
+        400: {"description": "No puedes restablecer tu propia contraseña"},
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        422: {"description": "Datos de entrada inválidos"},
+        502: {
+            "description": (
+                "La contraseña fue invalidada, pero el correo no pudo "
+                "enviarse"
+            )
+        },
+    },
+)
+def restablecer_password_usuario(
+    id_usuario: int,
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
+):
+    return controller.restablecer_password_usuario(
+        id_usuario,
+        current_user,
+    )

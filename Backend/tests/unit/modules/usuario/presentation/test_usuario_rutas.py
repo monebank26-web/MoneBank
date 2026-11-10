@@ -8,19 +8,26 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from app.core.database.connection import get_db
+from app.core.dependencies.email_service import get_email_service
 from app.core.security.auth import get_current_user
+from app.core.security.reset_token import TokenGenerator
 from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
 from app.modules.admin.infrastructure.model.registro_accion_admin_model import (
     RegistroAccionAdminModel,
 )
 from app.modules.usuario.presentation.router.router import router
-from app.shared.constants.acciones import ACCION_DESBLOQUEAR_USUARIO
+from app.shared.constants.acciones import (
+    ACCION_DESBLOQUEAR_USUARIO,
+    ACCION_RESTABLECER_PASSWORD,
+)
 from app.shared.constants.codigos_error import (
+    CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO,
     CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE,
     CODIGO_CUENTA_NO_BLOQUEADA,
     CODIGO_CUENTA_YA_BLOQUEADA,
     CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_DESACTIVARSE,
+    CODIGO_NO_PUEDE_RESTABLECER_PASSWORD_PROPIA,
 )
 from app.shared.exceptions.handlers.common_handlers import (
     register_common_exception_handlers,
@@ -40,6 +47,22 @@ USUARIO_BLOQUEADO_ID = 4
 OTRO_ACTIVO_ID = 5
 USUARIO_ACTIVO_TEMPORAL_ID = 6
 USUARIO_INEXISTENTE_ID = 999
+
+
+class EmailServiceFake:
+
+    def __init__(self, resultado=True, error=None):
+        self.resultado = resultado
+        self.error = error
+        self.llamadas = []
+
+    def send_password_reset_by_admin(self, correo, token):
+        self.llamadas.append((correo, token))
+
+        if self.error:
+            raise self.error
+
+        return self.resultado
 
 
 def crear_tablas(engine):
@@ -73,6 +96,17 @@ def crear_tablas(engine):
                 id_usuario_afectado INTEGER,
                 detalle TEXT,
                 fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conexion.execute(text("""
+            CREATE TABLE password_reset_token (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                token_hash VARCHAR(64) NOT NULL UNIQUE,
+                fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                fecha_expiracion DATETIME NOT NULL,
+                usado BOOLEAN NOT NULL DEFAULT 0,
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario)
             )
         """))
 
@@ -238,6 +272,10 @@ def autenticar_usuario(app):
     )
 
 
+def inyectar_email(app, email_service):
+    app.dependency_overrides[get_email_service] = lambda: email_service
+
+
 def contar_auditorias(session_factory):
     with session_factory() as sesion:
         return sesion.query(RegistroAccionAdminModel).count()
@@ -256,6 +294,25 @@ def obtener_usuario(session_factory, id_usuario):
             FROM usuario
             WHERE id_usuario = :id_usuario
         """), {"id_usuario": id_usuario}).mappings().one()
+
+
+def obtener_contrasena(session_factory, id_usuario):
+    with session_factory() as sesion:
+        return sesion.execute(text("""
+            SELECT contrasena
+            FROM usuario
+            WHERE id_usuario = :id_usuario
+        """), {"id_usuario": id_usuario}).scalar_one()
+
+
+def obtener_tokens(session_factory, id_usuario):
+    with session_factory() as sesion:
+        return sesion.execute(text("""
+            SELECT token_hash, fecha_expiracion, usado
+            FROM password_reset_token
+            WHERE usuario_id = :id_usuario
+            ORDER BY id
+        """), {"id_usuario": id_usuario}).mappings().all()
 
 
 def obtener_ultima_auditoria(session_factory):
@@ -577,3 +634,261 @@ def test_desbloquear_activo_con_bloqueo_temporal_vigente(entorno):
     assert auditoria["accion"] == ACCION_DESBLOQUEAR_USUARIO
     assert "ACTIVO" in auditoria["detalle"]
     assert "bloqueo temporal por intentos fallidos" in auditoria["detalle"]
+
+
+def test_restablecer_password_sin_token_devuelve_401(entorno):
+    cliente, _, _ = entorno
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 401
+    assert respuesta.json()["detail"] == "Token no proporcionado"
+
+
+def test_restablecer_password_usuario_no_admin_devuelve_403(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_usuario(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 403
+    assert email_service.llamadas == []
+    assert contar_auditorias(session_factory) == auditorias_antes
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_restablecer_password_usuario_inexistente_devuelve_404(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_INEXISTENTE_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 404
+    assert respuesta.json()["message"] == "Usuario no encontrado"
+    assert email_service.llamadas == []
+    assert contar_auditorias(session_factory) == auditorias_antes
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_restablecer_password_propia_devuelve_400(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+    contrasena_antes = obtener_contrasena(session_factory, ADMIN_ID)
+
+    respuesta = cliente.post(
+        f"/usuarios/{ADMIN_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["code"] == (
+        CODIGO_NO_PUEDE_RESTABLECER_PASSWORD_PROPIA
+    )
+    assert email_service.llamadas == []
+    assert contar_auditorias(session_factory) == auditorias_antes
+    assert obtener_contrasena(session_factory, ADMIN_ID) == contrasena_antes
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_restablecer_password_id_invalido_devuelve_422(entorno):
+    cliente, app, _ = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+
+    respuesta = cliente.post(
+        "/usuarios/abc/restablecer-password"
+    )
+
+    assert respuesta.status_code == 422
+    assert email_service.llamadas == []
+    assert_sin_contrasena(respuesta.json())
+
+
+def test_restablecer_password_activo_envia_correo_y_audita(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+    contrasena_antes = obtener_contrasena(session_factory, USUARIO_ACTIVO_ID)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json() == {
+        "mensaje": (
+            "Contraseña invalidada y enlace de restablecimiento "
+            "enviado al correo del usuario"
+        )
+    }
+    assert_sin_contrasena(respuesta.json())
+
+    assert len(email_service.llamadas) == 1
+    correo, token = email_service.llamadas[0]
+    assert correo == "activo@example.com"
+    assert token
+
+    assert obtener_contrasena(
+        session_factory,
+        USUARIO_ACTIVO_ID,
+    ) != contrasena_antes
+
+    tokens = obtener_tokens(session_factory, USUARIO_ACTIVO_ID)
+    assert len(tokens) == 1
+    assert tokens[0]["token_hash"] == TokenGenerator.hash(token)
+    assert tokens[0]["usado"] == 0
+
+    usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
+    assert usuario["intentos_fallidos"] == 0
+    assert usuario["bloqueado_hasta"] is None
+
+    assert contar_auditorias(session_factory) == auditorias_antes + 1
+    auditoria = obtener_ultima_auditoria(session_factory)
+    assert auditoria["id_admin"] == ADMIN_ID
+    assert auditoria["accion"] == ACCION_RESTABLECER_PASSWORD
+    assert auditoria["id_usuario_afectado"] == USUARIO_ACTIVO_ID
+    assert auditoria["detalle"] == (
+        "Contraseña invalidada y enlace de restablecimiento generado; "
+        "intentos reiniciados"
+    )
+
+
+@pytest.mark.parametrize(
+    "id_usuario,estado",
+    [
+        (USUARIO_BLOQUEADO_ID, "BLOQUEADO"),
+        (USUARIO_INACTIVO_ID, "INACTIVO"),
+    ],
+)
+def test_restablecer_password_no_cambia_estado_ni_bloqueo(
+    entorno,
+    id_usuario,
+    estado,
+):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    antes = obtener_usuario(session_factory, id_usuario)
+
+    respuesta = cliente.post(
+        f"/usuarios/{id_usuario}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 200
+    assert_sin_contrasena(respuesta.json())
+
+    despues = obtener_usuario(session_factory, id_usuario)
+    assert despues["estado"] == estado
+    assert despues["motivo_bloqueo"] == antes["motivo_bloqueo"]
+    assert despues["fecha_bloqueo"] == antes["fecha_bloqueo"]
+    assert despues["intentos_fallidos"] == 0
+    assert despues["bloqueado_hasta"] is None
+
+    auditoria = obtener_ultima_auditoria(session_factory)
+    assert auditoria["accion"] == ACCION_RESTABLECER_PASSWORD
+    assert auditoria["id_usuario_afectado"] == id_usuario
+
+
+def test_restablecer_password_correo_fallido_devuelve_502_y_conserva_cambios(
+    entorno,
+):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake(resultado=False)
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+    contrasena_antes = obtener_contrasena(session_factory, USUARIO_ACTIVO_ID)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 502
+    assert respuesta.json()["code"] == (
+        CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
+    )
+    assert respuesta.json()["message"] == (
+        "La contraseña fue invalidada, pero el correo no pudo enviarse. "
+        "Reintenta el restablecimiento."
+    )
+    assert_sin_contrasena(respuesta.json())
+
+    assert obtener_contrasena(
+        session_factory,
+        USUARIO_ACTIVO_ID,
+    ) != contrasena_antes
+    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 1
+    assert contar_auditorias(session_factory) == auditorias_antes + 1
+
+    usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
+    assert usuario["intentos_fallidos"] == 0
+    assert usuario["bloqueado_hasta"] is None
+
+
+def test_restablecer_password_excepcion_del_correo_devuelve_502(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake(error=RuntimeError("SMTP caído"))
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 502
+    assert respuesta.json()["code"] == (
+        CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
+    )
+    assert len(email_service.llamadas) == 1
+    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 1
+    assert contar_auditorias(session_factory) == auditorias_antes + 1
+
+
+def test_reintento_de_restablecimiento_genera_un_token_nuevo(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    primero = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+    segundo = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert primero.status_code == 200
+    assert segundo.status_code == 200
+    assert len(email_service.llamadas) == 2
+
+    primer_token = email_service.llamadas[0][1]
+    segundo_token = email_service.llamadas[1][1]
+    assert primer_token != segundo_token
+
+    tokens = obtener_tokens(session_factory, USUARIO_ACTIVO_ID)
+    assert len(tokens) == 2
+    assert tokens[0]["token_hash"] == TokenGenerator.hash(primer_token)
+    assert tokens[0]["usado"] == 1
+    assert tokens[1]["token_hash"] == TokenGenerator.hash(segundo_token)
+    assert tokens[1]["usado"] == 0
+    assert contar_auditorias(session_factory) == auditorias_antes + 2

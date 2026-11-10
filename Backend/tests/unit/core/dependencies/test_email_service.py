@@ -1,0 +1,53 @@
+from unittest.mock import Mock, patch
+
+from app.core.constants import MINUTOS_TOKEN_RECUPERACION
+from app.core.dependencies.email_service import EmailService
+
+
+@patch("app.core.dependencies.email_service.smtplib.SMTP_SSL")
+def test_envia_correo_de_restablecimiento_administrativo(mock_smtp):
+    mensaje_enviado = {}
+    servidor = Mock()
+
+    def capturar_mensaje(mensaje):
+        mensaje_enviado["mensaje"] = mensaje
+
+    servidor.send_message.side_effect = capturar_mensaje
+    mock_smtp.return_value.__enter__.return_value = servidor
+
+    resultado = EmailService().send_password_reset_by_admin(
+        "usuario@test.com",
+        "token-seguro",
+    )
+
+    assert resultado is True
+    mock_smtp.assert_called_once_with("smtp.gmail.com", 465)
+    servidor.login.assert_called_once()
+
+    mensaje = mensaje_enviado["mensaje"]
+    assert mensaje["To"] == "usuario@test.com"
+    assert "administrador" in mensaje["Subject"].lower()
+
+    cuerpo = mensaje.get_payload(decode=True).decode("utf-8")
+    assert "un administrador restableció la contraseña" in cuerpo.lower()
+    assert "tu contraseña anterior ya no funciona" in cuerpo.lower()
+    assert "http://localhost:3000/recuperar?token=token-seguro" in cuerpo
+    assert (
+        f"este enlace expira en {MINUTOS_TOKEN_RECUPERACION} minutos"
+        in cuerpo.lower()
+    )
+    assert "si no esperabas este cambio" in cuerpo.lower()
+    assert "soporte" in cuerpo.lower()
+
+
+@patch(
+    "app.core.dependencies.email_service.smtplib.SMTP_SSL",
+    side_effect=Exception("SMTP no disponible"),
+)
+def test_fallo_al_enviar_correo_administrativo_devuelve_false(mock_smtp):
+    resultado = EmailService().send_password_reset_by_admin(
+        "usuario@test.com",
+        "token-seguro",
+    )
+
+    assert resultado is False

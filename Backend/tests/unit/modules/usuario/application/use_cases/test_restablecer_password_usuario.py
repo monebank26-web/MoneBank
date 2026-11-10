@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -185,6 +185,41 @@ def test_restablece_password_tokens_y_auditoria():
     assert resultado["id_usuario"] == 9
     assert resultado["correo"] == "usuario@test.com"
     assert "contrasena" not in resultado
+
+
+@patch(
+    "app.modules.usuario.application.use_cases."
+    "restablecer_password_usuario.PasswordHasher"
+)
+@patch(
+    "app.modules.usuario.application.use_cases."
+    "restablecer_password_usuario.secrets.token_urlsafe"
+)
+def test_genera_hash_aleatorio_sin_password_temporal(
+    mock_token_urlsafe,
+    mock_password_hasher,
+):
+    mock_token_urlsafe.return_value = "valor-aleatorio"
+    mock_password_hasher.hash.return_value = "hash-aleatorio"
+
+    usuario = crear_usuario()
+    repository = Mock()
+    repository.get_by_id.return_value = usuario
+
+    caso_uso = RestablecerPasswordUsuario(
+        repository,
+        Mock(),
+        Mock(),
+    )
+
+    caso_uso.execute(9, id_admin=1)
+
+    mock_token_urlsafe.assert_any_call(32)
+    mock_password_hasher.hash.assert_called_once_with("valor-aleatorio")
+    repository.update_password.assert_called_once_with(
+        9,
+        "hash-aleatorio",
+    )
 
 
 @pytest.mark.parametrize("estado", ["BLOQUEADO", "INACTIVO"])
