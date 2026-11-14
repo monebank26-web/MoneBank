@@ -1,6 +1,6 @@
 from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-from app.shared.exceptions.business_exceptions import EstadoInvalido
+from app.shared.exceptions.cuenta_errors import EstadoCuentaInvalido
 
 
 class CrearCuenta:
@@ -17,6 +17,6 @@ class CrearCuenta:
         )
 
         if not Cuenta.es_estado_valido(cuenta.estado):
-            raise EstadoInvalido()
+            raise EstadoCuentaInvalido()
 
         return self.repository.create(cuenta_data)

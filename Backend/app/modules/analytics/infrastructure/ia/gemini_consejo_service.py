@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 from app.modules.analytics.domain.interface.consejo_ia_port import ConsejoIAPort
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 
 
 MAX_REINTENTOS = 3

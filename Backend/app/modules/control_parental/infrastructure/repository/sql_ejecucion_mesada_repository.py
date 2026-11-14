@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 
-from app.core.utils.fechas import ahora_colombia
+from app.shared.utils.fechas import ahora_colombia
 
 from app.modules.control_parental.infrastructure.model.control_parental_model import (
     ControlParentalModel,
@@ -204,7 +204,7 @@ class SqlEjecucionMesadaRepository:
         mesada.proxima_ejecucion = proxima
 
         # Todo se confirma en una sola transacción
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(ejecucion)
 
         return ejecucion, proxima

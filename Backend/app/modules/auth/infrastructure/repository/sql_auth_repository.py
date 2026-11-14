@@ -34,7 +34,8 @@ class SqlAuthRepository(AuthRepository):
         )
 
         if intento.debe_bloquearse():
-            bloqueado_hasta = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_BLOQUEO)
+            ahora_local = datetime.now()
+            bloqueado_hasta = ahora_local + timedelta(minutes=MINUTOS_BLOQUEO)
 
         return self.usuario_repository.update_auth_fields(
             usuario_id, nuevos_intentos, bloqueado_hasta
@@ -61,7 +62,7 @@ class SqlAuthRepository(AuthRepository):
             fecha_expiracion=fecha_expiracion
         )
         self.db.add(token)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(token)
         return token
 
@@ -94,11 +95,11 @@ class SqlAuthRepository(AuthRepository):
         )
         if token:
             token.usado = True
-            self.db.commit()
+            self.db.flush()
 
     def invalidate_user_tokens(self, usuario_id):
         self.db.query(ResetTokenModel).filter(
             ResetTokenModel.usuario_id == usuario_id,
             ResetTokenModel.usado == False
         ).update({"usado": True})
-        self.db.commit()
+        self.db.flush()

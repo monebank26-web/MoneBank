@@ -1,10 +1,11 @@
 from datetime import date
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.security.password_policy import validate_password
+from app.shared.constants.motivo_bloqueo import DESCRIPCION_MOTIVO_BLOQUEO
 
 
 class UsuarioCreate(BaseModel):
@@ -30,14 +31,43 @@ class UsuarioResponse(BaseModel):
     nombres: str
     apellidos: str
     correo: EmailStr
+    estado: str
+    id_rol: Optional[int] = None
     fecha_creacion: date
 
     class Config:
         from_attributes = True
 
 
+class UsuarioAdminResponse(UsuarioResponse):
+    motivo_bloqueo: Optional[str] = None
+    fecha_bloqueo: Optional[datetime] = None
+    fecha_desbloqueo: Optional[datetime] = None
+    bloqueo_temporal: bool
+
+
+class UsuarioListResponse(BaseModel):
+    items: List[UsuarioAdminResponse]
+    total: int
+    pagina: int
+    por_pagina: int
+
+
+class UsuarioDesactivadoResponse(BaseModel):
+    mensaje: str
+
+
 class BloqueoUsuarioRequest(BaseModel):
-    motivo: str = Field(..., min_length=5, max_length=255)
+    motivo: Optional[str] = Field(
+        None,
+        max_length=255,
+        description=DESCRIPCION_MOTIVO_BLOQUEO,
+    )
+
+    @field_validator("motivo", mode="before")
+    @classmethod
+    def limpiar_motivo(cls, value):
+        return value.strip() if isinstance(value, str) else value
 
 
 class BloqueoUsuarioResponse(BaseModel):
@@ -45,6 +75,15 @@ class BloqueoUsuarioResponse(BaseModel):
     estado: str
     motivo_bloqueo: str
     fecha_bloqueo: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DesbloqueoUsuarioResponse(BaseModel):
+    id_usuario: int
+    estado: str
+    fecha_desbloqueo: datetime
 
     class Config:
         from_attributes = True

@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
+from app.shared.startup_checks import ejecutar_chequeo_de_arranque
 
 from app.modules.usuario.presentation.router.router import (router as usuario_router)
 from app.modules.ahorro.presentation.router.router import router as ahorro_router
@@ -33,7 +36,13 @@ from app.modules.control_parental.presentation.router.gestionar_mesada_router im
     router as gestionar_mesada_router,
 )
 
-app = FastAPI(title="MoneBank API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ejecutar_chequeo_de_arranque()
+    yield
+
+
+app = FastAPI(title="MoneBank API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

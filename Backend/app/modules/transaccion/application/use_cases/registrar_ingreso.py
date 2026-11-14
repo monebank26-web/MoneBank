@@ -1,17 +1,15 @@
-from datetime import date
-
 from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
+    TipoTransaccionNoValido,
+)
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
-    FechaInvalida,
-    MontoInvalido,
-    TipoTransaccionNoValido,
 )
 
 class RegistrarIngreso:
@@ -29,15 +27,6 @@ class RegistrarIngreso:
             descripcion=transaccion_data.get("descripcion"),
             categoria=transaccion_data.get("id_categoria"),
         )
-
-        if not transaccion.es_ingreso():
-            raise MontoInvalido()
-
-        if transaccion.monto <= 0:
-            raise MontoInvalido()
-
-        if not isinstance(transaccion.fecha, date):
-            raise FechaInvalida()
 
         if not self.repository.existe_categoria(
             transaccion.categoria

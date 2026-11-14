@@ -1,4 +1,11 @@
+// Iconos (Material Design Icons) por categoría.
+//
+// `iconoDeCategoria` busca por nombre normalizado (minúsculas, sin tildes y
+// sin espacios al inicio/final), así que las claves van en minúsculas y sin
+// tildes. Las claves con espacios corresponden a los nombres completos de la
+// tabla `categoria`.
 const ICONOS_POR_CATEGORIA = {
+  // --- Nombres cortos y sinónimos (datos históricos del navegador) ---
   alimentacion: 'mdi:food',
   'alimentacion-fuera-de-casa': 'mdi:silverware-fork-knife',
   alimentos: 'mdi:food',
@@ -49,6 +56,52 @@ const ICONOS_POR_CATEGORIA = {
   deporte: 'mdi:dumbbell',
   gimnasio: 'mdi:dumbbell',
   gym: 'mdi:dumbbell',
+
+  // --- Nombres completos de las categorías de la base de datos ---
+  // Ingresos
+  ventas: 'mdi:storefront-outline',
+  'mesada parental recibida': 'mdi:hand-coin-outline',
+  freelance: 'mdi:laptop-account',
+  honorarios: 'mdi:account-cash-outline',
+  bonificaciones: 'mdi:cash-plus',
+  'prima y cesantias': 'mdi:cash-plus',
+  arriendos: 'mdi:home-city-outline',
+  inversiones: 'mdi:chart-line',
+  pension: 'mdi:account-clock-outline',
+  'becas y subsidios': 'mdi:school-outline',
+  'regalos y donaciones': 'mdi:gift-outline',
+  reembolsos: 'mdi:cash-refund',
+  'venta de articulos': 'mdi:tag-multiple-outline',
+  'otros ingresos': 'mdi:cash-multiple',
+
+  // Gastos
+  'mesada parental enviada': 'mdi:hand-coin-outline',
+  'vivienda y arriendo': 'mdi:home-city-outline',
+  'restaurantes y domicilios': 'mdi:silverware-fork-knife',
+  'ropa y calzado': 'mdi:tshirt-crew-outline',
+  'cuidado personal': 'mdi:spa-outline',
+  'tecnologia y electronicos': 'mdi:laptop',
+  suscripciones: 'mdi:calendar-sync',
+  'internet y telefonia': 'mdi:wifi',
+  'hogar y muebles': 'mdi:sofa-outline',
+  seguros: 'mdi:shield-check-outline',
+  'deudas y prestamos': 'mdi:credit-card-outline',
+  'hijos y familia': 'mdi:human-male-child',
+  'deportes y gimnasio': 'mdi:dumbbell',
+  'viajes y turismo': 'mdi:airplane',
+  'mantenimiento de vehiculo': 'mdi:car-wrench',
+  'otros gastos': 'mdi:dots-horizontal-circle-outline',
+
+  // Ahorros
+  tecnologia: 'mdi:laptop',
+  vehiculo: 'mdi:car',
+  emergencia: 'mdi:alert-octagon-outline',
+  otro: 'mdi:dots-horizontal-circle-outline',
+  jubilacion: 'mdi:beach',
+  inversion: 'mdi:chart-line',
+  negocio: 'mdi:store',
+  'boda o evento': 'mdi:ring',
+  'pago de deudas': 'mdi:credit-card-check-outline',
 };
 
 const ICONO_DEFECTO = 'mdi:tag-outline';

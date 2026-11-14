@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 
 from app.modules.chat_ia.domain.interface.chat_ia_port import ChatIAPort
-from app.shared.exceptions.business_exceptions import ConsejoIANoDisponible
+from app.shared.exceptions.chat_ia_errors import ConsejoIANoDisponible
 
 
 SYSTEM_INSTRUCTION_CHAT = (

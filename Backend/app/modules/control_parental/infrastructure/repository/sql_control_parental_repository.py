@@ -10,7 +10,6 @@ from app.modules.control_parental.domain.interface.control_parental_repository i
 from app.modules.control_parental.infrastructure.model.control_parental_model import  PermisoParentalModel
 from app.modules.cuenta.infrastructure.model.cuenta_model import CuentaModel
 from app.modules.transaccion.infrastructure.model.transaccion_model import TransaccionModel
-from app.modules.control_parental.infrastructure.model.mesada_parental_model import MesadaParentalModel
 
 class SqlControlParentalRepository:
     def __init__(self, db: Session): 
@@ -65,7 +64,7 @@ class SqlControlParentalRepository:
 
             self.db.add(permiso)
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(model)
 
         return self._to_entity(model)
@@ -103,7 +102,7 @@ class SqlControlParentalRepository:
                 synchronize_session=False,
             )
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(model)
 
         return self._to_entity(model)
@@ -122,13 +121,13 @@ class SqlControlParentalRepository:
             usado=entity.usado,
             estado=entity.estado,
         )
-        self.db.add(model); self.db.commit(); self.db.refresh(model)
+        self.db.add(model); self.db.flush(); self.db.refresh(model)
         return self._to_solicitud(model)
     def actualizar_solicitud(self, entity):
         model = self.db.query(SolicitudControlParentalModel).filter(SolicitudControlParentalModel.id_solicitud == entity.id_solicitud).first()
         if not model: return None
         model.usado = entity.usado; model.estado = entity.estado; model.intentos_fallidos = entity.intentos_fallidos
-        self.db.commit(); self.db.refresh(model)
+        self.db.flush(); self.db.refresh(model)
         return self._to_solicitud(model)
     def buscar_solicitud_vigente(self, token_hash, operacion):
         model = self.db.query(SolicitudControlParentalModel).filter(
@@ -146,7 +145,7 @@ class SqlControlParentalRepository:
             SolicitudControlParentalModel.tipo_operacion == operacion,
             SolicitudControlParentalModel.estado == "PENDIENTE",
         ).update({"estado": "CANCELADA", "usado": True})
-        self.db.commit()
+        self.db.flush()
     def listar_vinculaciones(self, usuario_id):
         rows = self.db.query(ControlParentalModel).filter(
             ((ControlParentalModel.id_usuario_parental == usuario_id) | (ControlParentalModel.id_usuario_dependiente == usuario_id)),
@@ -194,7 +193,7 @@ class SqlControlParentalRepository:
                 raise ValueError(f"Permiso no configurado: {nombre}")
             actuales[nombre].permitido = bool(permitido)
             actuales[nombre].fecha_actualizacion = datetime.utcnow()
-        self.db.commit()
+        self.db.flush()
         return self.listar_permisos(id_control)
 
     def obtener_resumen_hijo(self, id_hijo):
@@ -229,56 +228,4 @@ class SqlControlParentalRepository:
             "saldo": cuenta.saldo if cuenta else 0,
             "estado_cuenta": cuenta.estado if cuenta else "SIN_CUENTA",
             "permiso_monitoreo": control.permiso_monitoreo,
-        }
-
-class SqlMesadaParentalRepository:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def obtener_vinculo_activo(self, id_padre: int, id_hijo: int):
-        return self.db.query(ControlParentalModel).filter(
-            ControlParentalModel.id_usuario_parental == id_padre,
-            ControlParentalModel.id_usuario_dependiente == id_hijo,
-            ControlParentalModel.estado == "ACTIVO",
-        ).first()
-
-    def permiso_activo(self, id_control: int, nombre: str):
-        permiso = self.db.query(PermisoParentalModel).filter(
-            PermisoParentalModel.id_control == id_control,
-            PermisoParentalModel.nombre_permiso == nombre,
-        ).first()
-        return bool(permiso and permiso.permitido)
-
-    def obtener_cuentas(self, id_padre: int, id_hijo: int):
-        padre = self.db.query(CuentaModel).filter(CuentaModel.id_usuario == id_padre).first()
-        hijo = self.db.query(CuentaModel).filter(CuentaModel.id_usuario == id_hijo).first()
-        return padre, hijo
-
-    def obtener_activa(self, id_control: int):
-        return self.db.query(MesadaParentalModel).filter(
-            MesadaParentalModel.id_control == id_control,
-            MesadaParentalModel.estado == "ACTIVA",
-        ).first()
-
-    def crear(self, model):
-        self.db.add(model)
-        self.db.commit()
-        self.db.refresh(model)
-        return model
-
-    def guardar(self):
-        self.db.commit()
-
-    @staticmethod
-    def model_to_dict(model):
-        return {
-            "id_mesada": model.id_mesada,
-            "id_control": model.id_control,
-            "id_cuenta_padre": model.id_cuenta_padre,
-            "id_cuenta_hijo": model.id_cuenta_hijo,
-            "monto": model.monto,
-            "frecuencia": model.frecuencia,
-            "fecha_inicio": model.fecha_inicio,
-            "fecha_fin": model.fecha_fin,
-            "estado": model.estado,
         }

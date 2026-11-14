@@ -1,4 +1,4 @@
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
 )

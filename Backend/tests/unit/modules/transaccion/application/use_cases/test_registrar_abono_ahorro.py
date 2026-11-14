@@ -7,12 +7,14 @@ import pytest
 from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
     RegistrarAbonoAhorro
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
+    TipoTransaccionNoValido,
+)
+from app.shared.exceptions.common import (
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     SaldoInsuficiente,
-    TipoTransaccionNoValido,
 )
 
 

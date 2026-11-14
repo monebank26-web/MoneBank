@@ -1,10 +1,8 @@
 from app.modules.analytics.domain.entity.transaccion_analizada import (
     TransaccionAnalizada
 )
-from app.shared.exceptions.business_exceptions import (
-    CuentaNoEncontrada,
-    TransaccionesNoEncontrado,
-)
+from app.shared.exceptions.transaccion_errors import TransaccionesNoEncontrado
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerConsejoIA:

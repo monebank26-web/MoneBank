@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/context/AuthContext';
 import { authService } from '../services/authService';
 import { ROUTES } from '../../../core/constants';
+import { esAdministrador } from '../../../core/utils/permisos';
 
 export const useAuthForm = (mode = 'login') => {
   const { login } = useAuth();
@@ -25,7 +26,7 @@ export const useAuthForm = (mode = 'login') => {
         });
       }
       login(user);
-      navigate(ROUTES.DASHBOARD);
+      navigate(esAdministrador(user) ? ROUTES.ADMIN : ROUTES.DASHBOARD);
     } catch (err) {
       setError(err.message);
     } finally {

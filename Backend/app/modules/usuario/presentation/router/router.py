@@ -1,33 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Query
 
 from app.core.security.auth import get_current_user, require_rol
 from app.core.security.roles import ROL_ADMIN
+from app.shared.constants.estados import PATRON_ESTADO_USUARIO
+from app.shared.constants.motivo_bloqueo import DESCRIPCION_MOTIVO_BLOQUEO
 
-from app.modules.usuario.infrastructure.repository.sql_usuario_repository import SqlUsuarioRepository
-from app.modules.usuario.application.use_cases.crear_usuario import CrearUsuario
-from app.modules.usuario.application.use_cases.obtener_usuario import ObtenerUsuariosUseCase
-from app.modules.usuario.application.use_cases.obtener_usuario_por_id import ObtenerUsuarioPorIdUseCase
-from app.modules.usuario.application.use_cases.actualizar_usuarios import ActualizarUsuarioUseCase
-from app.modules.usuario.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
-from app.modules.usuario.application.use_cases.bloquear_usuario import BloquearUsuario
-
-from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
-
+from app.modules.usuario.presentation.controller.usuario_controller import (
+    UsuarioController,
+    get_usuario_controller,
+)
 from app.modules.usuario.presentation.schema.usuario_schema import (
-    UsuarioCreate,
-    UsuarioResponse,
-    UsuarioUpdate,
     BloqueoUsuarioRequest,
     BloqueoUsuarioResponse,
+    DesbloqueoUsuarioResponse,
+    UsuarioCreate,
+    UsuarioDesactivadoResponse,
+    UsuarioListResponse,
+    UsuarioResponse,
+    UsuarioUpdate,
 )
-
-
-from app.core.database.connection import get_db
-
-from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import SqlCuentaRepository
-from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
-
 
 
 router = APIRouter(
@@ -36,91 +29,129 @@ router = APIRouter(
 )
 
 
-def get_usuario_repository(
-    db: Session = Depends(get_db)
-) -> UsuarioRepository:
-    return SqlUsuarioRepository(db)
-
-
-def get_cuenta_repository(
-    db: Session = Depends(get_db)
-) -> CuentaRepository:
-    return SqlCuentaRepository(db)
-
-
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(
     usuario: UsuarioCreate,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
-    cuenta_repository: CuentaRepository = Depends(get_cuenta_repository),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    caso_uso = CrearUsuario(repository, cuenta_repository)
-    return caso_uso.execute(usuario.model_dump())
+    return controller.crear_usuario(usuario)
 
 
-@router.get("/")
+@router.get("/", response_model=UsuarioListResponse)
 def obtener_usuarios(
-    repository: UsuarioRepository = Depends(get_usuario_repository),
+    buscar: Optional[str] = Query(
+        None,
+        max_length=100,
+        description="Busca por nombres, apellidos o correo",
+    ),
+    estado: Optional[str] = Query(
+        None,
+        pattern=PATRON_ESTADO_USUARIO,
+        description="Filtra por estado del usuario",
+    ),
+    id_rol: Optional[int] = Query(None, ge=1),
+    pagina: int = Query(1, ge=1),
+    por_pagina: int = Query(10, ge=1, le=100),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    caso_uso = ObtenerUsuariosUseCase(repository)
-    return caso_uso.execute()
+    return controller.obtener_usuarios(current_user, {
+        "buscar": buscar,
+        "estado": estado,
+        "id_rol": id_rol,
+        "pagina": pagina,
+        "por_pagina": por_pagina,
+    })
 
 
-@router.get("/{id_usuario}")
+@router.get("/{id_usuario}", response_model=UsuarioResponse)
 def obtener_usuario_por_id(
     id_usuario: int,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
     current_user: object = Depends(get_current_user),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    caso_uso = ObtenerUsuarioPorIdUseCase(repository)
-    return caso_uso.execute(id_usuario)
+    return controller.obtener_usuario_por_id(id_usuario, current_user)
 
 
 @router.put("/{id_usuario}", response_model=UsuarioResponse)
 def actualizar_usuario(
     id_usuario: int,
     usuario: UsuarioUpdate,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
     current_user: object = Depends(get_current_user),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    if current_user.id_usuario != id_usuario:
-        raise HTTPException(
-            status_code=403,
-            detail="No puedes modificar otro usuario"
-        )
+    return controller.actualizar_usuario(id_usuario, usuario, current_user)
 
-    caso_uso = ActualizarUsuarioUseCase(repository)
 
-    try:
-        return caso_uso.execute(
-            id_usuario,
-            usuario.model_dump(exclude_unset=True)
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error al actualizar usuario: {str(e)}"
-        )
-
-@router.delete("/{id_usuario}")
+@router.delete(
+    "/{id_usuario}",
+    response_model=UsuarioDesactivadoResponse,
+    responses={
+        400: {"description": "No puedes desactivar tu propia cuenta"},
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {"description": "La cuenta ya está inactiva"},
+        422: {"description": "Datos de entrada inválidos"},
+    },
+)
 def eliminar_usuario(
     id_usuario: int,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    caso_uso = EliminarUsuarioUseCase(repository)
-    return caso_uso.execute(id_usuario)
+    return controller.eliminar_usuario(id_usuario, current_user)
 
 
-@router.put("/{id_usuario}/bloquear", response_model=BloqueoUsuarioResponse)
+@router.put(
+    "/{id_usuario}/bloquear",
+    response_model=BloqueoUsuarioResponse,
+    responses={
+        400: {"description": "No puedes bloquear tu propia cuenta"},
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {
+            "description": (
+                "La cuenta ya está bloqueada, está inactiva o es el último "
+                "administrador activo"
+            )
+        },
+        422: {
+            "description": (
+                "Datos de entrada inválidos. "
+                f"{DESCRIPCION_MOTIVO_BLOQUEO}"
+            )
+        },
+    },
+)
 def bloquear_usuario(
     id_usuario: int,
     datos: BloqueoUsuarioRequest,
-    repository: UsuarioRepository = Depends(get_usuario_repository),
     current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
 ):
-    caso_uso = BloquearUsuario(repository)
-    return caso_uso.execute(id_usuario, datos.motivo)
+    return controller.bloquear_usuario(id_usuario, datos, current_user)
+
+
+@router.put(
+    "/{id_usuario}/desbloquear",
+    response_model=DesbloqueoUsuarioResponse,
+    responses={
+        401: {"description": "Token no proporcionado o inválido"},
+        403: {"description": "El usuario no tiene permisos de administrador"},
+        404: {"description": "Usuario no encontrado"},
+        409: {
+            "description": (
+                "La cuenta no se encuentra bloqueada ni desactivada"
+            )
+        },
+        422: {"description": "Datos de entrada inválidos"},
+    },
+)
+def desbloquear_usuario(
+    id_usuario: int,
+    current_user: object = Depends(require_rol(ROL_ADMIN)),
+    controller: UsuarioController = Depends(get_usuario_controller),
+):
+    return controller.desbloquear_usuario(id_usuario, current_user)

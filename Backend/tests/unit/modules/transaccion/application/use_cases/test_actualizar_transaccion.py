@@ -6,14 +6,16 @@ import pytest
 from app.modules.transaccion.application.use_cases.actualizar_transaccion import (
     ActualizarTransaccion
 )
-from app.shared.exceptions.business_exceptions import (
+from app.shared.exceptions.transaccion_errors import (
+    TransaccionNoEditable,
+    TransaccionesNoEncontrado,
+)
+from app.shared.exceptions.common import (
     CategoriaInvalida,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     MontoInvalido,
     SaldoInsuficiente,
-    TransaccionNoEditable,
-    TransaccionesNoEncontrado,
 )
 
 ID_GASTO = 2
