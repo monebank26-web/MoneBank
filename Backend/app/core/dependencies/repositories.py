@@ -2,8 +2,8 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.core.database.connection import get_db
-from app.core.database.sql_unit_of_work import SqlAlchemyUnitOfWork
 from app.core.database.unit_of_work import UnitOfWork
+from app.core.database.uow_factory import crear_unit_of_work
 from app.modules.cuenta.domain.interface.cuenta_repository import CuentaRepository
 from app.modules.cuenta.infrastructure.repository.sql_cuenta_repository import (
     SqlCuentaRepository,
@@ -17,7 +17,7 @@ from app.modules.transaccion.infrastructure.repository.sql_transaccion_repositor
 
 
 def get_unit_of_work(db: Session = Depends(get_db)) -> UnitOfWork:
-    return SqlAlchemyUnitOfWork(db)
+    return crear_unit_of_work(db)
 
 
 def get_transaccion_repository(
