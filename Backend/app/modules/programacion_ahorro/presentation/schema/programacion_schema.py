@@ -35,9 +35,13 @@ class ProgramacionCreate(BaseModel):
         return self
 
 
-class ProgramacionUpdate(BaseModel):
-    id_programacion_ahorro: int
+class CambiarEstadoRequest(BaseModel):
     estado: Estado
+
+
+class ModificarProgramacionRequest(BaseModel):
+    monto_periodico: Decimal = Field(..., gt=0)
+    frecuencia: Frecuencia
 
 
 class ProgramacionResponse(BaseModel):

@@ -5,6 +5,12 @@
   font-size: 14px;
 }
 
+.separador-programacion {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 6px 0;
+}
+
 .grupo-estado-programacion {
   display: flex;
   flex-direction: column;
