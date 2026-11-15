@@ -398,3 +398,74 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── RECUPERACIÓN DE CONTRASEÑA CON CÓDIGO ── */
+.recuperacion-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.aviso-recuperacion {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.recuperacion-nota {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.recuperacion-mensaje {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--color-accent-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.recuperacion-codigo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  text-align: center;
+}
+
+.recuperacion-ayuda {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.recuperacion-exito {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--color-text-soft);
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.recuperacion-exito p {
+  margin: 0;
+}
+
+.recuperacion-volver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}

@@ -3,6 +3,7 @@ import CampoContrasena from '../../../shared/components/CampoContrasena';
 import './Auth.css';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../core/constants';
 
 const IconoOjo = ({ cerrado = false }) => (
   <svg
@@ -203,6 +204,19 @@ const LoginPage = () => {
               : 'Ingresar'}
           </button>
         </form>
+
+        <div className="recuperacion-login">
+          <Link
+            to={ROUTES.RECUPERAR}
+            className="enlace-autenticacion"
+          >
+            ¿Olvidaste tu contraseña?
+          </Link>
+
+          <p className="aviso-recuperacion">
+            Te enviaremos un código de 6 dígitos al correo registrado.
+          </p>
+        </div>
 
         <p className="texto-cambio-autenticacion">
           ¿No tienes cuenta?{' '}

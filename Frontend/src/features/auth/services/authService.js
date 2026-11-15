@@ -40,6 +40,24 @@ export const authService = {
 },
 
 
+  solicitarCodigoRecuperacion: async ({ email }) => {
+    return apiClient.post('/auth/password-recovery/request', {
+      correo: email,
+    });
+  },
+
+  confirmarCodigoRecuperacion: async ({
+    email,
+    codigo,
+    nuevaContrasena,
+  }) => {
+    return apiClient.post('/auth/password-recovery/confirm', {
+      correo: email,
+      codigo,
+      nueva_contrasena: nuevaContrasena,
+    });
+  },
+
   register: async ({ nombres,apellidos, email, password }) => {
     const data = await apiClient.post('/usuarios/', {
       nombres,
