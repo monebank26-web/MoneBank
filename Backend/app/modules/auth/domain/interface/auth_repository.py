@@ -48,3 +48,26 @@ class AuthRepository(ABC):
         """Debe invalidar todos los tokens de recuperación activos
         de un usuario (marcarlos como utilizados)."""
         pass
+
+    @abstractmethod
+    def find_latest_recovery_token(self, usuario_id):
+        """Debe devolver el último código de recuperación creado para el
+        usuario, sin importar si ya fue usado o expiró, o None."""
+        pass
+
+    @abstractmethod
+    def find_active_recovery_token(self, usuario_id):
+        """Debe devolver el código activo del usuario, o None."""
+        pass
+
+    @abstractmethod
+    def exists_recovery_token_hash(self, token_hash):
+        """Debe indicar si el hash de un código ya está registrado."""
+        pass
+
+    @abstractmethod
+    def update_recovery_token_attempts(self, token_id, intentos_fallidos,
+                                       usado):
+        """Debe actualizar los intentos fallidos y el estado de uso
+        de un código de recuperación."""
+        pass

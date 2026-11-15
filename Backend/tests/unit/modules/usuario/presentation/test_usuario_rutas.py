@@ -106,6 +106,7 @@ def crear_tablas(engine):
                 fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
                 fecha_expiracion DATETIME NOT NULL,
                 usado BOOLEAN NOT NULL DEFAULT 0,
+                intentos_fallidos INTEGER NOT NULL DEFAULT 0,
                 FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario)
             )
         """))
