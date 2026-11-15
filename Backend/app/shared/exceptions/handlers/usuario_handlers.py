@@ -11,6 +11,7 @@ from app.shared.exceptions.usuario_errors import (
     NoPuedeBloquearseException,
     NoPuedeDesactivarseException,
     NoPuedeRestablecerPasswordPropiaException,
+    SolicitudCodigoRecienteException,
     UltimoAdministradorDesactivacionException,
     UltimoAdministradorException,
 )
@@ -34,6 +35,7 @@ def register_usuario_exception_handlers(app: FastAPI):
         CorreoRestablecimientoNoEnviadoException,
         502,
     )
+    registrar_error_business(app, SolicitudCodigoRecienteException, 429)
     registrar_error_business(app, UltimoAdministradorException, 409)
     registrar_error_business(
         app,

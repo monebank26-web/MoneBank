@@ -26,6 +26,7 @@ from app.shared.exceptions.auth_errors import (
     AccountLockedException,
     CuentaInactivaException,
     InvalidCredentialsException,
+    InvalidOrExpiredTokenException,
 )
 
 # Ramas de login que pueden escribir antes de lanzar (registro del intento
@@ -72,8 +73,19 @@ class AuthController:
             self.unit_of_work.usuarios,
             self.email_service,
         )
-        resultado = caso_uso.execute(request.correo)
-        self.unit_of_work.commit()
+
+        try:
+            resultado = caso_uso.execute(request.correo)
+            correo_enviado = resultado.pop("_correo_enviado", True)
+
+            if correo_enviado:
+                self.unit_of_work.commit()
+            else:
+                self.unit_of_work.rollback()
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
         return resultado
 
     def cambiar_contrasena(self, request: ContrasenaUpdateRequest, current_user):
@@ -91,7 +103,22 @@ class AuthController:
             self.repository,
             self.unit_of_work.usuarios,
         )
-        resultado = caso_uso.execute(request.token, request.nueva_contrasena)
+
+        try:
+            resultado = caso_uso.execute(
+                request.correo,
+                request.codigo,
+                request.nueva_contrasena,
+            )
+        except InvalidOrExpiredTokenException:
+            # Cada código incorrecto actualiza sus intentos; se confirma antes
+            # de relanzar para que ese contador persista.
+            self.unit_of_work.commit()
+            raise
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
         self.unit_of_work.commit()
         return resultado
 

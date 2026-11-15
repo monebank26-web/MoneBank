@@ -30,9 +30,10 @@ class AuthRepositoryFake:
     def exists_recovery_token_hash(self, token_hash):
         return token_hash in self.hashes_existentes
 
-    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion):
+    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion,
+                              intentos_fallidos=0):
         self.creaciones.append(
-            (usuario_id, token_hash, fecha_expiracion)
+            (usuario_id, token_hash, fecha_expiracion, intentos_fallidos)
         )
         return SimpleToken(
             usuario_id=usuario_id,
@@ -83,10 +84,11 @@ def test_crear_codigo_recuperacion_invalida_el_anterior_y_crea_el_nuevo():
     assert repository.invalidaciones == [9]
     assert len(repository.creaciones) == 1
 
-    usuario_id, token_hash, fecha_expiracion = repository.creaciones[0]
+    usuario_id, token_hash, fecha_expiracion, intentos = repository.creaciones[0]
     assert usuario_id == 9
     assert token_hash == hash_codigo_recuperacion(9, "000042")
     assert fecha_expiracion.tzinfo is not None
+    assert intentos == 0
 
     ahora = datetime.now(timezone.utc)
     assert timedelta(minutes=MINUTOS_TOKEN_RECUPERACION - 1) < (

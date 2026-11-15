@@ -56,9 +56,13 @@ class NoPuedeRestablecerPasswordPropiaException(BusinessError):
     code = CODIGO_NO_PUEDE_RESTABLECER_PASSWORD_PROPIA
 
 
+class SolicitudCodigoRecienteException(BusinessError):
+    message = "Espera 60 segundos antes de solicitar otro código."
+
+
 class CorreoRestablecimientoNoEnviadoException(BusinessError):
     message = (
-        "No se pudo enviar el enlace de restablecimiento. "
+        "No se pudo enviar el código de restablecimiento. "
         "No se guardó ningún cambio. Intenta nuevamente."
     )
     code = CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO

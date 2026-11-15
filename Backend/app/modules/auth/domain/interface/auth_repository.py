@@ -27,15 +27,17 @@ class AuthRepository(ABC):
         pass
 
     @abstractmethod
-    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion):
-        """Debe crear y persistir un token de recuperación de contraseña
+    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion,
+                              intentos_fallidos=0):
+        """Debe crear y persistir un código de recuperación de contraseña
         asociado al usuario indicado."""
         pass
 
     @abstractmethod
-    def find_valid_token(self, token_hash):
-        """Debe devolver el token de recuperación que coincida con el hash,
-        que no esté expirado y que no haya sido utilizado, o None."""
+    def find_valid_token(self, usuario_id, token_hash):
+        """Debe devolver el código de recuperación que coincida con el
+        usuario y el hash, que no esté expirado y que no haya sido
+        utilizado, o None."""
         pass
 
     @abstractmethod

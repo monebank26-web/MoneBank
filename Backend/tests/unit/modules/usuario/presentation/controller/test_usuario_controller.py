@@ -22,6 +22,7 @@ from app.shared.exceptions.common import UsuarioNotFoundException
 from app.shared.exceptions.usuario_errors import (
     CorreoRestablecimientoNoEnviadoException,
     NoPuedeRestablecerPasswordPropiaException,
+    SolicitudCodigoRecienteException,
 )
 
 
@@ -430,8 +431,8 @@ def test_restablecer_password_envia_correo_antes_de_commitear(mock_use_case):
     def commit():
         eventos.append("commit")
 
-    def enviar_correo(correo, token):
-        eventos.append(("email", correo, token))
+    def enviar_correo(correo, codigo):
+        eventos.append(("email", correo, codigo))
         return True
 
     unit_of_work.commit.side_effect = commit
@@ -440,7 +441,7 @@ def test_restablecer_password_envia_correo_antes_de_commitear(mock_use_case):
     resultado_caso_uso = {
         "id_usuario": 9,
         "correo": "usuario@test.com",
-        "token": "token-nuevo",
+        "codigo": "123456",
     }
     mock_use_case.return_value.execute.return_value = resultado_caso_uso
 
@@ -451,22 +452,21 @@ def test_restablecer_password_envia_correo_antes_de_commitear(mock_use_case):
         usuario_actual(6, ROL_ADMIN),
     )
 
-    mock_use_case.assert_called_once_with(
-        repository,
-        unit_of_work.auth,
-        unit_of_work.registros_accion_admin,
-    )
+    argumentos = mock_use_case.call_args.args
+    assert argumentos[0] is repository
+    assert argumentos[1] is unit_of_work.registros_accion_admin
+    assert callable(argumentos[2]) is True
     mock_use_case.return_value.execute.assert_called_once_with(9, 6)
     assert eventos == [
-        ("email", "usuario@test.com", "token-nuevo"),
+        ("email", "usuario@test.com", "123456"),
         "commit",
     ]
     assert resultado == {
         "mensaje": (
-            "Enlace de restablecimiento enviado al correo del usuario"
+            "Código de restablecimiento enviado al correo del usuario"
         )
     }
-    assert "token" not in resultado
+    assert "codigo" not in resultado
     assert "contrasena" not in resultado
 
 
@@ -528,7 +528,7 @@ def test_restablecer_password_correo_no_enviado_responde_502_con_rollback(
     mock_use_case.return_value.execute.return_value = {
         "id_usuario": 9,
         "correo": "usuario@test.com",
-        "token": "token-nuevo",
+        "codigo": "123456",
     }
 
     controller = UsuarioController(repository, unit_of_work, email_service)
@@ -540,7 +540,7 @@ def test_restablecer_password_correo_no_enviado_responde_502_con_rollback(
         )
 
     assert str(exc.value) == (
-        "No se pudo enviar el enlace de restablecimiento. "
+        "No se pudo enviar el código de restablecimiento. "
         "No se guardó ningún cambio. Intenta nuevamente."
     )
     assert exc.value.code == CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
@@ -548,7 +548,7 @@ def test_restablecer_password_correo_no_enviado_responde_502_con_rollback(
     unit_of_work.rollback.assert_called_once()
     email_service.send_password_reset_by_admin.assert_called_once_with(
         "usuario@test.com",
-        "token-nuevo",
+        "123456",
     )
 
 
@@ -568,7 +568,7 @@ def test_restablecer_password_excepcion_del_correo_responde_502_con_rollback(
     mock_use_case.return_value.execute.return_value = {
         "id_usuario": 9,
         "correo": "usuario@test.com",
-        "token": "token-nuevo",
+        "codigo": "123456",
     }
 
     controller = UsuarioController(repository, unit_of_work, email_service)
@@ -596,6 +596,32 @@ def test_restablecer_password_error_del_caso_uso_hace_rollback(mock_use_case):
     controller = UsuarioController(repository, unit_of_work, email_service)
 
     with pytest.raises(RuntimeError, match="boom"):
+        controller.restablecer_password_usuario(
+            9,
+            usuario_actual(6, ROL_ADMIN),
+        )
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()
+    email_service.send_password_reset_by_admin.assert_not_called()
+
+
+@patch(
+    "app.modules.usuario.presentation.controller."
+    "usuario_controller.RestablecerPasswordUsuario"
+)
+def test_restablecer_password_en_enfriamiento_hace_rollback_y_no_envia(
+    mock_use_case,
+):
+    repository, unit_of_work = mocks()
+    email_service = Mock()
+    mock_use_case.return_value.execute.side_effect = (
+        SolicitudCodigoRecienteException()
+    )
+
+    controller = UsuarioController(repository, unit_of_work, email_service)
+
+    with pytest.raises(SolicitudCodigoRecienteException):
         controller.restablecer_password_usuario(
             9,
             usuario_actual(6, ROL_ADMIN),

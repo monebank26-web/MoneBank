@@ -84,6 +84,36 @@ def test_find_active_recovery_token_ignora_usados_y_expirados():
     assert encontrado.token_hash == "hash-activo"
 
 
+def test_find_valid_token_busca_por_usuario_y_hash():
+    repositorio, _ = repositorio_con_usuarios()
+    expiracion = datetime.now(timezone.utc) + timedelta(minutes=15)
+    repositorio.create_recovery_token(1, "hash-uno", expiracion)
+    repositorio.create_recovery_token(2, "hash-dos", expiracion)
+
+    encontrado = repositorio.find_valid_token(1, "hash-uno")
+
+    assert encontrado is not None
+    assert encontrado.usuario_id == 1
+    assert repositorio.find_valid_token(2, "hash-uno") is None
+    assert repositorio.find_valid_token(1, "hash-inexistente") is None
+
+
+def test_find_valid_token_ignora_usados_y_expirados():
+    repositorio, _ = repositorio_con_usuarios()
+    ahora = datetime.now(timezone.utc)
+
+    usado = repositorio.create_recovery_token(
+        1, "hash-usado", ahora + timedelta(minutes=15)
+    )
+    repositorio.invalidate_token(usado.id)
+    assert repositorio.find_valid_token(1, "hash-usado") is None
+
+    repositorio.create_recovery_token(
+        1, "hash-expirado", ahora - timedelta(minutes=1)
+    )
+    assert repositorio.find_valid_token(1, "hash-expirado") is None
+
+
 def test_exists_recovery_token_hash_y_actualizacion_de_intentos():
     repositorio, _ = repositorio_con_usuarios()
     token = repositorio.create_recovery_token(

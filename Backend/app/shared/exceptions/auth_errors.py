@@ -33,5 +33,9 @@ class EmailNotFoundException(BusinessError):
     message = "El correo no está registrado"
 
 
+class ContrasenaInvalidaException(BusinessError):
+    message = "La contraseña no cumple con los requisitos de seguridad"
+
+
 class InvalidOrExpiredTokenException(BusinessError):
-    message = "El token es inválido o ha expirado"
+    message = "El código es inválido o ha expirado"

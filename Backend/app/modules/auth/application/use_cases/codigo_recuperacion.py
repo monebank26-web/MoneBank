@@ -53,5 +53,6 @@ def crear_codigo_recuperacion(auth_repository, usuario_id):
             usuario_id,
             token_hash,
             fecha_expiracion,
+            intentos_fallidos=0,
         )
         return codigo

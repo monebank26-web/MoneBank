@@ -6,6 +6,9 @@ from app.core.database.unit_of_work import UnitOfWork
 from app.core.dependencies.email_service import EmailService, get_email_service
 from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.roles import ROL_ADMIN
+from app.modules.auth.application.use_cases.codigo_recuperacion import (
+    crear_codigo_recuperacion,
+)
 from app.modules.usuario.application.use_cases.actualizar_usuarios import (
     ActualizarUsuarioUseCase,
 )
@@ -199,8 +202,11 @@ class UsuarioController:
 
         caso_uso = RestablecerPasswordUsuario(
             self.repository,
-            self.unit_of_work.auth,
             self.unit_of_work.registros_accion_admin,
+            lambda id_usuario: crear_codigo_recuperacion(
+                self.unit_of_work.auth,
+                id_usuario,
+            ),
         )
 
         try:
@@ -212,7 +218,7 @@ class UsuarioController:
             try:
                 enviado = self.email_service.send_password_reset_by_admin(
                     resultado["correo"],
-                    resultado["token"],
+                    resultado["codigo"],
                 )
             except Exception:
                 enviado = False
@@ -228,7 +234,7 @@ class UsuarioController:
 
         return {
             "mensaje": (
-                "Enlace de restablecimiento enviado al correo del usuario"
+                "Código de restablecimiento enviado al correo del usuario"
             )
         }
 

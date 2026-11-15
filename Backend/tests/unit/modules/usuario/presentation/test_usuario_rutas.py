@@ -10,8 +10,10 @@ from sqlalchemy.orm import sessionmaker
 from app.core.database.connection import get_db
 from app.core.dependencies.email_service import get_email_service
 from app.core.security.auth import get_current_user
-from app.core.security.reset_token import TokenGenerator
 from app.core.security.roles import ROL_ADMIN, ROL_USUARIO
+from app.modules.auth.application.use_cases.codigo_recuperacion import (
+    hash_codigo_recuperacion,
+)
 from app.modules.admin.infrastructure.model.registro_accion_admin_model import (
     RegistroAccionAdminModel,
 )
@@ -56,8 +58,8 @@ class EmailServiceFake:
         self.error = error
         self.llamadas = []
 
-    def send_password_reset_by_admin(self, correo, token):
-        self.llamadas.append((correo, token))
+    def send_password_reset_by_admin(self, correo, codigo):
+        self.llamadas.append((correo, codigo))
 
         if self.error:
             raise self.error
@@ -309,7 +311,7 @@ def obtener_contrasena(session_factory, id_usuario):
 def obtener_tokens(session_factory, id_usuario):
     with session_factory() as sesion:
         return sesion.execute(text("""
-            SELECT token_hash, fecha_expiracion, usado
+            SELECT token_hash, fecha_expiracion, usado, intentos_fallidos
             FROM password_reset_token
             WHERE usuario_id = :id_usuario
             ORDER BY id
@@ -735,16 +737,19 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
     assert respuesta.status_code == 200
     assert respuesta.json() == {
         "mensaje": (
-            "Enlace de restablecimiento enviado al correo del usuario"
+            "Código de restablecimiento enviado al correo del usuario"
         )
     }
+    assert "codigo" not in respuesta.json()
     assert "token" not in respuesta.json()
+    assert "enlace" not in respuesta.json()
     assert_sin_contrasena(respuesta.json())
 
     assert len(email_service.llamadas) == 1
-    correo, token = email_service.llamadas[0]
+    correo, codigo = email_service.llamadas[0]
     assert correo == "activo@example.com"
-    assert token
+    assert len(codigo) == 6
+    assert codigo.isdigit() is True
 
     assert obtener_contrasena(
         session_factory,
@@ -753,8 +758,12 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
 
     tokens = obtener_tokens(session_factory, USUARIO_ACTIVO_ID)
     assert len(tokens) == 1
-    assert tokens[0]["token_hash"] == TokenGenerator.hash(token)
+    assert tokens[0]["token_hash"] == hash_codigo_recuperacion(
+        USUARIO_ACTIVO_ID,
+        codigo,
+    )
     assert tokens[0]["usado"] == 0
+    assert tokens[0]["intentos_fallidos"] == 0
 
     usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
     assert usuario["intentos_fallidos"] == 0
@@ -766,7 +775,7 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
     assert auditoria["accion"] == ACCION_RESTABLECER_PASSWORD
     assert auditoria["id_usuario_afectado"] == USUARIO_ACTIVO_ID
     assert auditoria["detalle"] == (
-        "Enlace de restablecimiento generado; contraseña vigente"
+        "Código de restablecimiento generado; contraseña vigente"
     )
 
 
@@ -793,7 +802,9 @@ def test_restablecer_password_no_cambia_estado_ni_bloqueo(
     )
 
     assert respuesta.status_code == 200
+    assert "codigo" not in respuesta.json()
     assert "token" not in respuesta.json()
+    assert "enlace" not in respuesta.json()
     assert_sin_contrasena(respuesta.json())
 
     despues = obtener_usuario(session_factory, id_usuario)
@@ -828,7 +839,7 @@ def test_restablecer_password_correo_fallido_devuelve_502_y_no_conserva_cambios(
         CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
     )
     assert respuesta.json()["message"] == (
-        "No se pudo enviar el enlace de restablecimiento. "
+        "No se pudo enviar el código de restablecimiento. "
         "No se guardó ningún cambio. Intenta nuevamente."
     )
     assert_sin_contrasena(respuesta.json())
@@ -870,7 +881,7 @@ def test_restablecer_password_excepcion_del_correo_devuelve_502(entorno):
     assert contar_auditorias(session_factory) == auditorias_antes
 
 
-def test_reintento_de_restablecimiento_genera_un_token_nuevo(entorno):
+def test_restablecer_password_en_enfriamiento_devuelve_429(entorno):
     cliente, app, session_factory = entorno
     autenticar_admin(app)
     email_service = EmailServiceFake()
@@ -885,17 +896,62 @@ def test_reintento_de_restablecimiento_genera_un_token_nuevo(entorno):
     )
 
     assert primero.status_code == 200
+    assert segundo.status_code == 429
+    assert segundo.json()["message"] == (
+        "Espera 60 segundos antes de solicitar otro código."
+    )
+    assert len(email_service.llamadas) == 1
+    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 1
+    assert contar_auditorias(session_factory) == auditorias_antes + 1
+
+
+def test_reintento_de_restablecimiento_genera_un_codigo_nuevo(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake()
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+
+    primero = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    with session_factory() as sesion:
+        sesion.execute(text("""
+            UPDATE password_reset_token
+            SET fecha_creacion = :fecha_vieja
+            WHERE usuario_id = :id_usuario
+        """), {
+            "fecha_vieja": (
+                datetime.now() - timedelta(seconds=61)
+            ).strftime("%Y-%m-%d %H:%M:%S"),
+            "id_usuario": USUARIO_ACTIVO_ID,
+        })
+        sesion.commit()
+
+    segundo = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert primero.status_code == 200
     assert segundo.status_code == 200
     assert len(email_service.llamadas) == 2
 
-    primer_token = email_service.llamadas[0][1]
-    segundo_token = email_service.llamadas[1][1]
-    assert primer_token != segundo_token
+    primer_codigo = email_service.llamadas[0][1]
+    segundo_codigo = email_service.llamadas[1][1]
+    assert primer_codigo != segundo_codigo
 
     tokens = obtener_tokens(session_factory, USUARIO_ACTIVO_ID)
     assert len(tokens) == 2
-    assert tokens[0]["token_hash"] == TokenGenerator.hash(primer_token)
+    assert tokens[0]["token_hash"] == hash_codigo_recuperacion(
+        USUARIO_ACTIVO_ID,
+        primer_codigo,
+    )
     assert tokens[0]["usado"] == 1
-    assert tokens[1]["token_hash"] == TokenGenerator.hash(segundo_token)
+    assert tokens[1]["token_hash"] == hash_codigo_recuperacion(
+        USUARIO_ACTIVO_ID,
+        segundo_codigo,
+    )
     assert tokens[1]["usado"] == 0
+    assert tokens[1]["intentos_fallidos"] == 0
     assert contar_auditorias(session_factory) == auditorias_antes + 2

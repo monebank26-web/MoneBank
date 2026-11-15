@@ -163,7 +163,7 @@ def desbloquear_usuario(
     response_model=RestablecimientoPasswordResponse,
     summary="Restablecer contraseña de un usuario",
     description=(
-        "Genera un enlace de restablecimiento y envía el correo al usuario. "
+        "Genera un código de restablecimiento y envía el correo al usuario. "
         "La contraseña actual no cambia hasta que el usuario confirme."
     ),
     responses={
@@ -172,6 +172,11 @@ def desbloquear_usuario(
         403: {"description": "El usuario no tiene permisos de administrador"},
         404: {"description": "Usuario no encontrado"},
         422: {"description": "Datos de entrada inválidos"},
+        429: {
+            "description": (
+                "Espera 60 segundos antes de solicitar otro código"
+            )
+        },
         502: {
             "description": (
                 "No se pudo enviar el correo; no se guardó ningún cambio"
