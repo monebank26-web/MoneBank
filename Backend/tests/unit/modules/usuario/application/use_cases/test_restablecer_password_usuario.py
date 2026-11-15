@@ -139,7 +139,7 @@ def test_usuario_inexistente_lanza_404():
     registro_repository.registrar.assert_not_called()
 
 
-def test_restablece_password_tokens_y_auditoria():
+def test_genera_enlace_sin_cambiar_password_ni_intentos():
     usuario = crear_usuario()
     caso_uso, repository, auth_repository, registro_repository = crear_caso_uso(
         usuario
@@ -150,13 +150,11 @@ def test_restablece_password_tokens_y_auditoria():
     repository.get_by_id.assert_called_once_with(9)
     auth_repository.invalidate_user_tokens.assert_called_once_with(9)
 
-    repository.update_password.assert_called_once()
-    id_usuario, nuevo_hash = repository.update_password.call_args.args
-    assert id_usuario == 9
-    assert nuevo_hash != usuario.contrasena
-    assert PasswordHasher.verify(usuario.contrasena, nuevo_hash) is False
-
-    repository.update_auth_fields.assert_called_once_with(9, 0, None)
+    repository.update_password.assert_not_called()
+    repository.update_auth_fields.assert_not_called()
+    assert usuario.contrasena == "hash-viejo"
+    assert usuario.intentos_fallidos == 5
+    assert usuario.bloqueado_hasta == "2026-01-02 11:00:00"
 
     auth_repository.create_recovery_token.assert_called_once()
     usuario_id_token, token_hash, fecha_expiracion = (
@@ -176,8 +174,7 @@ def test_restablece_password_tokens_y_auditoria():
         accion=ACCION_RESTABLECER_PASSWORD,
         id_usuario_afectado=9,
         detalle=(
-            "Contraseña invalidada y enlace de restablecimiento "
-            "generado; intentos reiniciados"
+            "Enlace de restablecimiento generado; contraseña vigente"
         ),
     )
 
@@ -187,43 +184,8 @@ def test_restablece_password_tokens_y_auditoria():
     assert "contrasena" not in resultado
 
 
-@patch(
-    "app.modules.usuario.application.use_cases."
-    "restablecer_password_usuario.PasswordHasher"
-)
-@patch(
-    "app.modules.usuario.application.use_cases."
-    "restablecer_password_usuario.secrets.token_urlsafe"
-)
-def test_genera_hash_aleatorio_sin_password_temporal(
-    mock_token_urlsafe,
-    mock_password_hasher,
-):
-    mock_token_urlsafe.return_value = "valor-aleatorio"
-    mock_password_hasher.hash.return_value = "hash-aleatorio"
-
-    usuario = crear_usuario()
-    repository = Mock()
-    repository.get_by_id.return_value = usuario
-
-    caso_uso = RestablecerPasswordUsuario(
-        repository,
-        Mock(),
-        Mock(),
-    )
-
-    caso_uso.execute(9, id_admin=1)
-
-    mock_token_urlsafe.assert_any_call(32)
-    mock_password_hasher.hash.assert_called_once_with("valor-aleatorio")
-    repository.update_password.assert_called_once_with(
-        9,
-        "hash-aleatorio",
-    )
-
-
 @pytest.mark.parametrize("estado", ["BLOQUEADO", "INACTIVO"])
-def test_restablece_sin_cambiar_el_estado_ni_el_bloqueo(estado):
+def test_no_cambia_estado_bloqueo_ni_intentos(estado):
     usuario = crear_usuario(estado)
     estado_original = usuario.estado
     motivo_original = usuario.motivo_bloqueo
@@ -236,8 +198,8 @@ def test_restablece_sin_cambiar_el_estado_ni_el_bloqueo(estado):
     assert usuario.estado == estado_original
     assert usuario.motivo_bloqueo == motivo_original
     assert usuario.fecha_bloqueo == fecha_original
-    assert usuario.intentos_fallidos == 0
-    assert usuario.bloqueado_hasta is None
+    assert usuario.intentos_fallidos == 5
+    assert usuario.bloqueado_hasta == "2026-01-02 11:00:00"
 
 
 def test_el_token_creado_sirve_para_confirmar_la_recuperacion():
@@ -253,11 +215,12 @@ def test_el_token_creado_sirve_para_confirmar_la_recuperacion():
 
     resultado = caso_uso.execute(9, id_admin=1)
 
-    assert PasswordHasher.verify("ClaveVieja1!", usuario.contrasena) is False
+    assert PasswordHasher.verify("ClaveVieja1!", usuario.contrasena) is True
 
     confirmar = ConfirmPasswordRecoveryUseCase(auth_repository, repository)
     confirmar.execute(resultado["token"], "ClaveNueva1!")
 
+    assert PasswordHasher.verify("ClaveVieja1!", usuario.contrasena) is False
     assert PasswordHasher.verify("ClaveNueva1!", usuario.contrasena) is True
     token = auth_repository.tokens[TokenGenerator.hash(resultado["token"])]
     assert token.usado is True

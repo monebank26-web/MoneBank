@@ -734,10 +734,10 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
     assert respuesta.status_code == 200
     assert respuesta.json() == {
         "mensaje": (
-            "Contraseña invalidada y enlace de restablecimiento "
-            "enviado al correo del usuario"
+            "Enlace de restablecimiento enviado al correo del usuario"
         )
     }
+    assert "token" not in respuesta.json()
     assert_sin_contrasena(respuesta.json())
 
     assert len(email_service.llamadas) == 1
@@ -748,7 +748,7 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
     assert obtener_contrasena(
         session_factory,
         USUARIO_ACTIVO_ID,
-    ) != contrasena_antes
+    ) == contrasena_antes
 
     tokens = obtener_tokens(session_factory, USUARIO_ACTIVO_ID)
     assert len(tokens) == 1
@@ -765,8 +765,7 @@ def test_restablecer_password_activo_envia_correo_y_audita(entorno):
     assert auditoria["accion"] == ACCION_RESTABLECER_PASSWORD
     assert auditoria["id_usuario_afectado"] == USUARIO_ACTIVO_ID
     assert auditoria["detalle"] == (
-        "Contraseña invalidada y enlace de restablecimiento generado; "
-        "intentos reiniciados"
+        "Enlace de restablecimiento generado; contraseña vigente"
     )
 
 
@@ -793,26 +792,62 @@ def test_restablecer_password_no_cambia_estado_ni_bloqueo(
     )
 
     assert respuesta.status_code == 200
+    assert "token" not in respuesta.json()
     assert_sin_contrasena(respuesta.json())
 
     despues = obtener_usuario(session_factory, id_usuario)
     assert despues["estado"] == estado
     assert despues["motivo_bloqueo"] == antes["motivo_bloqueo"]
     assert despues["fecha_bloqueo"] == antes["fecha_bloqueo"]
-    assert despues["intentos_fallidos"] == 0
-    assert despues["bloqueado_hasta"] is None
+    assert despues["intentos_fallidos"] == antes["intentos_fallidos"]
+    assert despues["bloqueado_hasta"] == antes["bloqueado_hasta"]
 
     auditoria = obtener_ultima_auditoria(session_factory)
     assert auditoria["accion"] == ACCION_RESTABLECER_PASSWORD
     assert auditoria["id_usuario_afectado"] == id_usuario
 
 
-def test_restablecer_password_correo_fallido_devuelve_502_y_conserva_cambios(
+def test_restablecer_password_correo_fallido_devuelve_502_y_no_conserva_cambios(
     entorno,
 ):
     cliente, app, session_factory = entorno
     autenticar_admin(app)
     email_service = EmailServiceFake(resultado=False)
+    inyectar_email(app, email_service)
+    auditorias_antes = contar_auditorias(session_factory)
+    contrasena_antes = obtener_contrasena(session_factory, USUARIO_ACTIVO_ID)
+    usuario_antes = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
+
+    respuesta = cliente.post(
+        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
+    )
+
+    assert respuesta.status_code == 502
+    assert respuesta.json()["code"] == (
+        CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
+    )
+    assert respuesta.json()["message"] == (
+        "No se pudo enviar el enlace de restablecimiento. "
+        "No se guardó ningún cambio. Intenta nuevamente."
+    )
+    assert_sin_contrasena(respuesta.json())
+
+    assert obtener_contrasena(
+        session_factory,
+        USUARIO_ACTIVO_ID,
+    ) == contrasena_antes
+    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 0
+    assert contar_auditorias(session_factory) == auditorias_antes
+
+    usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
+    assert usuario["intentos_fallidos"] == usuario_antes["intentos_fallidos"]
+    assert usuario["bloqueado_hasta"] == usuario_antes["bloqueado_hasta"]
+
+
+def test_restablecer_password_excepcion_del_correo_devuelve_502(entorno):
+    cliente, app, session_factory = entorno
+    autenticar_admin(app)
+    email_service = EmailServiceFake(error=RuntimeError("SMTP caído"))
     inyectar_email(app, email_service)
     auditorias_antes = contar_auditorias(session_factory)
     contrasena_antes = obtener_contrasena(session_factory, USUARIO_ACTIVO_ID)
@@ -825,42 +860,13 @@ def test_restablecer_password_correo_fallido_devuelve_502_y_conserva_cambios(
     assert respuesta.json()["code"] == (
         CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
     )
-    assert respuesta.json()["message"] == (
-        "La contraseña fue invalidada, pero el correo no pudo enviarse. "
-        "Reintenta el restablecimiento."
-    )
-    assert_sin_contrasena(respuesta.json())
-
+    assert len(email_service.llamadas) == 1
     assert obtener_contrasena(
         session_factory,
         USUARIO_ACTIVO_ID,
-    ) != contrasena_antes
-    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 1
-    assert contar_auditorias(session_factory) == auditorias_antes + 1
-
-    usuario = obtener_usuario(session_factory, USUARIO_ACTIVO_ID)
-    assert usuario["intentos_fallidos"] == 0
-    assert usuario["bloqueado_hasta"] is None
-
-
-def test_restablecer_password_excepcion_del_correo_devuelve_502(entorno):
-    cliente, app, session_factory = entorno
-    autenticar_admin(app)
-    email_service = EmailServiceFake(error=RuntimeError("SMTP caído"))
-    inyectar_email(app, email_service)
-    auditorias_antes = contar_auditorias(session_factory)
-
-    respuesta = cliente.post(
-        f"/usuarios/{USUARIO_ACTIVO_ID}/restablecer-password"
-    )
-
-    assert respuesta.status_code == 502
-    assert respuesta.json()["code"] == (
-        CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
-    )
-    assert len(email_service.llamadas) == 1
-    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 1
-    assert contar_auditorias(session_factory) == auditorias_antes + 1
+    ) == contrasena_antes
+    assert len(obtener_tokens(session_factory, USUARIO_ACTIVO_ID)) == 0
+    assert contar_auditorias(session_factory) == auditorias_antes
 
 
 def test_reintento_de_restablecimiento_genera_un_token_nuevo(entorno):

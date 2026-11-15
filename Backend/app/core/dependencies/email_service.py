@@ -1,5 +1,6 @@
 import logging
 import smtplib
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.core.config.settings import settings
@@ -39,17 +40,43 @@ class EmailService:
 
         link = f"http://localhost:3000/recuperar?token={token}"
 
-        msg = MIMEText(
-            "<h2>MoneBank - Restablecimiento de contraseña</h2>"
-            "<p>Un administrador restableció la contraseña de tu cuenta.</p>"
-            "<p>Tu contraseña anterior ya no funciona. Para crear una nueva, "
-            "usa el siguiente enlace:</p>"
-            f"<p><a href='{link}'>{link}</a></p>"
-            f"<p>Este enlace expira en {MINUTOS_TOKEN_RECUPERACION} minutos.</p>"
-            "<p>Si no esperabas este cambio, contacta al soporte de MoneBank "
-            "de inmediato.</p>",
-            "html"
+        texto = (
+            "Hola:\n\n"
+            "Un administrador solicitó restablecer la contraseña de tu "
+            "cuenta MoneBank.\n\n"
+            "Tu contraseña actual sigue funcionando hasta que crees una "
+            "nueva.\n"
+            "Para crear una nueva contraseña, abre este enlace:\n"
+            f"{link}\n\n"
+            f"El enlace vence en {MINUTOS_TOKEN_RECUPERACION} minutos y "
+            "solo puede usarse una vez.\n\n"
+            "Si no esperabas este correo, ignóralo: tu contraseña actual "
+            "no cambia mientras no uses el enlace. Si crees que alguien "
+            "intenta acceder a tu cuenta, avisa al administrador.\n"
         )
+
+        html = (
+            "<h2>MoneBank - Restablecimiento de contraseña</h2>"
+            "<p>Un administrador solicitó restablecer la contraseña de tu "
+            "cuenta.</p>"
+            "<p><strong>Tu contraseña actual sigue funcionando</strong> "
+            "hasta que crees una nueva.</p>"
+            f"<p><a href='{link}' style='display:inline-block;"
+            "padding:12px 24px;background:#c9a84c;color:#080808;"
+            "text-decoration:none;border-radius:6px;font-weight:bold;'>"
+            "Crear nueva contraseña</a></p>"
+            "<p>Si el botón no funciona, copia y pega este enlace:<br>"
+            f"<a href='{link}'>{link}</a></p>"
+            f"<p>Este enlace vence en {MINUTOS_TOKEN_RECUPERACION} minutos "
+            "y solo puede usarse una vez.</p>"
+            "<p>Si no esperabas este correo, ignóralo: tu contraseña actual "
+            "no cambia mientras no uses el enlace. Si crees que alguien "
+            "intenta acceder a tu cuenta, avisa al administrador.</p>"
+        )
+
+        msg = MIMEMultipart("alternative")
+        msg.attach(MIMEText(texto, "plain", "utf-8"))
+        msg.attach(MIMEText(html, "html", "utf-8"))
         msg["Subject"] = (
             "MoneBank - Restablecimiento de contraseña por administrador"
         )

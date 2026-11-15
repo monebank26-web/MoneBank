@@ -208,27 +208,27 @@ class UsuarioController:
                 id_usuario,
                 current_user.id_usuario,
             )
-            # La invalidación, el token y la auditoría son atómicos.
+
+            try:
+                enviado = self.email_service.send_password_reset_by_admin(
+                    resultado["correo"],
+                    resultado["token"],
+                )
+            except Exception:
+                enviado = False
+
+            if not enviado:
+                raise CorreoRestablecimientoNoEnviadoException()
+
+            # Solo se confirma si el correo salió: si falla, se revierte todo.
             self.unit_of_work.commit()
         except Exception:
             self.unit_of_work.rollback()
             raise
 
-        try:
-            enviado = self.email_service.send_password_reset_by_admin(
-                resultado["correo"],
-                resultado["token"],
-            )
-        except Exception:
-            enviado = False
-
-        if not enviado:
-            raise CorreoRestablecimientoNoEnviadoException()
-
         return {
             "mensaje": (
-                "Contraseña invalidada y enlace de restablecimiento "
-                "enviado al correo del usuario"
+                "Enlace de restablecimiento enviado al correo del usuario"
             )
         }
 

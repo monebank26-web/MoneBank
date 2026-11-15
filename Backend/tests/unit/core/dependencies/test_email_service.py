@@ -28,16 +28,25 @@ def test_envia_correo_de_restablecimiento_administrativo(mock_smtp):
     assert mensaje["To"] == "usuario@test.com"
     assert "administrador" in mensaje["Subject"].lower()
 
-    cuerpo = mensaje.get_payload(decode=True).decode("utf-8")
-    assert "un administrador restableció la contraseña" in cuerpo.lower()
-    assert "tu contraseña anterior ya no funciona" in cuerpo.lower()
-    assert "http://localhost:3000/recuperar?token=token-seguro" in cuerpo
-    assert (
-        f"este enlace expira en {MINUTOS_TOKEN_RECUPERACION} minutos"
-        in cuerpo.lower()
+    partes = mensaje.get_payload()
+    texto = partes[0].get_payload(decode=True).decode("utf-8")
+    html = partes[1].get_payload(decode=True).decode("utf-8")
+
+    assert "un administrador solicitó restablecer la contraseña" in (
+        texto.lower()
     )
-    assert "si no esperabas este cambio" in cuerpo.lower()
-    assert "soporte" in cuerpo.lower()
+    assert "tu contraseña actual sigue funcionando" in texto.lower()
+    assert "http://localhost:3000/recuperar?token=token-seguro" in texto
+    assert (
+        f"vence en {MINUTOS_TOKEN_RECUPERACION} minutos"
+        in texto.lower()
+    )
+    assert "crear nueva contraseña" in html.lower()
+    assert "http://localhost:3000/recuperar?token=token-seguro" in html
+    assert "si no esperabas este correo, ignóralo" in texto.lower()
+    assert "avisa al administrador" in texto.lower()
+    assert "soporte" not in texto.lower()
+    assert "contraseña anterior ya no funciona" not in texto.lower()
 
 
 @patch(

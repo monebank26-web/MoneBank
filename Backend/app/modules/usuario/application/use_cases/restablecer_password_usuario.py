@@ -1,8 +1,6 @@
-import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.core.constants import MINUTOS_TOKEN_RECUPERACION
-from app.core.security.PasswordHasher import PasswordHasher
 from app.core.security.reset_token import TokenGenerator
 from app.modules.admin.domain.interface.registro_accion_admin_repository import (
     RegistroAccionAdminRepository,
@@ -17,10 +15,10 @@ from app.shared.exceptions.usuario_errors import (
 
 
 class RestablecerPasswordUsuario:
-    """Invalida la contraseña de otro usuario y genera un enlace nuevo.
+    """Genera un enlace de restablecimiento sin cambiar la contraseña actual.
 
-    No revoca los JWT ya emitidos: solo cambia la contraseña y los tokens de
-    recuperación. El envío del correo queda fuera de este caso de uso.
+    Invalida los tokens de recuperación anteriores, pero no la contraseña ni
+    los intentos fallidos. El envío del correo queda fuera de este caso de uso.
     """
 
     def __init__(
@@ -44,12 +42,6 @@ class RestablecerPasswordUsuario:
 
         self.auth_repository.invalidate_user_tokens(id_usuario)
 
-        self.repository.update_password(
-            id_usuario,
-            PasswordHasher.hash(secrets.token_urlsafe(32)),
-        )
-        self.repository.update_auth_fields(id_usuario, 0, None)
-
         token_original = TokenGenerator.generate()
         token_hash = TokenGenerator.hash(token_original)
 
@@ -69,8 +61,7 @@ class RestablecerPasswordUsuario:
             accion=ACCION_RESTABLECER_PASSWORD,
             id_usuario_afectado=id_usuario,
             detalle=(
-                "Contraseña invalidada y enlace de restablecimiento "
-                "generado; intentos reiniciados"
+                "Enlace de restablecimiento generado; contraseña vigente"
             ),
         )
 

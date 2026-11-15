@@ -163,8 +163,8 @@ def desbloquear_usuario(
     response_model=RestablecimientoPasswordResponse,
     summary="Restablecer contraseña de un usuario",
     description=(
-        "Invalida la contraseña del usuario, genera un enlace de "
-        "restablecimiento y envía el correo al usuario."
+        "Genera un enlace de restablecimiento y envía el correo al usuario. "
+        "La contraseña actual no cambia hasta que el usuario confirme."
     ),
     responses={
         400: {"description": "No puedes restablecer tu propia contraseña"},
@@ -174,8 +174,7 @@ def desbloquear_usuario(
         422: {"description": "Datos de entrada inválidos"},
         502: {
             "description": (
-                "La contraseña fue invalidada, pero el correo no pudo "
-                "enviarse"
+                "No se pudo enviar el correo; no se guardó ningún cambio"
             )
         },
     },

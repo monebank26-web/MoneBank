@@ -58,8 +58,8 @@ class NoPuedeRestablecerPasswordPropiaException(BusinessError):
 
 class CorreoRestablecimientoNoEnviadoException(BusinessError):
     message = (
-        "La contraseña fue invalidada, pero el correo no pudo enviarse. "
-        "Reintenta el restablecimiento."
+        "No se pudo enviar el enlace de restablecimiento. "
+        "No se guardó ningún cambio. Intenta nuevamente."
     )
     code = CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
 

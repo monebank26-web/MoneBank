@@ -421,7 +421,7 @@ def test_desbloquear_usuario_con_error_hace_rollback_sin_commit(mock_use_case):
     "app.modules.usuario.presentation.controller."
     "usuario_controller.RestablecerPasswordUsuario"
 )
-def test_restablecer_password_commitea_antes_de_enviar_correo(mock_use_case):
+def test_restablecer_password_envia_correo_antes_de_commitear(mock_use_case):
 
     repository, unit_of_work = mocks()
     email_service = Mock()
@@ -458,13 +458,12 @@ def test_restablecer_password_commitea_antes_de_enviar_correo(mock_use_case):
     )
     mock_use_case.return_value.execute.assert_called_once_with(9, 6)
     assert eventos == [
-        "commit",
         ("email", "usuario@test.com", "token-nuevo"),
+        "commit",
     ]
     assert resultado == {
         "mensaje": (
-            "Contraseña invalidada y enlace de restablecimiento "
-            "enviado al correo del usuario"
+            "Enlace de restablecimiento enviado al correo del usuario"
         )
     }
     assert "token" not in resultado
@@ -519,7 +518,7 @@ def test_restablecer_password_sin_email_service_falla_claro(mock_use_case):
     "app.modules.usuario.presentation.controller."
     "usuario_controller.RestablecerPasswordUsuario"
 )
-def test_restablecer_password_correo_no_enviado_responde_502_sin_rollback(
+def test_restablecer_password_correo_no_enviado_responde_502_con_rollback(
     mock_use_case,
 ):
 
@@ -541,12 +540,12 @@ def test_restablecer_password_correo_no_enviado_responde_502_sin_rollback(
         )
 
     assert str(exc.value) == (
-        "La contraseña fue invalidada, pero el correo no pudo enviarse. "
-        "Reintenta el restablecimiento."
+        "No se pudo enviar el enlace de restablecimiento. "
+        "No se guardó ningún cambio. Intenta nuevamente."
     )
     assert exc.value.code == CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
-    unit_of_work.commit.assert_called_once()
-    unit_of_work.rollback.assert_not_called()
+    unit_of_work.commit.assert_not_called()
+    unit_of_work.rollback.assert_called_once()
     email_service.send_password_reset_by_admin.assert_called_once_with(
         "usuario@test.com",
         "token-nuevo",
@@ -557,7 +556,7 @@ def test_restablecer_password_correo_no_enviado_responde_502_sin_rollback(
     "app.modules.usuario.presentation.controller."
     "usuario_controller.RestablecerPasswordUsuario"
 )
-def test_restablecer_password_excepcion_del_correo_responde_502_sin_rollback(
+def test_restablecer_password_excepcion_del_correo_responde_502_con_rollback(
     mock_use_case,
 ):
 
@@ -580,8 +579,8 @@ def test_restablecer_password_excepcion_del_correo_responde_502_sin_rollback(
             usuario_actual(6, ROL_ADMIN),
         )
 
-    unit_of_work.commit.assert_called_once()
-    unit_of_work.rollback.assert_not_called()
+    unit_of_work.commit.assert_not_called()
+    unit_of_work.rollback.assert_called_once()
 
 
 @patch(
