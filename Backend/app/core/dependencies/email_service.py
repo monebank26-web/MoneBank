@@ -12,7 +12,8 @@ class EmailService:
     def send_recovery_email(self, correo: str, token: str):
         logger = logging.getLogger(__name__)
 
-        link = f"http://localhost:3000/recuperar?token={token}"
+        frontend_url = settings.FRONTEND_URL.rstrip("/")
+        link = f"{frontend_url}/recuperar?token={token}"
 
         msg = MIMEText(
             f"<h2>MoneBank - Recuperacion de contrasena</h2>"
@@ -38,7 +39,8 @@ class EmailService:
     def send_password_reset_by_admin(self, correo: str, token: str):
         logger = logging.getLogger(__name__)
 
-        link = f"http://localhost:3000/recuperar?token={token}"
+        frontend_url = settings.FRONTEND_URL.rstrip("/")
+        link = f"{frontend_url}/recuperar?token={token}"
 
         texto = (
             "Hola:\n\n"
