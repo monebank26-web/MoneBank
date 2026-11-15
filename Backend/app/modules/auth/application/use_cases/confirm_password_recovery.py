@@ -34,6 +34,12 @@ class ConfirmPasswordRecoveryUseCase:
             nuevo_hash
         )
 
+        self.usuario_repository.update_auth_fields(
+            reset_token.usuario_id,
+            0,
+            None,
+        )
+
         self.auth_repository.invalidate_token(reset_token.id)
 
         return {
