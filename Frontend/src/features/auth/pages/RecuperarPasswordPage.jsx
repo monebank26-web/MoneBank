@@ -5,7 +5,9 @@ import CampoContrasena from '../../../shared/components/CampoContrasena';
 import { useEnfriamientoCodigo } from '../hooks/useEnfriamientoCodigo';
 import { authService } from '../services/authService';
 import {
+  AVISO_CODIGO_ADMINISTRADOR,
   MENSAJE_CODIGO_ENVIADO,
+  MENSAJE_RECUPERACION_EXITOSA,
   SEGUNDOS_ENFRIAMIENTO_CODIGO,
   codigoRecuperacionValido,
   contrasenasCoinciden,
@@ -30,6 +32,12 @@ const RecuperarPasswordPage = () => {
     iniciarEnfriamiento,
   } = useEnfriamientoCodigo(SEGUNDOS_ENFRIAMIENTO_CODIGO);
 
+  const irACodigoExistente = () => {
+    setError('');
+    setMensaje('');
+    setPaso('confirmar');
+  };
+
   const solicitarCodigo = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -53,6 +61,13 @@ const RecuperarPasswordPage = () => {
     event.preventDefault();
     setError('');
 
+    const correo = email.trim().toLowerCase();
+
+    if (!correo) {
+      setError('Escribe tu correo electrónico.');
+      return;
+    }
+
     if (!codigoRecuperacionValido(codigo)) {
       setError('Escribe el código de 6 dígitos.');
       return;
@@ -67,10 +82,11 @@ const RecuperarPasswordPage = () => {
 
     try {
       await authService.confirmarCodigoRecuperacion({
-        email,
+        email: correo,
         codigo,
         nuevaContrasena,
       });
+      setEmail(correo);
       setPaso('listo');
     } catch (err) {
       setError(mensajeErrorRecuperacion(err));
@@ -82,11 +98,19 @@ const RecuperarPasswordPage = () => {
   const reenviarCodigo = async () => {
     if (loading || enfriamientoActivo) return;
 
+    const correo = email.trim().toLowerCase();
+
+    if (!correo) {
+      setError('Escribe tu correo electrónico.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      await authService.solicitarCodigoRecuperacion({ email });
+      await authService.solicitarCodigoRecuperacion({ email: correo });
+      setEmail(correo);
       setMensaje(MENSAJE_CODIGO_ENVIADO);
       iniciarEnfriamiento();
     } catch (err) {
@@ -130,6 +154,10 @@ const RecuperarPasswordPage = () => {
               Ingresa tu correo y te enviaremos un código de 6 dígitos.
             </p>
 
+            <p className="recuperacion-mensaje">
+              {AVISO_CODIGO_ADMINISTRADOR}
+            </p>
+
             <div className="grupo-campo">
               <label className="etiqueta-campo" htmlFor="recuperar-email">
                 Correo electrónico
@@ -160,6 +188,14 @@ const RecuperarPasswordPage = () => {
             >
               {loading ? 'Enviando...' : 'Enviarme un código'}
             </button>
+
+            <button
+              type="button"
+              className="enlace-autenticacion recuperacion-enlace"
+              onClick={irACodigoExistente}
+            >
+              Ya tengo un código
+            </button>
           </form>
         )}
 
@@ -173,6 +209,25 @@ const RecuperarPasswordPage = () => {
                 {mensaje}
               </p>
             )}
+
+            <div className="grupo-campo">
+              <label
+                className="etiqueta-campo"
+                htmlFor="recuperar-email-confirmar"
+              >
+                Correo electrónico
+              </label>
+
+              <input
+                id="recuperar-email-confirmar"
+                className="campo-entrada"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
 
             <div className="grupo-campo">
               <label className="etiqueta-campo" htmlFor="recuperar-codigo">
@@ -190,7 +245,6 @@ const RecuperarPasswordPage = () => {
                 onChange={(event) =>
                   setCodigo(normalizarCodigoRecuperacion(event.target.value))
                 }
-                maxLength={6}
                 pattern="\d{6}"
                 required
               />
@@ -263,12 +317,13 @@ const RecuperarPasswordPage = () => {
 
         {paso === 'listo' && (
           <div className="recuperacion-exito" role="status" aria-live="polite">
-            <p>
-              Tu contraseña fue actualizada. Ya puedes iniciar sesión con tu
-              nueva contraseña.
-            </p>
+            <p>{MENSAJE_RECUPERACION_EXITOSA}</p>
 
-            <Link to={ROUTES.LOGIN} className="boton-principal recuperacion-volver">
+            <Link
+              to={ROUTES.LOGIN}
+              state={{ mensajeRecuperacion: MENSAJE_RECUPERACION_EXITOSA }}
+              className="boton-principal recuperacion-volver"
+            >
               Ir a iniciar sesión
             </Link>
           </div>

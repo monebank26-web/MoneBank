@@ -1,5 +1,7 @@
 import {
+  AVISO_CODIGO_ADMINISTRADOR,
   MENSAJE_CODIGO_ENVIADO,
+  MENSAJE_RECUPERACION_EXITOSA,
   MENSAJE_SOLICITUD_CODIGO,
   SEGUNDOS_ENFRIAMIENTO_CODIGO,
   codigoRecuperacionValido,
@@ -13,6 +15,7 @@ import {
 describe('normalizarCodigoRecuperacion', () => {
   it('deja solo seis digitos', () => {
     expect(normalizarCodigoRecuperacion('12a34-56')).toBe('123456');
+    expect(normalizarCodigoRecuperacion(' 12 34 56 ')).toBe('123456');
     expect(normalizarCodigoRecuperacion('00004299')).toBe('000042');
     expect(normalizarCodigoRecuperacion(null)).toBe('');
   });
@@ -112,6 +115,23 @@ describe('MENSAJE_CODIGO_ENVIADO', () => {
   it('invita a revisar el spam', () => {
     expect(MENSAJE_CODIGO_ENVIADO).toBe(
       'Te enviamos un código; revisa también el spam'
+    );
+  });
+});
+
+describe('AVISO_CODIGO_ADMINISTRADOR', () => {
+  it('indica que no se pida otro código cuando ya existe uno', () => {
+    expect(AVISO_CODIGO_ADMINISTRADOR).toBe(
+      "Si un administrador te envió un código, pulsa 'Ya tengo un código' y no " +
+      'pidas otro: pedir uno nuevo invalida el anterior.'
+    );
+  });
+});
+
+describe('MENSAJE_RECUPERACION_EXITOSA', () => {
+  it('avisa que ya se puede iniciar sesión', () => {
+    expect(MENSAJE_RECUPERACION_EXITOSA).toBe(
+      'Tu contraseña fue actualizada. Ya puedes iniciar sesión.'
     );
   });
 });

@@ -6,6 +6,15 @@ export const MENSAJE_CODIGO_ENVIADO = (
   'Te enviamos un código; revisa también el spam'
 );
 
+export const AVISO_CODIGO_ADMINISTRADOR = (
+  "Si un administrador te envió un código, pulsa 'Ya tengo un código' y no " +
+  'pidas otro: pedir uno nuevo invalida el anterior.'
+);
+
+export const MENSAJE_RECUPERACION_EXITOSA = (
+  'Tu contraseña fue actualizada. Ya puedes iniciar sesión.'
+);
+
 export const SEGUNDOS_ENFRIAMIENTO_CODIGO = 60;
 
 export const REGEX_CODIGO_RECUPERACION = /^\d{6}$/;

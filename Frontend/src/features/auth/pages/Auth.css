@@ -440,6 +440,16 @@
   line-height: 1.45;
 }
 
+.recuperacion-enlace {
+  align-self: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
 .recuperacion-codigo {
   font-family: var(--font-display);
   font-size: 22px;

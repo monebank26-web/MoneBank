@@ -2,7 +2,7 @@ import { useAuthForm } from '../hooks/useAuthForm';
 import CampoContrasena from '../../../shared/components/CampoContrasena';
 import './Auth.css';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../../core/constants';
 
 const IconoOjo = ({ cerrado = false }) => (
@@ -64,6 +64,8 @@ const IconoOjo = ({ cerrado = false }) => (
 const LoginPage = () => {
   const { submit, loading, error } =
     useAuthForm('login');
+  const location = useLocation();
+  const avisoRecuperacion = location.state?.mensajeRecuperacion;
 
   const [form, setForm] = useState({
     email: '',
@@ -126,6 +128,16 @@ const LoginPage = () => {
           onSubmit={handleSubmit}
           className="formulario-autenticacion"
         >
+          {avisoRecuperacion && (
+            <p
+              className="recuperacion-mensaje"
+              role="status"
+              aria-live="polite"
+            >
+              {avisoRecuperacion}
+            </p>
+          )}
+
           <div className="grupo-campo">
             <label className="etiqueta-campo">
               Correo electrónico
