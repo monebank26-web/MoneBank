@@ -62,6 +62,15 @@ export const puedeBloquearUsuario = (estado) => estado === 'ACTIVO';
 export const puedeDesactivarUsuario = (estado) =>
   estado === 'ACTIVO' || estado === 'BLOQUEADO';
 
+export const puedeRestablecerPassword = (usuario, usuarioActual) => {
+  const idUsuario = usuario?.id_usuario ?? usuario?.id;
+  const idActual = usuarioActual?.id_usuario ?? usuarioActual?.id;
+
+  if (!idUsuario || !idActual) return false;
+
+  return String(idUsuario) !== String(idActual);
+};
+
 export const tieneBloqueoTemporalAdmin = (usuario) =>
   usuario?.estado === 'ACTIVO' && Boolean(usuario.bloqueo_temporal);
 
@@ -176,3 +185,27 @@ export const mensajeErrorDesactivacion = (error) =>
   MENSAJES_ERROR_ACCION[error?.code] ||
   mensajeErrorDeEstado(error) ||
   'No se pudo desactivar la cuenta. Inténtalo de nuevo.';
+
+// El restablecimiento administrativo usa un código de 6 dígitos. El backend
+// aplica un enfriamiento de 60 segundos por usuario para evitar envíos seguidos.
+export const MENSAJE_RESTABLECIMIENTO_ENVIADO =
+  'Código de restablecimiento enviado al correo del usuario.';
+
+export const mensajeErrorRestablecerPassword = (error) => {
+  if (error?.status === 429) {
+    return 'Espera 60 segundos antes de solicitar otro código.';
+  }
+
+  if (error?.status === 400) {
+    return 'No puedes restablecer tu propia contraseña desde este panel.';
+  }
+
+  if (error?.status === 502) {
+    return 'No se pudo enviar el código. No se guardó ningún cambio. Inténtalo de nuevo.';
+  }
+
+  return (
+    mensajeErrorDeEstado(error) ||
+    'No se pudo restablecer la contraseña. Inténtalo de nuevo.'
+  );
+};

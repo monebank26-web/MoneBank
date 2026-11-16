@@ -47,6 +47,18 @@ describe('desbloquearUsuario', () => {
   });
 });
 
+describe('restablecerPasswordUsuario', () => {
+  it('llama al endpoint administrativo de restablecimiento', async () => {
+    apiClient.post.mockResolvedValue({ mensaje: 'ok' });
+
+    await authService.restablecerPasswordUsuario(7);
+
+    expect(apiClient.post).toHaveBeenCalledWith(
+      '/usuarios/7/restablecer-password'
+    );
+  });
+});
+
 describe('recuperación de contraseña', () => {
   beforeEach(() => {
     jest.clearAllMocks();

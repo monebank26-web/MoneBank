@@ -111,6 +111,10 @@ export const authService = {
     return apiClient.put(`/usuarios/${id}/desbloquear`);
   },
 
+  restablecerPasswordUsuario: async (id) => {
+    return apiClient.post(`/usuarios/${id}/restablecer-password`);
+  },
+
   cambiarPassword: async (contrasenaActual, contrasenaNueva) => {
     return apiClient.post('/auth/cambiar-password', {
       contrasena_actual: contrasenaActual,
