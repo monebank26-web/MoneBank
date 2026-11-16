@@ -55,8 +55,8 @@ def test_envia_correo_de_restablecimiento_administrativo(mock_smtp):
     assert "solo puede usarse una vez" in texto.lower()
     assert (
         "Para crear una nueva contraseña, abre MoneBank, pulsa "
-        "'¿Olvidaste tu contraseña?' en el inicio de sesión y escribe "
-        "tu correo y este código."
+        "'¿Olvidaste tu contraseña?' y luego 'Ya tengo un código' en el "
+        "inicio de sesión y escribe tu correo y este código."
     ) in texto
     assert (
         "No pidas otro código: el que recibiste ya es válido."

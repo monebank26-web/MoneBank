@@ -115,8 +115,8 @@ class EmailService:
     def send_password_reset_by_admin(self, correo: str, codigo: str):
         instruccion = (
             "Para crear una nueva contraseña, abre MoneBank, pulsa "
-            "'¿Olvidaste tu contraseña?' en el inicio de sesión y escribe "
-            "tu correo y este código."
+            "'¿Olvidaste tu contraseña?' y luego 'Ya tengo un código' en el "
+            "inicio de sesión y escribe tu correo y este código."
         )
         msg = self._construir_correo_recuperacion(
             correo=correo,
