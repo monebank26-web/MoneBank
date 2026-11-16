@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../../core/constants';
 import CampoContrasena from '../../../shared/components/CampoContrasena';
+import { useEnfriamientoCodigo } from '../hooks/useEnfriamientoCodigo';
 import { authService } from '../services/authService';
 import {
-  MENSAJE_SOLICITUD_CODIGO,
+  MENSAJE_CODIGO_ENVIADO,
+  SEGUNDOS_ENFRIAMIENTO_CODIGO,
   codigoRecuperacionValido,
   contrasenasCoinciden,
   mensajeErrorRecuperacion,
   normalizarCodigoRecuperacion,
+  textoBotonReenvio,
 } from '../utils/recuperacionPassword';
 import './Auth.css';
 
@@ -21,6 +24,11 @@ const RecuperarPasswordPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const {
+    segundosRestantes,
+    enfriamientoActivo,
+    iniciarEnfriamiento,
+  } = useEnfriamientoCodigo(SEGUNDOS_ENFRIAMIENTO_CODIGO);
 
   const solicitarCodigo = async (event) => {
     event.preventDefault();
@@ -31,7 +39,8 @@ const RecuperarPasswordPage = () => {
       const correo = email.trim().toLowerCase();
       await authService.solicitarCodigoRecuperacion({ email: correo });
       setEmail(correo);
-      setMensaje(MENSAJE_SOLICITUD_CODIGO);
+      setMensaje(MENSAJE_CODIGO_ENVIADO);
+      iniciarEnfriamiento();
       setPaso('confirmar');
     } catch (err) {
       setError(mensajeErrorRecuperacion(err));
@@ -71,14 +80,15 @@ const RecuperarPasswordPage = () => {
   };
 
   const reenviarCodigo = async () => {
-    if (loading) return;
+    if (loading || enfriamientoActivo) return;
 
     setLoading(true);
     setError('');
 
     try {
       await authService.solicitarCodigoRecuperacion({ email });
-      setMensaje(MENSAJE_SOLICITUD_CODIGO);
+      setMensaje(MENSAJE_CODIGO_ENVIADO);
+      iniciarEnfriamiento();
     } catch (err) {
       setError(mensajeErrorRecuperacion(err));
     } finally {
@@ -146,9 +156,9 @@ const RecuperarPasswordPage = () => {
             <button
               className="boton-principal"
               type="submit"
-              disabled={loading}
+              disabled={loading || enfriamientoActivo}
             >
-              {loading ? 'Enviando...' : 'Enviar código'}
+              {loading ? 'Enviando...' : 'Enviarme un código'}
             </button>
           </form>
         )}
@@ -242,9 +252,11 @@ const RecuperarPasswordPage = () => {
               type="button"
               className="boton-secundario"
               onClick={reenviarCodigo}
-              disabled={loading}
+              disabled={loading || enfriamientoActivo}
             >
-              Solicitar otro código
+              {enfriamientoActivo
+                ? textoBotonReenvio(segundosRestantes)
+                : 'Reenviar código'}
             </button>
           </form>
         )}

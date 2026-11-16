@@ -1,9 +1,13 @@
 import {
+  MENSAJE_CODIGO_ENVIADO,
   MENSAJE_SOLICITUD_CODIGO,
+  SEGUNDOS_ENFRIAMIENTO_CODIGO,
   codigoRecuperacionValido,
   contrasenasCoinciden,
   mensajeErrorRecuperacion,
   normalizarCodigoRecuperacion,
+  segundosRestantesEnfriamiento,
+  textoBotonReenvio,
 } from './recuperacionPassword';
 
 describe('normalizarCodigoRecuperacion', () => {
@@ -67,6 +71,47 @@ describe('MENSAJE_SOLICITUD_CODIGO', () => {
   it('no revela si el correo existe', () => {
     expect(MENSAJE_SOLICITUD_CODIGO).toBe(
       'Si el correo está registrado, recibirás un código'
+    );
+  });
+});
+
+describe('segundosRestantesEnfriamiento', () => {
+  const inicio = 1_000_000;
+
+  it('empieza en sesenta segundos', () => {
+    expect(segundosRestantesEnfriamiento(inicio, inicio)).toBe(
+      SEGUNDOS_ENFRIAMIENTO_CODIGO
+    );
+  });
+
+  it('descuenta los segundos transcurridos', () => {
+    expect(segundosRestantesEnfriamiento(inicio, inicio + 15_000)).toBe(45);
+    expect(segundosRestantesEnfriamiento(inicio, inicio + 59_900)).toBe(1);
+  });
+
+  it('no baja de cero ni supera la duracion', () => {
+    expect(segundosRestantesEnfriamiento(inicio, inicio + 60_000)).toBe(0);
+    expect(segundosRestantesEnfriamiento(inicio, inicio + 90_000)).toBe(0);
+    expect(segundosRestantesEnfriamiento(inicio, inicio - 5_000)).toBe(60);
+  });
+
+  it('tolera valores invalidos', () => {
+    expect(segundosRestantesEnfriamiento(null, inicio)).toBe(0);
+    expect(segundosRestantesEnfriamiento(inicio, NaN)).toBe(0);
+  });
+});
+
+describe('textoBotonReenvio', () => {
+  it('muestra la cuenta atras mientras el enfriamiento esta activo', () => {
+    expect(textoBotonReenvio(45)).toBe('Reenviar en 45 s');
+    expect(textoBotonReenvio(0)).toBe('Reenviar código');
+  });
+});
+
+describe('MENSAJE_CODIGO_ENVIADO', () => {
+  it('invita a revisar el spam', () => {
+    expect(MENSAJE_CODIGO_ENVIADO).toBe(
+      'Te enviamos un código; revisa también el spam'
     );
   });
 });

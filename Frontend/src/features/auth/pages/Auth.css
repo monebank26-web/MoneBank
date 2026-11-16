@@ -234,9 +234,14 @@
   margin-top: 6px;
 }
 
-.boton-secundario:hover {
+.boton-secundario:hover:not(:disabled) {
   border-color: var(--color-accent, #c9a84c);
   color: var(--color-accent, #c9a84c);
+}
+
+.boton-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 
