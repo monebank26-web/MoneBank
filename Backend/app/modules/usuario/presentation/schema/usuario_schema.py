@@ -70,6 +70,10 @@ class BloqueoUsuarioRequest(BaseModel):
         return value.strip() if isinstance(value, str) else value
 
 
+class RestablecimientoPasswordResponse(BaseModel):
+    mensaje: str
+
+
 class BloqueoUsuarioResponse(BaseModel):
     id_usuario: int
     estado: str

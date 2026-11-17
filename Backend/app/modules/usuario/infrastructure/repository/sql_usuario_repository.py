@@ -165,6 +165,19 @@ class SqlUsuarioRepository(UsuarioRepository):
             .first()
         )
 
+    def get_by_email_recuperacion(self, correo):
+        if not correo:
+            return None
+
+        return (
+            self.db.query(UsuarioModel)
+            .filter(
+                func.lower(func.trim(UsuarioModel.correo))
+                == correo.strip().lower()
+            )
+            .first()
+        )
+
     def update_auth_fields(self, usuario_id, intentos_fallidos, bloqueado_hasta):
         usuario = (
             self.db.query(UsuarioModel)

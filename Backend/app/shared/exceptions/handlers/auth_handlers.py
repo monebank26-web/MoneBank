@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.shared.exceptions.auth_errors import (
     AccountLockedException,
+    ContrasenaInvalidaException,
     CuentaBloqueadaException,
     CuentaInactivaException,
     EmailAlreadyExistsException,
@@ -19,4 +20,5 @@ def register_auth_exception_handlers(app: FastAPI):
     registrar_error_business(app, CuentaInactivaException, 403)
     registrar_error_business(app, EmailAlreadyExistsException, 409)
     registrar_error_business(app, EmailNotFoundException, 404)
+    registrar_error_business(app, ContrasenaInvalidaException, 422)
     registrar_error_business(app, InvalidOrExpiredTokenException, 410)

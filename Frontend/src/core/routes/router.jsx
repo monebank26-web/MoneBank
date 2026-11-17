@@ -7,6 +7,7 @@ import { esAdministrador } from '../utils/permisos';
 import HomePage from '../../features/Home/pages/HomePage';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
+import RecuperarPasswordPage from '../../features/auth/pages/RecuperarPasswordPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
@@ -64,6 +65,7 @@ const AppRouter = () => (
       {/* Públicas */}
       <Route path="/login" element={<RutaPublica><LoginPage /></RutaPublica>} />
       <Route path="/register" element={<RutaPublica><RegisterPage /></RutaPublica>} />
+      <Route path={ROUTES.RECUPERAR} element={<RecuperarPasswordPage />} />
 
       {/* Privadas generales */}
       <Route path="/dashboard" element={<RutaPrivada><RutaInicio><DashboardPage /></RutaInicio></RutaPrivada>} />

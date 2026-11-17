@@ -52,12 +52,11 @@ def login(
     response_model=PasswordRecoveryResponse,
     summary="Solicitar recuperación de contraseña",
     description=(
-        "Envía un enlace de recuperación al correo registrado. "
+        "Envía un código de seis dígitos al correo registrado. "
         "Si el correo no está registrado, no se revela esa información."
     ),
     responses={
         200: {"description": "Solicitud procesada (mensaje genérico)"},
-        404: {"description": "El correo no está registrado"},
         422: {"description": "Datos de entrada inválidos"},
         500: {"description": "Error interno del servidor"},
     }
@@ -87,12 +86,12 @@ def cambiar_contrasena(
     response_model=PasswordRecoveryResponse,
     summary="Confirmar recuperación de contraseña",
     description=(
-        "Establece una nueva contraseña usando el token de recuperación "
+        "Establece una nueva contraseña usando el código de seis dígitos "
         "recibido por correo."
     ),
     responses={
         200: {"description": "Contraseña restablecida exitosamente"},
-        410: {"description": "El token es inválido o ha expirado"},
+        410: {"description": "El código es inválido o ha expirado"},
         422: {"description": "Datos de entrada inválidos"},
         500: {"description": "Error interno del servidor"},
     },

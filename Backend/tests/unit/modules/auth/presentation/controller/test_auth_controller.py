@@ -16,6 +16,7 @@ from app.shared.exceptions.auth_errors import (
     AccountLockedException,
     CuentaInactivaException,
     InvalidCredentialsException,
+    InvalidOrExpiredTokenException,
 )
 
 
@@ -49,7 +50,29 @@ def test_request_password_recovery_usa_uow_y_commitea(mock_use_case):
     )
     mock_use_case.return_value.execute.assert_called_once_with("ana@example.com")
     unit_of_work.commit.assert_called_once()
+    unit_of_work.rollback.assert_not_called()
     assert resultado == {"mensaje": "ok"}
+
+
+@patch(
+    "app.modules.auth.presentation.controller."
+    "auth_controller.RequestPasswordRecoveryUseCase"
+)
+def test_request_password_recovery_hace_rollback_si_falla_el_correo(
+    mock_use_case,
+):
+    controller, (_, unit_of_work, _) = controller_con_mocks()
+    request = Mock(correo="ana@example.com")
+    mock_use_case.return_value.execute.return_value = {
+        "mensaje": "genérico",
+        "_correo_enviado": False,
+    }
+
+    resultado = controller.request_password_recovery(request)
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()
+    assert resultado == {"mensaje": "genérico"}
 
 
 @patch(
@@ -59,18 +82,72 @@ def test_request_password_recovery_usa_uow_y_commitea(mock_use_case):
 def test_confirm_password_recovery_usa_uow_y_commitea(mock_use_case):
 
     controller, (repository, unit_of_work, _) = controller_con_mocks()
-    request = Mock(token="token-123", nueva_contrasena="Nueva123")
+    request = Mock(
+        correo="ana@example.com",
+        codigo="123456",
+        nueva_contrasena="Nueva123",
+    )
     mock_use_case.return_value.execute.return_value = {"mensaje": "ok"}
 
     resultado = controller.confirm_password_recovery(request)
 
     mock_use_case.assert_called_once_with(repository, unit_of_work.usuarios)
     mock_use_case.return_value.execute.assert_called_once_with(
-        "token-123",
+        "ana@example.com",
+        "123456",
         "Nueva123",
     )
     unit_of_work.commit.assert_called_once()
+    unit_of_work.rollback.assert_not_called()
     assert resultado == {"mensaje": "ok"}
+
+
+@patch(
+    "app.modules.auth.presentation.controller."
+    "auth_controller.ConfirmPasswordRecoveryUseCase"
+)
+def test_confirm_password_recovery_commitea_ante_codigo_invalido(
+    mock_use_case,
+):
+    controller, (_, unit_of_work, _) = controller_con_mocks()
+    mock_use_case.return_value.execute.side_effect = (
+        InvalidOrExpiredTokenException()
+    )
+
+    with pytest.raises(InvalidOrExpiredTokenException):
+        controller.confirm_password_recovery(
+            Mock(
+                correo="ana@example.com",
+                codigo="000000",
+                nueva_contrasena="Nueva123",
+            )
+        )
+
+    unit_of_work.commit.assert_called_once()
+    unit_of_work.rollback.assert_not_called()
+
+
+@patch(
+    "app.modules.auth.presentation.controller."
+    "auth_controller.ConfirmPasswordRecoveryUseCase"
+)
+def test_confirm_password_recovery_hace_rollback_ante_error_inesperado(
+    mock_use_case,
+):
+    controller, (_, unit_of_work, _) = controller_con_mocks()
+    mock_use_case.return_value.execute.side_effect = RuntimeError("boom")
+
+    with pytest.raises(RuntimeError):
+        controller.confirm_password_recovery(
+            Mock(
+                correo="ana@example.com",
+                codigo="123456",
+                nueva_contrasena="Nueva123",
+            )
+        )
+
+    unit_of_work.rollback.assert_called_once()
+    unit_of_work.commit.assert_not_called()
 
 
 @patch(

@@ -3,8 +3,12 @@ from typing import Optional
 from fastapi import Depends, HTTPException
 
 from app.core.database.unit_of_work import UnitOfWork
+from app.core.dependencies.email_service import EmailService, get_email_service
 from app.core.dependencies.repositories import get_unit_of_work
 from app.core.security.roles import ROL_ADMIN
+from app.modules.auth.application.use_cases.codigo_recuperacion import (
+    crear_codigo_recuperacion,
+)
 from app.modules.usuario.application.use_cases.actualizar_usuarios import (
     ActualizarUsuarioUseCase,
 )
@@ -22,6 +26,9 @@ from app.modules.usuario.application.use_cases.obtener_usuario import (
 from app.modules.usuario.application.use_cases.obtener_usuario_por_id import (
     ObtenerUsuarioPorIdUseCase,
 )
+from app.modules.usuario.application.use_cases.restablecer_password_usuario import (
+    RestablecerPasswordUsuario,
+)
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.modules.usuario.presentation.schema.usuario_schema import (
     BloqueoUsuarioRequest,
@@ -30,6 +37,9 @@ from app.modules.usuario.presentation.schema.usuario_schema import (
 )
 from app.shared.exceptions.auth_errors import EmailAlreadyExistsException
 from app.shared.exceptions.common import UsuarioNotFoundException
+from app.shared.exceptions.usuario_errors import (
+    CorreoRestablecimientoNoEnviadoException,
+)
 
 
 class UsuarioController:
@@ -38,9 +48,11 @@ class UsuarioController:
         self,
         repository: UsuarioRepository,
         unit_of_work: UnitOfWork,
+        email_service: Optional[EmailService] = None,
     ):
         self.repository = repository
         self.unit_of_work = unit_of_work
+        self.email_service = email_service
 
     def _puede_gestionar(self, current_user, id_usuario) -> bool:
         """El administrador gestiona a cualquiera; cada usuario, a sí mismo."""
@@ -176,8 +188,63 @@ class UsuarioController:
 
         return resultado
 
+    def restablecer_password_usuario(self, id_usuario: int, current_user):
+        if current_user.id_rol != ROL_ADMIN:
+            raise HTTPException(
+                status_code=403,
+                detail="No tienes permisos para restablecer contraseñas",
+            )
+
+        if self.email_service is None:
+            raise RuntimeError(
+                "EmailService no inyectado en UsuarioController"
+            )
+
+        caso_uso = RestablecerPasswordUsuario(
+            self.repository,
+            self.unit_of_work.registros_accion_admin,
+            lambda id_usuario: crear_codigo_recuperacion(
+                self.unit_of_work.auth,
+                id_usuario,
+            ),
+        )
+
+        try:
+            resultado = caso_uso.execute(
+                id_usuario,
+                current_user.id_usuario,
+            )
+
+            try:
+                enviado = self.email_service.send_password_reset_by_admin(
+                    resultado["correo"],
+                    resultado["codigo"],
+                )
+            except Exception:
+                enviado = False
+
+            if not enviado:
+                raise CorreoRestablecimientoNoEnviadoException()
+
+            # Solo se confirma si el correo salió: si falla, se revierte todo.
+            self.unit_of_work.commit()
+        except Exception:
+            self.unit_of_work.rollback()
+            raise
+
+        return {
+            "mensaje": (
+                "Código de restablecimiento enviado al correo del usuario"
+            )
+        }
+
 
 def get_usuario_controller(
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    email_service: EmailService = Depends(get_email_service),
 ) -> UsuarioController:
-    return UsuarioController(unit_of_work.usuarios, unit_of_work)
+    return UsuarioController(
+        unit_of_work.usuarios,
+        unit_of_work,
+        email_service,
+    )

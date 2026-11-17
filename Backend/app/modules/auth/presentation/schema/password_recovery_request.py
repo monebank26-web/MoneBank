@@ -1,6 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
-
-from app.core.security.password_policy import validate_password
+from pydantic import BaseModel, EmailStr, Field
 
 
 class PasswordRecoveryRequest(BaseModel):
@@ -8,10 +6,6 @@ class PasswordRecoveryRequest(BaseModel):
 
 
 class PasswordRecoveryConfirmRequest(BaseModel):
-    token: str
+    correo: EmailStr
+    codigo: str = Field(..., pattern=r"^\d{6}$")
     nueva_contrasena: str
-
-    @field_validator("nueva_contrasena")
-    @classmethod
-    def validar_contrasena(cls, value):
-        return validate_password(value)
