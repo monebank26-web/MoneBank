@@ -9,6 +9,10 @@ class ProgramacionAhorroRepository(ABC):
         pass
 
     @abstractmethod
+    def get_by_id(self, programacion_id):
+        pass
+
+    @abstractmethod
     def obtener_por_ahorro(self, id_ahorro):
         pass
 
@@ -17,6 +21,9 @@ class ProgramacionAhorroRepository(ABC):
         pass
 
     @abstractmethod
+    def update_periodicidad(self, programacion_id, monto_periodico, frecuencia):
+        pass
+
+    @abstractmethod
     def obtener_detalles_por_cuenta(self, id_cuenta):
         pass
-    

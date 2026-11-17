@@ -9,9 +9,15 @@ from app.shared.exceptions.common import CuentaNoEncontrada
 
 class ActualizarEstadoUseCase:
 
-    def __init__(self, repository: ProgramacionAhorroRepository, cuenta_repository):
+    def __init__(
+        self,
+        repository: ProgramacionAhorroRepository,
+        cuenta_repository,
+        ahorro_repository,
+    ):
         self.repository = repository
         self.cuenta_repository = cuenta_repository
+        self.ahorro_repository = ahorro_repository
 
     def execute(self, id_usuario, programacion_id: int, nuevo_estado: str):
 
@@ -23,9 +29,22 @@ class ActualizarEstadoUseCase:
         if not ProgramacionAhorro.es_estado_valido(nuevo_estado):
             raise EstadoInvalido()
 
-        programacion = self.repository.update_estado(programacion_id, nuevo_estado)
+        programacion = self.repository.get_by_id(programacion_id)
 
-        if not programacion:
+        if not self._pertenece_al_usuario(programacion, cuenta):
             raise ProgramacionNoEncontrada()
 
-        return programacion
+        actualizada = self.repository.update_estado(programacion_id, nuevo_estado)
+
+        if not actualizada:
+            raise ProgramacionNoEncontrada()
+
+        return actualizada
+
+    def _pertenece_al_usuario(self, programacion, cuenta):
+        if not programacion:
+            return False
+
+        ahorro = self.ahorro_repository.get_by_id(programacion.id_ahorro)
+
+        return bool(ahorro) and ahorro.id_cuenta == cuenta.id_cuenta

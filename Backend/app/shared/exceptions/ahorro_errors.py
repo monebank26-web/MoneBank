@@ -37,6 +37,10 @@ class ProgramacionNoEncontrada(BusinessError):
     message = "Programación de ahorro no encontrada"
 
 
+class ProgramacionFinalizada(BusinessError):
+    message = "La programación ya está finalizada y no se puede modificar"
+
+
 class ProgramacionDuplicada(BusinessError):
     message = "La meta ya tiene una programación de ahorro activa"
 

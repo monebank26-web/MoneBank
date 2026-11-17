@@ -12,6 +12,7 @@ from app.shared.exceptions.ahorro_errors import (
     PeriodoInvalido,
     PresupuestoDuplicado,
     ProgramacionDuplicada,
+    ProgramacionFinalizada,
     ProgramacionNoEncontrada,
     RangoFechasInvalido,
 )
@@ -29,6 +30,7 @@ def register_ahorro_exception_handlers(app: FastAPI):
     registrar_error_business(app, AhorroNoEncontrado, 404)
     registrar_error_business(app, ProgramacionNoEncontrada, 404)
     registrar_error_business(app, ProgramacionDuplicada, 409)
+    registrar_error_business(app, ProgramacionFinalizada, 409)
     registrar_error_business(app, FechaCobroInvalida, 400)
     registrar_error_business(app, FrecuenciaInvalida, 400)
     registrar_error_business(app, RangoFechasInvalido, 400)
