@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -143,3 +145,19 @@ def test_update_recovery_token_attempts_devuelve_none_si_no_existe():
     repositorio, _ = repositorio_con_usuarios()
 
     assert repositorio.update_recovery_token_attempts(999, 1, False) is None
+
+
+def test_register_failed_attempt_tras_bloqueo_vencido_reinicia_el_contador(
+    reloj_fijo,
+):
+    usuario = SimpleNamespace(
+        intentos_fallidos=3,
+        bloqueado_hasta=reloj_fijo - timedelta(minutes=1),
+    )
+    usuario_repository = Mock()
+    usuario_repository.get_by_id.return_value = usuario
+    repositorio = SqlAuthRepository(Mock(), usuario_repository)
+
+    repositorio.register_failed_attempt(1)
+
+    usuario_repository.update_auth_fields.assert_called_once_with(1, 1, None)

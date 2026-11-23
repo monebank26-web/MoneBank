@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from app.core.constants import MINUTOS_BLOQUEO
 from app.modules.auth.domain.entity.intento_autenticacion import IntentoAutenticacion
 from app.modules.auth.domain.entity.reset_token import ResetToken
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
@@ -40,20 +39,14 @@ class SqlAuthRepository(AuthRepository):
         if not usuario:
             return None
 
-        nuevos_intentos = (usuario.intentos_fallidos or 0) + 1
-        bloqueado_hasta = usuario.bloqueado_hasta
-
         intento = IntentoAutenticacion(
-            nuevos_intentos,
+            usuario.intentos_fallidos or 0,
             usuario.bloqueado_hasta
         )
-
-        if intento.debe_bloquearse():
-            ahora_local = datetime.now()
-            bloqueado_hasta = ahora_local + timedelta(minutes=MINUTOS_BLOQUEO)
+        intento.registrar_intento_fallido()
 
         return self.usuario_repository.update_auth_fields(
-            usuario_id, nuevos_intentos, bloqueado_hasta
+            usuario_id, intento.intentos_fallidos, intento.bloqueado_hasta
         )
 
     def is_locked(self, usuario_id):
