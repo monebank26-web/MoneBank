@@ -79,12 +79,6 @@ const MainLayout = ({ children }) => {
       icono: <Icon icon="mdi:shield-account-outline" />,
       visible: esAdmin,
     },
-    {
-      to: ROUTES.PERFIL,
-      label: 'Mi perfil',
-      icono: '⚙',
-      visible: true,
-    },
   ].filter((elemento) => elemento.visible);
 
   const submenuAnalitica = [
@@ -173,6 +167,19 @@ const MainLayout = ({ children }) => {
               )}
             </div>
           )}
+
+          <NavLink
+            to={ROUTES.PERFIL}
+            className={({ isActive }) =>
+              `elemento-navegacion ${
+                isActive ? 'elemento-navegacion--activo' : ''
+              }`
+            }
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="icono-navegacion">⚙</span>
+            <span className="etiqueta-navegacion">Mi perfil</span>
+          </NavLink>
         </nav>
 
         <div className="pie-barra-lateral">

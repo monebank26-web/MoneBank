@@ -94,8 +94,8 @@ class ControlParentalController:
         caso_uso = ConfirmarVinculacionUseCase(self.unit_of_work.parentales)
 
         resultado = caso_uso.execute(
-            current_user.id_usuario,
-            data.codigo,
+            id_padre=current_user.id_usuario,
+            codigo=data.codigo,
         )
         self.unit_of_work.commit()
         return resultado
