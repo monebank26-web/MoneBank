@@ -5,6 +5,7 @@ import { formatMoney } from '../../../core/utils/format';
 const TarjetaResumenPerfil = ({
   user,
   relaciones = [],
+  saldoCuenta = 0,
 }) => {
   const nombreCompleto =
     user?.nombre ||
@@ -90,7 +91,7 @@ const TarjetaResumenPerfil = ({
           </p>
 
           <p className="valor-saldo-perfil">
-            {formatMoney(user?.saldoCuenta || 0)}
+            {formatMoney(saldoCuenta)}
           </p>
         </div>
       )}
