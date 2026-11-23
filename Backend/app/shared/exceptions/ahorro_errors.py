@@ -33,6 +33,10 @@ class AhorroNoEncontrado(BusinessError):
     message = "Ahorro no encontrado"
 
 
+class AhorroNoActivo(BusinessError):
+    message = "La meta no está activa"
+
+
 class ProgramacionNoEncontrada(BusinessError):
     message = "Programación de ahorro no encontrada"
 

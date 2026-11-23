@@ -5,6 +5,10 @@ class CuentaNoEncontrada(BusinessError):
     message = "Cuenta no encontrada"
 
 
+class CuentaInactiva(BusinessError):
+    message = "La cuenta no está activa"
+
+
 class CuentaNoPerteneceAlUsuario(BusinessError):
     message = "La cuenta no pertenece al usuario autenticado"
 

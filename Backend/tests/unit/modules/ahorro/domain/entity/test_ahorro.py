@@ -27,6 +27,12 @@ def test_es_meta_y_es_limite():
     assert ahorro.es_limite(Ahorro.TIPO_LIMITE) is True
 
 
+def test_esta_activo():
+    assert construir_ahorro().esta_activo() is True
+    assert construir_ahorro(estado=Ahorro.ESTADO_PAUSADO).esta_activo() is False
+    assert construir_ahorro(estado=Ahorro.ESTADO_FINALIZADO).esta_activo() is False
+
+
 def test_calcular_porcentaje_avance():
     ahorro = construir_ahorro(saldo_actual=500000, monto_objetivo=1000000)
 

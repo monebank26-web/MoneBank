@@ -42,6 +42,9 @@ class Ahorro:
     def es_limite(self, nombre_tipo):
         return nombre_tipo == self.TIPO_LIMITE
 
+    def esta_activo(self):
+        return self.estado == self.ESTADO_ACTIVO
+
     def calcular_porcentaje_avance(self):
         if not self.monto_objetivo:
             return 0
