@@ -3,13 +3,14 @@ import { useAuth } from '../../../core/context/AuthContext';
 import { fechaLocalHoy } from '../../../core/utils/fechaLocal';
 import { transaccionesService } from '../services/transaccionesService';
 import { useReporte } from '../../analytics/hooks/useReporte';
-import { ReporteResumen } from '../../analytics/components/ReporteResumen';
-import '../../analytics/styles/analytics-cards.css';
+import ResumenMovimientos from '../components/ResumenMovimientos';
 import TransaccionCard from '../components/TransaccionCard';
 import DetalleTransaccionModal from '../components/DetalleTransaccionModal';
 import FiltrosHistorial from '../components/FiltrosHistorial';
 import Paginacion from '../components/Paginacion';
 import './TransaccionesPage.css';
+
+const INICIO_HISTORIAL = '2000-01-01';
 
 const TransaccionesPage = () => {
   const { user } = useAuth();
@@ -25,8 +26,7 @@ const TransaccionesPage = () => {
   const [detalleId, setDetalleId] = useState(null);
 
   const hoy = fechaLocalHoy();
-  const inicioMes = `${hoy.slice(0, 7)}-01`;
-  const { data: reporte, loading: reporteLoading, error: reporteError, recargar: recargarReporte } = useReporte('mensual', inicioMes, hoy);
+  const { data: reporte, loading: reporteLoading, error: reporteError, recargar: recargarReporte } = useReporte('mensual', INICIO_HISTORIAL, hoy);
 
   // Cargar categorías una vez
   useEffect(() => {
@@ -72,11 +72,15 @@ const TransaccionesPage = () => {
       </div>
 
       { reporteLoading ? (
-        <p className="cargando-pagina">Cargando resumen del mes...</p>
+        <p className="cargando-pagina">Cargando resumen de movimientos...</p>
       ) : reporteError ? (
         <p className="movimientos-sin-contenido">{reporteError}</p>
       ) : (
-        <ReporteResumen data={reporte} titulo="Balance mensual" />
+        <ResumenMovimientos
+          data={reporte}
+          titulo="Balance histórico"
+          periodoTexto="Todo el historial"
+        />
       )}
 
       <FiltrosHistorial onFiltrar={handleFiltrar} categorias={categorias} />
