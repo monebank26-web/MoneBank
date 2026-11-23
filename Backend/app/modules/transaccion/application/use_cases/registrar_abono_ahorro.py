@@ -1,6 +1,7 @@
 from datetime import date
 
 from app.modules.ahorro.domain.entity.ahorro import Ahorro
+from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
@@ -43,7 +44,7 @@ class RegistrarAbonoAhorro:
         if cuenta.id_usuario != id_usuario:
             raise CuentaNoPerteneceAlUsuario()
 
-        if not cuenta.esta_activa():
+        if cuenta.estado != Cuenta.ESTADO_ACTIVA:
             raise CuentaInactiva()
 
         ahorro = self.repository.get_ahorro(
@@ -53,7 +54,7 @@ class RegistrarAbonoAhorro:
         if not ahorro or ahorro.id_cuenta != cuenta.id_cuenta:
             raise AhorroAsociadoNoValido()
 
-        if not ahorro.esta_activo():
+        if ahorro.estado != Ahorro.ESTADO_ACTIVO:
             raise AhorroNoActivo()
 
         tipo_limite = self.repository.get_tipo_ahorro(Ahorro.TIPO_LIMITE)

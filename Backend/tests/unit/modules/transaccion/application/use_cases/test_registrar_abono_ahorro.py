@@ -1,9 +1,12 @@
 from datetime import date
 from decimal import Decimal
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
 
+from app.modules.ahorro.domain.entity.ahorro import Ahorro
+from app.modules.cuenta.domain.entity.cuenta import Cuenta
 from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
     RegistrarAbonoAhorro
 )
@@ -33,19 +36,21 @@ def datos_validos():
 def repository_base():
     repository = Mock()
 
-    cuenta = Mock()
-    cuenta.id_usuario = 6
-    cuenta.id_cuenta = 1
-    cuenta.saldo = Decimal("98250.00")
-    cuenta.esta_activa.return_value = True
+    cuenta = SimpleNamespace(
+        id_usuario=6,
+        id_cuenta=1,
+        saldo=Decimal("98250.00"),
+        estado=Cuenta.ESTADO_ACTIVA,
+    )
     repository.get_cuenta.return_value = cuenta
 
-    ahorro = Mock()
-    ahorro.id_ahorro = 47
-    ahorro.id_cuenta = 1
-    ahorro.id_tipo_ahorro = 1
-    ahorro.id_categoria = 17
-    ahorro.esta_activo.return_value = True
+    ahorro = SimpleNamespace(
+        id_ahorro=47,
+        id_cuenta=1,
+        id_tipo_ahorro=1,
+        id_categoria=17,
+        estado=Ahorro.ESTADO_ACTIVO,
+    )
     repository.get_ahorro.return_value = ahorro
 
     tipo_limite = Mock()
@@ -166,7 +171,7 @@ def test_registrar_abono_sin_fondos_lanza_error():
 def test_registrar_abono_con_cuenta_inactiva_lanza_error():
 
     repository = repository_base()
-    repository.get_cuenta.return_value.esta_activa.return_value = False
+    repository.get_cuenta.return_value.estado = Cuenta.ESTADO_INACTIVA
 
     with pytest.raises(CuentaInactiva):
         RegistrarAbonoAhorro(repository).execute(datos_validos(), 6)
@@ -177,7 +182,7 @@ def test_registrar_abono_con_cuenta_inactiva_lanza_error():
 def test_registrar_abono_con_meta_inactiva_lanza_error():
 
     repository = repository_base()
-    repository.get_ahorro.return_value.esta_activo.return_value = False
+    repository.get_ahorro.return_value.estado = Ahorro.ESTADO_FINALIZADO
 
     with pytest.raises(AhorroNoActivo):
         RegistrarAbonoAhorro(repository).execute(datos_validos(), 6)
