@@ -55,7 +55,7 @@ def confirmar_vinculacion(
     controller: ControlParentalController = Depends(get_control_parental_controller),
 ):
     """
-    El hijo confirma el código de vinculación.
+    El padre confirma el código que recibió el hijo por correo.
     """
     return controller.confirmar_vinculacion(data, current_user)
 
