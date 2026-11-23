@@ -13,6 +13,23 @@ class ProgramacionAhorroRepository(ABC):
         pass
 
     @abstractmethod
+    def get_para_procesar(self, programacion_id):
+        pass
+
+    @abstractmethod
+    def obtener_vencidas(self, hoy):
+        pass
+
+    @abstractmethod
+    def actualizar_fecha_cobro(
+        self,
+        programacion_id,
+        nueva_fecha,
+        nuevo_estado=None,
+    ):
+        pass
+
+    @abstractmethod
     def obtener_por_ahorro(self, id_ahorro):
         pass
 

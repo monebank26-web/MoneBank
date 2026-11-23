@@ -5,12 +5,14 @@ from app.modules.transaccion.domain.entity.trans_entity import Transaccion
 from app.modules.transaccion.domain.interface.trans_repository import (
     TransaccionRepository
 )
+from app.shared.exceptions.ahorro_errors import AhorroNoActivo
 from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
     FechaInvalida,
     TipoTransaccionNoValido,
 )
 from app.shared.exceptions.common import (
+    CuentaInactiva,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     MontoInvalido,
@@ -41,12 +43,18 @@ class RegistrarAbonoAhorro:
         if cuenta.id_usuario != id_usuario:
             raise CuentaNoPerteneceAlUsuario()
 
+        if not cuenta.esta_activa():
+            raise CuentaInactiva()
+
         ahorro = self.repository.get_ahorro(
             transaccion_data["id_ahorro"]
         )
 
         if not ahorro or ahorro.id_cuenta != cuenta.id_cuenta:
             raise AhorroAsociadoNoValido()
+
+        if not ahorro.esta_activo():
+            raise AhorroNoActivo()
 
         tipo_limite = self.repository.get_tipo_ahorro(Ahorro.TIPO_LIMITE)
 

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.shared.exceptions.common import (
     CategoriaInvalida,
+    CuentaInactiva,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     MontoInvalido,
@@ -13,6 +14,7 @@ from app.shared.exceptions.handlers._helpers import registrar_error_business
 
 def register_common_exception_handlers(app: FastAPI):
     registrar_error_business(app, CuentaNoEncontrada, 404)
+    registrar_error_business(app, CuentaInactiva, 403)
     registrar_error_business(app, CuentaNoPerteneceAlUsuario, 403)
     registrar_error_business(app, SaldoInsuficiente, 400)
     registrar_error_business(app, MontoInvalido, 400)

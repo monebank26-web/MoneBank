@@ -7,11 +7,13 @@ import pytest
 from app.modules.transaccion.application.use_cases.registrar_abono_ahorro import (
     RegistrarAbonoAhorro
 )
+from app.shared.exceptions.ahorro_errors import AhorroNoActivo
 from app.shared.exceptions.transaccion_errors import (
     AhorroAsociadoNoValido,
     TipoTransaccionNoValido,
 )
 from app.shared.exceptions.common import (
+    CuentaInactiva,
     CuentaNoEncontrada,
     CuentaNoPerteneceAlUsuario,
     SaldoInsuficiente,
@@ -35,6 +37,7 @@ def repository_base():
     cuenta.id_usuario = 6
     cuenta.id_cuenta = 1
     cuenta.saldo = Decimal("98250.00")
+    cuenta.esta_activa.return_value = True
     repository.get_cuenta.return_value = cuenta
 
     ahorro = Mock()
@@ -42,6 +45,7 @@ def repository_base():
     ahorro.id_cuenta = 1
     ahorro.id_tipo_ahorro = 1
     ahorro.id_categoria = 17
+    ahorro.esta_activo.return_value = True
     repository.get_ahorro.return_value = ahorro
 
     tipo_limite = Mock()
@@ -157,3 +161,25 @@ def test_registrar_abono_sin_fondos_lanza_error():
 
     repository.create.assert_not_called()
     repository.descontar_saldo.assert_not_called()
+
+
+def test_registrar_abono_con_cuenta_inactiva_lanza_error():
+
+    repository = repository_base()
+    repository.get_cuenta.return_value.esta_activa.return_value = False
+
+    with pytest.raises(CuentaInactiva):
+        RegistrarAbonoAhorro(repository).execute(datos_validos(), 6)
+
+    repository.create.assert_not_called()
+
+
+def test_registrar_abono_con_meta_inactiva_lanza_error():
+
+    repository = repository_base()
+    repository.get_ahorro.return_value.esta_activo.return_value = False
+
+    with pytest.raises(AhorroNoActivo):
+        RegistrarAbonoAhorro(repository).execute(datos_validos(), 6)
+
+    repository.create.assert_not_called()
