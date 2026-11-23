@@ -110,6 +110,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -121,6 +122,37 @@
 .faltante-meta--lograda {
   color: var(--color-success) !important;
   font-weight: 600;
+}
+
+.acciones-tarjeta-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 8px;
+}
+
+.boton-programar-meta {
+  flex-shrink: 0;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent-ring);
+  border-radius: var(--radius-sm);
+  padding: 7px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.boton-programar-meta:hover:not(:disabled) {
+  background: var(--color-accent-brillo);
+}
+
+.boton-programar-meta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .boton-abonar-meta {

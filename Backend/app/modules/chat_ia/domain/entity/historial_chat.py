@@ -1,4 +1,4 @@
-from app.shared.exceptions.business_exceptions import ChatInvalido
+from app.shared.exceptions.chat_ia_errors import ChatInvalido
 
 
 class HistorialChat:

@@ -6,6 +6,8 @@ import { fechaHoraLocal } from '../../../core/utils/fechaLocal';
 export const metasService = {
   listar: () => apiClient.get('/ahorros/metas'),
 
+  resumenGlobal: () => apiClient.get('/ahorros/metas/resumen'),
+
   crear: ({ nombre, monto_objetivo, saldo_inicial, fecha_objetivo, id_categoria }) => {
     const datos = {
       nombre,
@@ -29,6 +31,26 @@ export const metasService = {
       id_ahorro,
     });
   },
+
+  programarAporte: ({ id_ahorro, monto_periodico, frecuencia, fecha_cobro, fecha_fin }) =>
+    apiClient.post('/programacion-ahorro/', {
+      id_ahorro,
+      monto_periodico,
+      frecuencia,
+      fecha_cobro,
+      fecha_fin: fecha_fin || null,
+    }),
+
+  listarProgramaciones: () => apiClient.get('/programacion-ahorro/'),
+
+  actualizarEstadoProgramacion: ({ id_programacion_ahorro, estado }) =>
+    apiClient.put(`/programacion-ahorro/estado/${id_programacion_ahorro}`, { estado }),
+
+  modificarProgramacion: ({ id_programacion_ahorro, monto_periodico, frecuencia }) =>
+    apiClient.put(`/programacion-ahorro/${id_programacion_ahorro}`, {
+      monto_periodico,
+      frecuencia,
+    }),
 
   listarCategoriasAhorro: async () => {
     const categorias = await transaccionesService.listarCategorias();

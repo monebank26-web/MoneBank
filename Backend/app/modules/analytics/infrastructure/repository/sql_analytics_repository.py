@@ -3,7 +3,7 @@ from datetime import timedelta
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
-from app.core.utils.fechas import fin_del_dia, hoy_colombia
+from app.shared.utils.fechas import fin_del_dia, hoy_colombia
 
 from app.modules.analytics.domain.interface.analytics_repository import (
     AnalyticsRepository
@@ -311,11 +311,20 @@ class SqlAnalyticsRepository(AnalyticsRepository):
             .all()
         )
 
-        return [
-            {
-                "nombre_categoria": row.nombre_categoria,
-                "tipo_transaccion": row.tipo_transaccion,
-                "total": row.total,
-            }
+        total_metas = sum(
+            row.total
             for row in resultados
-        ]
+            if row.tipo_transaccion == Transaccion.TIPO_MOVIMIENTO_AHORRO
+        )
+
+        return {
+            "detalle_por_categoria": [
+                {
+                    "nombre_categoria": row.nombre_categoria,
+                    "tipo_transaccion": row.tipo_transaccion,
+                    "total": row.total,
+                }
+                for row in resultados
+            ],
+            "total_metas": total_metas or 0,
+        }

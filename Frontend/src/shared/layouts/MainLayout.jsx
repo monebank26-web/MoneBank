@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Icon } from '@iconify/react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
-import { ROUTES, ROLES } from '../../core/constants';
+import { ROUTES } from '../../core/constants';
+import { esAdministrador } from '../../core/utils/permisos';
 import { controlParentalService } from '../../features/controlParental/services/controlParentalServices';
 
 import logoMonebank from '../assets/logo-monebank.png';
@@ -16,7 +18,7 @@ const MainLayout = ({ children }) => {
   const [analiticaAbierta, setAnaliticaAbierta] = useState(false);
   const [relacionesParentales, setRelacionesParentales] = useState([]);
 
-  const esAdmin = user?.rol === ROLES.ADMIN;
+  const esAdmin = esAdministrador(user);
 
   useEffect(() => {
     const cargarRelacionesParentales = async () => {
@@ -60,7 +62,7 @@ const MainLayout = ({ children }) => {
 
 
   const elementosNav = [
-    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: true },
+    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: !esAdmin },
     { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
     { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
     { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
@@ -73,22 +75,15 @@ const MainLayout = ({ children }) => {
     },
     {
       to: ROUTES.ADMIN,
-      label: 'Administrador',
-      icono: '👑',
+      label: 'Usuarios',
+      icono: <Icon icon="mdi:shield-account-outline" />,
       visible: esAdmin,
-    },
-    {
-      to: ROUTES.PERFIL,
-      label: 'Mi perfil',
-      icono: '⚙',
-      visible: true,
     },
   ].filter((elemento) => elemento.visible);
 
   const submenuAnalitica = [
     { to: ROUTES.GRAFICAS, label: 'Gráficas' },
     { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
-    { to: ROUTES.REPORTES, label: 'Descargar reporte' },
   ];
   const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 
@@ -172,6 +167,19 @@ const MainLayout = ({ children }) => {
               )}
             </div>
           )}
+
+          <NavLink
+            to={ROUTES.PERFIL}
+            className={({ isActive }) =>
+              `elemento-navegacion ${
+                isActive ? 'elemento-navegacion--activo' : ''
+              }`
+            }
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="icono-navegacion">⚙</span>
+            <span className="etiqueta-navegacion">Mi perfil</span>
+          </NavLink>
         </nav>
 
         <div className="pie-barra-lateral">

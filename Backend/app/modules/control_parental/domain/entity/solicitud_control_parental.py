@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from app.shared.exceptions.control_parental_exception import CodigoIntentosAgotados
+from app.shared.exceptions.control_parental_errors import CodigoIntentosAgotados
 
 class SolicitudControlParental:
     OPERACION_VINCULAR = "VINCULAR"

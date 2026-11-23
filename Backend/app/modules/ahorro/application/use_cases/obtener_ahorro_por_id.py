@@ -1,7 +1,5 @@
-from app.shared.exceptions.business_exceptions import (
-    AhorroNoEncontrado,
-    CuentaNoEncontrada,
-)
+from app.shared.exceptions.ahorro_errors import AhorroNoEncontrado
+from app.shared.exceptions.common import CuentaNoEncontrada
 
 
 class ObtenerAhorroPorIdUseCase:

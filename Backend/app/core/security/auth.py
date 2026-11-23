@@ -7,6 +7,11 @@ from app.core.database.connection import get_db
 from app.core.security.JwtManager import JwtManager
 from app.modules.usuario.domain.interface.usuario_repository import UsuarioRepository
 from app.modules.usuario.infrastructure.repository.sql_usuario_repository import SqlUsuarioRepository
+from app.shared.constants.estados import es_bloqueado, es_inactivo
+from app.shared.exceptions.auth_errors import (
+    CuentaBloqueadaException,
+    CuentaInactivaException,
+)
 
 
 security = HTTPBearer(auto_error=False)
@@ -46,6 +51,12 @@ def get_current_user(
             status_code=401,
             detail="Usuario no encontrado"
         )
+
+    if es_bloqueado(usuario.estado):
+        raise CuentaBloqueadaException()
+
+    if es_inactivo(usuario.estado):
+        raise CuentaInactivaException()
 
     return usuario
 

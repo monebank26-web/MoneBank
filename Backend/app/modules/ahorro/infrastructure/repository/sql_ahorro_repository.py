@@ -19,7 +19,7 @@ class SqlAhorroRepository(AhorroRepository):
             saldo_actual=ahorro_data.get("saldo_actual") or 0
         )
         self.db.add(ahorro)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(ahorro)
         return ahorro
 
@@ -43,7 +43,7 @@ class SqlAhorroRepository(AhorroRepository):
         for key, value in ahorro_data.items():
             setattr(ahorro, key, value)
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(ahorro)
         return ahorro
 
@@ -58,7 +58,7 @@ class SqlAhorroRepository(AhorroRepository):
             return None
 
         self.db.delete(ahorro)
-        self.db.commit()
+        self.db.flush()
 
         return {"mensaje": "Ahorro eliminado"}
 
@@ -151,6 +151,6 @@ class SqlAhorroRepository(AhorroRepository):
             return None
 
         cuenta.saldo -= monto
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(cuenta)
         return cuenta

@@ -24,10 +24,10 @@
   color: var(--color-text-muted);
 }
 
-/* Grid de totales (ingresos / gastos / balance) */
+/* Grid de totales (ingresos / gastos / balance / metas) */
 .resumen-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -67,6 +67,10 @@
 
 .resumen-item.balance.negativo strong {
   color: var(--color-danger);
+}
+
+.resumen-item.meta strong {
+  color: var(--color-accent);
 }
 
 /* Tabla de detalle por categoría */
@@ -112,7 +116,28 @@
   font-weight: 600;
 }
 
+/* Mensaje de rango inválido (HU-0081) */
+.rango-error {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+
+.grupo-rango input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
 /* Responsive */
+@media (max-width: 960px) {
+  .resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .resumen-grid {
     grid-template-columns: 1fr;

@@ -6,7 +6,9 @@ const moneda = (v) =>
 const fecha = (f) =>
   new Date(f).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
 
-export const ReporteResumen = ({ data }) => {
+const aNumero = (v) => Number(v) || 0;
+
+export const ReporteResumen = ({ data, titulo = 'Reporte del periodo' }) => {
   if (!data) return null;
 
   const ingresos = Number(data.total_ingresos) || 0;

@@ -2,10 +2,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ROUTES, ROLES } from '../constants';
+import { ROUTES } from '../constants';
+import { esAdministrador } from '../utils/permisos';
 import HomePage from '../../features/Home/pages/HomePage';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
+import RecuperarPasswordPage from '../../features/auth/pages/RecuperarPasswordPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
@@ -21,17 +23,27 @@ import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemana
 
 const RutaPrivada = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div style={{ color: 'white', padding: 40 }}>Cargando...</div>;
+  if (loading) return <p className="cargando-pagina">Cargando...</p>;
   return isAuthenticated
     ? <MainLayout>{children}</MainLayout>
     : <Navigate to={ROUTES.LOGIN} replace />;
 };
 
+// El administrador no maneja cuentas, metas ni límites: su inicio es el panel
+// de usuarios. Se espera a que la sesión termine de cargar para no montar el
+// dashboard (con sus peticiones) antes de redirigir.
+const RutaInicio = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="cargando-pagina">Cargando...</p>;
+  if (esAdministrador(user)) return <Navigate to={ROUTES.ADMIN} replace />;
+  return children;
+};
+
 const RutaAdmin = ({ children }) => {
   const { isAuthenticated, user, loading } = useAuth();
-  if (loading) return <div style={{ color: 'white', padding: 40 }}>Cargando...</div>;
+  if (loading) return <p className="cargando-pagina">Cargando...</p>;
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
-  if (user?.rol !== ROLES.ADMIN) return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (!esAdministrador(user)) return <Navigate to={ROUTES.DASHBOARD} replace />;
   return <MainLayout>{children}</MainLayout>;
 };
 
@@ -53,9 +65,10 @@ const AppRouter = () => (
       {/* Públicas */}
       <Route path="/login" element={<RutaPublica><LoginPage /></RutaPublica>} />
       <Route path="/register" element={<RutaPublica><RegisterPage /></RutaPublica>} />
+      <Route path={ROUTES.RECUPERAR} element={<RecuperarPasswordPage />} />
 
       {/* Privadas generales */}
-      <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
+      <Route path="/dashboard" element={<RutaPrivada><RutaInicio><DashboardPage /></RutaInicio></RutaPrivada>} />
       <Route path="/chat" element={<RutaPrivada><ChatPage /></RutaPrivada>} />
       <Route path="/metas" element={<RutaPrivada><MetasPage /></RutaPrivada>} />
       <Route path="/limites" element={<RutaPrivada><LimitesPage /></RutaPrivada>} />

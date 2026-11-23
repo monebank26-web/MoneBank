@@ -8,10 +8,13 @@ from app.modules.analytics.application.use_cases.generar_reporte import (
 
 def test_reporte_generado_correctamente_con_movimientos():
     repository = Mock()
-    repository.obtener_reporte_periodo.return_value = [
-        {"nombre_categoria": "Salario", "tipo_transaccion": "INGRESO", "total": 500000.0},
-        {"nombre_categoria": "Alimentacion", "tipo_transaccion": "GASTO", "total": 150000.0},
-    ]
+    repository.obtener_reporte_periodo.return_value = {
+        "detalle_por_categoria": [
+            {"nombre_categoria": "Salario", "tipo_transaccion": "INGRESO", "total": 500000.0},
+            {"nombre_categoria": "Alimentacion", "tipo_transaccion": "GASTO", "total": 150000.0},
+        ],
+        "total_metas": 800000.0,
+    }
 
     resultado = GenerarReporte(repository).execute(
         6, fecha_inicio=date(2026, 8, 1), fecha_fin=date(2026, 8, 31)
@@ -20,6 +23,7 @@ def test_reporte_generado_correctamente_con_movimientos():
     assert resultado["total_ingresos"] == 500000.0
     assert resultado["total_gastos"] == 150000.0
     assert resultado["balance"] == 350000.0
+    assert resultado["total_metas"] == 800000.0
     assert len(resultado["detalle_por_categoria"]) == 2
     repository.obtener_reporte_periodo.assert_called_once_with(
         6, date(2026, 8, 1), date(2026, 8, 31)
@@ -31,7 +35,10 @@ def test_datos_del_reporte_coinciden_con_lo_consultado():
     datos_esperados = [
         {"nombre_categoria": "Ventas", "tipo_transaccion": "INGRESO", "total": 1000000.0},
     ]
-    repository.obtener_reporte_periodo.return_value = datos_esperados
+    repository.obtener_reporte_periodo.return_value = {
+        "detalle_por_categoria": datos_esperados,
+        "total_metas": 0,
+    }
 
     resultado = GenerarReporte(repository).execute(
         6, fecha_inicio=date(2026, 8, 1), fecha_fin=date(2026, 8, 31)
@@ -42,7 +49,10 @@ def test_datos_del_reporte_coinciden_con_lo_consultado():
 
 def test_reporte_sin_movimientos_devuelve_totales_en_cero():
     repository = Mock()
-    repository.obtener_reporte_periodo.return_value = []
+    repository.obtener_reporte_periodo.return_value = {
+        "detalle_por_categoria": [],
+        "total_metas": 0,
+    }
 
     resultado = GenerarReporte(repository).execute(
         6, fecha_inicio=date(2026, 8, 1), fecha_fin=date(2026, 8, 31)
@@ -51,12 +61,16 @@ def test_reporte_sin_movimientos_devuelve_totales_en_cero():
     assert resultado["total_ingresos"] == 0
     assert resultado["total_gastos"] == 0
     assert resultado["balance"] == 0
+    assert resultado["total_metas"] == 0
     assert resultado["detalle_por_categoria"] == []
 
 
 def test_sin_fechas_calcula_el_mes_anterior_finalizado():
     repository = Mock()
-    repository.obtener_reporte_periodo.return_value = []
+    repository.obtener_reporte_periodo.return_value = {
+        "detalle_por_categoria": [],
+        "total_metas": 0,
+    }
 
     GenerarReporte(repository).execute(6, periodo="mensual")
 

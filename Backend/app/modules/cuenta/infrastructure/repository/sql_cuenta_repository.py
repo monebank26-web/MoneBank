@@ -12,7 +12,7 @@ class SqlCuentaRepository(CuentaRepository):
     def create(self, cuenta_data):
         cuenta = CuentaModel(**cuenta_data)
         self.db.add(cuenta)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(cuenta)
         return cuenta
 
@@ -42,7 +42,7 @@ class SqlCuentaRepository(CuentaRepository):
         for key, value in cuenta_data.items():
             setattr(cuenta, key, value)
 
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(cuenta)
         return cuenta
 
@@ -53,7 +53,7 @@ class SqlCuentaRepository(CuentaRepository):
             return None
 
         cuenta.saldo -= monto
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(cuenta)
         return cuenta
 
@@ -64,6 +64,6 @@ class SqlCuentaRepository(CuentaRepository):
             return None
 
         self.db.delete(cuenta)
-        self.db.commit()
+        self.db.flush()
 
         return {"mensaje": "Cuenta eliminada"}

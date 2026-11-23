@@ -1,44 +1,60 @@
 import React from 'react';
-import { ROLES } from '../../../core/constants';
-import { formatMoney } from '../../../core/utils/format';
-import { etiquetaRol } from '../../../core/utils/roles';
+import { Icon } from '@iconify/react';
+import {
+  claseEstadoAdmin,
+  etiquetaEstadoAdmin,
+  etiquetaRolAdmin,
+  iconoEstadoAdmin,
+  tieneBloqueoTemporalAdmin,
+} from '../utils/usuariosAdmin';
 
-const FilaUsuarioAdmin = ({ usuario, onVerDetalle, onEditar, onEliminar, onBloquear }) => {
+const FilaUsuarioAdmin = ({ usuario, onVerDetalle }) => {
+  const estadoClase = String(usuario.estado || '').toLowerCase();
+  const estaBloqueado = usuario.estado === 'BLOQUEADO';
+  const nombre = usuario.nombre || usuario.email || 'usuario';
+
   return (
-    <div className="fila-usuario-admin">
-      <div className="avatar-usuario-admin">
-        {usuario.nombre.charAt(0).toUpperCase()}
-      </div>
-      <div className="informacion-usuario-admin">
-        <p className="nombre-usuario-admin">{usuario.nombre}</p>
-        <p className="correo-usuario-admin">{usuario.email}</p>
-        <span className={`etiqueta-rol-admin etiqueta-rol-admin--${usuario.rol}`}>
-          {etiquetaRol(usuario.rol)}
+    <button
+      type="button"
+      className={`admin-fila${estadoClase ? ` admin-fila--${estadoClase}` : ''}`}
+      onClick={() => onVerDetalle(usuario)}
+      aria-label={`Abrir detalle de ${nombre}`}
+    >
+      <span className={`admin-avatar admin-avatar--${usuario.rol}`}>
+        {(usuario.nombres || usuario.email || '?').charAt(0).toUpperCase()}
+      </span>
+
+      <span className="admin-fila__datos">
+        <span className="admin-fila__nombre">{nombre}</span>
+        <span className="admin-fila__correo">{usuario.email}</span>
+        {estaBloqueado && usuario.motivo_bloqueo && (
+          <span className="admin-fila__motivo">
+            <Icon icon="mdi:lock-outline" />
+            <span>{usuario.motivo_bloqueo}</span>
+          </span>
+        )}
+      </span>
+
+      <span className="admin-fila__etiquetas">
+        <span className={`admin-etiqueta-rol admin-etiqueta-rol--${usuario.rol}`}>
+          {etiquetaRolAdmin(usuario.rol)}
         </span>
-      </div>
-      <div className="saldo-usuario-admin">
-        <p className="valor-saldo-admin">{formatMoney(usuario.saldoCuenta)}</p>
-        <p className="etiqueta-saldo-admin">Saldo en cuenta</p>
-      </div>
-      <div className="acciones-usuario-admin">
-        <button className="boton-accion-admin boton-accion-admin--ver" onClick={() => onVerDetalle(usuario)}>
-          Ver
-        </button>
-        <button className="boton-accion-admin boton-accion-admin--editar" onClick={() => onEditar(usuario)}>
-          Editar
-        </button>
-        {usuario.rol !== ROLES.ADMIN && usuario.estado !== 'Bloqueado' && (
-          <button className="boton-accion-admin boton-accion-admin--bloquear" onClick={() => onBloquear(usuario)}>
-            Bloquear
-          </button>
+        <span className={claseEstadoAdmin(usuario.estado)}>
+          <Icon icon={iconoEstadoAdmin(usuario.estado)} />
+          {etiquetaEstadoAdmin(usuario.estado)}
+        </span>
+        {tieneBloqueoTemporalAdmin(usuario) && (
+          <span className="admin-etiqueta-temporal">
+            <Icon icon="mdi:clock-outline" aria-hidden="true" />
+            Bloqueo temporal
+          </span>
         )}
-        {usuario.rol !== ROLES.ADMIN && (
-          <button className="boton-accion-admin boton-accion-admin--eliminar" onClick={() => onEliminar(usuario)}>
-            Eliminar
-          </button>
-        )}
-      </div>
-    </div>
+      </span>
+
+      <span className="admin-fila__chevron" aria-hidden="true">
+        <Icon icon="mdi:chevron-right" />
+      </span>
+    </button>
   );
 };
 

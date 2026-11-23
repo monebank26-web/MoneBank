@@ -111,7 +111,8 @@ const ControlParentalPage = () => {
         </form>
 
         <small>
-          El código de seis dígitos será enviado al correo del hijo.
+          El código de seis dígitos será enviado al correo del hijo. Pídeselo y
+          escríbelo aquí para confirmar la vinculación.
         </small>
       </section>
 

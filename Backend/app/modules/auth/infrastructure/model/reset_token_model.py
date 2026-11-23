@@ -26,3 +26,5 @@ class ResetTokenModel(Base):
     fecha_expiracion = Column(DateTime(timezone=True), nullable=False)
 
     usado = Column(Boolean, default=False)
+
+    intentos_fallidos = Column(Integer, nullable=False, default=0)

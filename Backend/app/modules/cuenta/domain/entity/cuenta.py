@@ -1,4 +1,4 @@
-from app.core.utils.fechas import hoy_colombia
+from app.shared.utils.fechas import hoy_colombia
 
 
 class Cuenta:
