@@ -1,0 +1,102 @@
+.resumen-movimientos {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+.resumen-movimientos__titulo {
+  font-family: var(--font-display);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.resumen-movimientos__periodo {
+  color: var(--color-text-soft);
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+.resumen-movimientos__vacio {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: 12px;
+}
+
+.resumen-movimientos__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.resumen-movimientos__tarjeta {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resumen-movimientos__etiqueta {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.resumen-movimientos__monto {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.resumen-movimientos__tarjeta--ingreso {
+  background-color: rgba(var(--rgb-verde-fuerte), 0.1);
+  border-color: rgba(var(--rgb-verde-fuerte), 0.25);
+}
+
+.resumen-movimientos__tarjeta--ingreso .resumen-movimientos__monto {
+  color: var(--color-verde-fuerte);
+}
+
+.resumen-movimientos__tarjeta--gasto {
+  background-color: rgba(var(--rgb-rojo), 0.1);
+  border-color: rgba(var(--rgb-rojo), 0.25);
+}
+
+.resumen-movimientos__tarjeta--gasto .resumen-movimientos__monto {
+  color: var(--color-danger);
+}
+
+.resumen-movimientos__tarjeta--positivo {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent-ring);
+}
+
+.resumen-movimientos__tarjeta--positivo .resumen-movimientos__monto {
+  color: var(--color-accent);
+}
+
+.resumen-movimientos__tarjeta--negativo {
+  background-color: rgba(var(--rgb-rojo), 0.1);
+  border-color: rgba(var(--rgb-rojo), 0.25);
+}
+
+.resumen-movimientos__tarjeta--negativo .resumen-movimientos__monto {
+  color: var(--color-danger);
+}
+
+@media (max-width: 960px) {
+  .resumen-movimientos__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .resumen-movimientos__grid {
+    grid-template-columns: 1fr;
+  }
+}
