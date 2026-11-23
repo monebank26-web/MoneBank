@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import Mock, patch
 
 import pytest
@@ -297,4 +298,113 @@ def test_login_fallido_persiste_el_intento_en_sqlite(tmp_path):
         .one()
     )
     assert usuario.intentos_fallidos == 1
+    sesion.close()
+
+
+def test_login_fallido_tras_bloqueo_vencido_reinicia_el_contador_en_sqlite(
+    tmp_path, reloj_fijo
+):
+    engine = create_engine(f"sqlite:///{tmp_path / 'auth.db'}")
+    UsuarioModel.__table__.create(engine)
+    session_factory = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine,
+    )
+
+    sesion = session_factory()
+    sesion.add(
+        UsuarioModel(
+            nombres="Ana",
+            apellidos="Perez",
+            correo="ana@example.com",
+            contrasena=PasswordHasher.hash("Correcta123"),
+            estado="ACTIVO",
+            id_rol=2,
+            intentos_fallidos=3,
+            bloqueado_hasta=reloj_fijo - timedelta(minutes=1),
+        )
+    )
+    sesion.commit()
+    sesion.close()
+
+    sesion = session_factory()
+    unit_of_work = get_unit_of_work(sesion)
+    controller = get_auth_controller(
+        unit_of_work=unit_of_work,
+        email_service=Mock(),
+    )
+
+    with pytest.raises(InvalidCredentialsException):
+        controller.login(
+            LoginRequest(
+                correo="ana@example.com",
+                contrasena="Incorrecta123",
+            )
+        )
+
+    sesion.close()
+
+    sesion = session_factory()
+    usuario = (
+        sesion.query(UsuarioModel)
+        .filter(UsuarioModel.correo == "ana@example.com")
+        .one()
+    )
+    assert usuario.intentos_fallidos == 1
+    assert usuario.bloqueado_hasta is None
+    sesion.close()
+
+
+def test_login_correcto_tras_bloqueo_vencido_reinicia_el_contador_en_sqlite(
+    tmp_path, reloj_fijo
+):
+    engine = create_engine(f"sqlite:///{tmp_path / 'auth.db'}")
+    UsuarioModel.__table__.create(engine)
+    session_factory = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine,
+    )
+
+    sesion = session_factory()
+    sesion.add(
+        UsuarioModel(
+            nombres="Ana",
+            apellidos="Perez",
+            correo="ana@example.com",
+            contrasena=PasswordHasher.hash("Correcta123"),
+            estado="ACTIVO",
+            id_rol=2,
+            intentos_fallidos=3,
+            bloqueado_hasta=reloj_fijo - timedelta(minutes=1),
+        )
+    )
+    sesion.commit()
+    sesion.close()
+
+    sesion = session_factory()
+    unit_of_work = get_unit_of_work(sesion)
+    controller = get_auth_controller(
+        unit_of_work=unit_of_work,
+        email_service=Mock(),
+    )
+
+    controller.login(
+        LoginRequest(
+            correo="ana@example.com",
+            contrasena="Correcta123",
+        )
+    )
+
+    sesion.close()
+
+    sesion = session_factory()
+    usuario = (
+        sesion.query(UsuarioModel)
+        .filter(UsuarioModel.correo == "ana@example.com")
+        .one()
+    )
+    assert usuario.intentos_fallidos == 0
+    assert usuario.bloqueado_hasta is None
     sesion.close()
