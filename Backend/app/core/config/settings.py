@@ -8,6 +8,11 @@ class Settings(BaseSettings):
     EMAIL_PASSWORD: str = ""
     GOOGLE_AI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-3.7-flash"
+    CORS_ORIGINS: str = "http://localhost:3000"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [origen.strip() for origen in self.CORS_ORIGINS.split(",") if origen.strip()]
 
     model_config = SettingsConfigDict(
         env_file=".env",
