@@ -4,6 +4,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    TOKEN_RENEW_BEFORE_MINUTES: int = 15
+    TOKEN_ABSOLUTE_MAX_HOURS: int = 8
     EMAIL_USER: str = ""
     EMAIL_PASSWORD: str = ""
     GOOGLE_AI_API_KEY: str = ""

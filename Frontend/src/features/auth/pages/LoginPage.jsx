@@ -2,8 +2,9 @@ import { useAuthForm } from '../hooks/useAuthForm';
 import CampoContrasena from '../../../shared/components/CampoContrasena';
 import './Auth.css';
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../core/constants';
+import { MENSAJE_SESION_EXPIRADA } from '../../../core/utils/tokenSesion';
 
 const IconoOjo = ({ cerrado = false }) => (
   <svg
@@ -65,7 +66,13 @@ const LoginPage = () => {
   const { submit, loading, error } =
     useAuthForm('login');
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const avisoRecuperacion = location.state?.mensajeRecuperacion;
+  const avisoSesion =
+    searchParams.get('sesion') === 'expirada'
+      ? MENSAJE_SESION_EXPIRADA
+      : null;
+  const aviso = avisoRecuperacion || avisoSesion;
 
   const [form, setForm] = useState({
     email: '',
@@ -128,13 +135,13 @@ const LoginPage = () => {
           onSubmit={handleSubmit}
           className="formulario-autenticacion"
         >
-          {avisoRecuperacion && (
+          {aviso && (
             <p
               className="recuperacion-mensaje"
               role="status"
               aria-live="polite"
             >
-              {avisoRecuperacion}
+              {aviso}
             </p>
           )}
 

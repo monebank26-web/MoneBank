@@ -9,6 +9,8 @@ from app.shared.exceptions.auth_errors import (
     EmailNotFoundException,
     InvalidCredentialsException,
     InvalidOrExpiredTokenException,
+    TokenExpiradoException,
+    TokenInvalidoException,
 )
 from app.shared.exceptions.handlers._helpers import registrar_error_business
 
@@ -22,3 +24,5 @@ def register_auth_exception_handlers(app: FastAPI):
     registrar_error_business(app, EmailNotFoundException, 404)
     registrar_error_business(app, ContrasenaInvalidaException, 422)
     registrar_error_business(app, InvalidOrExpiredTokenException, 410)
+    registrar_error_business(app, TokenExpiradoException, 401)
+    registrar_error_business(app, TokenInvalidoException, 401)
