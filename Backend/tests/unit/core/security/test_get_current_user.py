@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
-from fastapi import HTTPException
+from fastapi import HTTPException, Response
 from fastapi.security import HTTPAuthorizationCredentials
 
 from app.core.security import auth
@@ -10,10 +10,14 @@ from app.core.security.roles import ROL_USUARIO
 from app.shared.constants.codigos_error import (
     CODIGO_CUENTA_BLOQUEADA,
     CODIGO_CUENTA_INACTIVA,
+    CODIGO_TOKEN_EXPIRADO,
+    CODIGO_TOKEN_INVALIDO,
 )
 from app.shared.exceptions.auth_errors import (
     CuentaBloqueadaException,
     CuentaInactivaException,
+    TokenExpiradoException,
+    TokenInvalidoException,
 )
 
 
@@ -43,12 +47,13 @@ def test_get_current_user_sin_header_rechaza():
 
 
 def test_get_current_user_con_token_invalido_rechaza():
-    with pytest.raises(HTTPException) as exc:
+    with pytest.raises(TokenInvalidoException) as exc:
         auth.get_current_user(
             credentials=credenciales("token-invalido"),
             repository=Mock()
         )
-    assert exc.value.status_code == 401
+    assert exc.value.code == CODIGO_TOKEN_INVALIDO
+    assert str(exc.value) == "Token inválido o expirado"
 
 
 def test_get_current_user_con_token_valido_devuelve_usuario():
@@ -137,3 +142,78 @@ def test_get_current_user_con_usuario_activo_permite_el_acceso():
     )
 
     assert resultado.id_usuario == 6
+
+
+def test_get_current_user_con_token_proximo_a_expirar_renueva():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "ACTIVO"
+    repository.get_by_id.return_value = usuario
+    token = JwtManager.create_token(
+        {"sub": "6"}, expires_minutes=14
+    )
+    response = Response()
+
+    auth.get_current_user(
+        credentials=credenciales(token),
+        repository=repository,
+        response=response,
+    )
+
+    nuevo_token = response.headers["X-Token-Renovado"]
+    assert JwtManager.decode_token(nuevo_token)["sub"] == "6"
+    assert (
+        JwtManager.decode_token(nuevo_token)["orig_iat"]
+        == JwtManager.decode_token(token)["orig_iat"]
+    )
+
+
+def test_get_current_user_con_token_fresco_no_renueva():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "ACTIVO"
+    repository.get_by_id.return_value = usuario
+    response = Response()
+
+    auth.get_current_user(
+        credentials=credenciales(crear_token(6)),
+        repository=repository,
+        response=response,
+    )
+
+    assert "X-Token-Renovado" not in response.headers
+
+
+def test_get_current_user_bloqueado_no_renueva():
+    repository = Mock()
+    usuario = crear_usuario_mock()
+    usuario.estado = "BLOQUEADO"
+    repository.get_by_id.return_value = usuario
+    token = JwtManager.create_token(
+        {"sub": "6"}, expires_minutes=14
+    )
+    response = Response()
+
+    with pytest.raises(CuentaBloqueadaException):
+        auth.get_current_user(
+            credentials=credenciales(token),
+            repository=repository,
+            response=response,
+        )
+
+    assert "X-Token-Renovado" not in response.headers
+
+
+def test_get_current_user_con_token_expirado_devuelve_codigo():
+    token = JwtManager.create_token(
+        {"sub": "6"}, expires_minutes=-1
+    )
+
+    with pytest.raises(TokenExpiradoException) as exc:
+        auth.get_current_user(
+            credentials=credenciales(token),
+            repository=Mock(),
+        )
+
+    assert exc.value.code == CODIGO_TOKEN_EXPIRADO
+    assert str(exc.value) == "Token inválido o expirado"
