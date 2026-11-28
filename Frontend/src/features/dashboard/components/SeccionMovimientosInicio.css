@@ -1,0 +1,181 @@
+.movimientos-inicio {
+  display: flex;
+  flex-direction: column;
+}
+
+.movimientos-inicio__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.movimientos-inicio__marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.movimientos-inicio__marca h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.movimientos-inicio__icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.movimientos-inicio__enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.movimientos-inicio__enlace:hover {
+  text-decoration: underline;
+}
+
+.movimientos-inicio__vacio {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.movimientos-inicio__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fila-movimiento {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.15s;
+}
+
+.fila-movimiento:hover {
+  border-color: var(--color-accent-ring);
+}
+
+.fila-movimiento__icono {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.fila-movimiento__icono--gasto {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.fila-movimiento__icono--ingreso {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.fila-movimiento__icono--ahorro {
+  color: var(--color-secundario);
+  background: var(--color-secundario-soft);
+}
+
+.fila-movimiento__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fila-movimiento__nombre {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fila-movimiento__detalle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.fila-movimiento__chip {
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.fila-movimiento__chip--gasto {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.fila-movimiento__chip--ingreso {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.fila-movimiento__chip--ahorro {
+  color: var(--color-secundario);
+  background: var(--color-secundario-soft);
+}
+
+.fila-movimiento__fecha {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.fila-movimiento__monto {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.fila-movimiento__valor {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.fila-movimiento__valor--gasto {
+  color: var(--color-danger);
+}
+
+.fila-movimiento__valor--ingreso {
+  color: var(--color-success);
+}
+
+.fila-movimiento__valor--ahorro {
+  color: var(--color-secundario);
+}
+
+.fila-movimiento__moneda {
+  margin-top: 2px;
+  font-family: var(--font-label);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}

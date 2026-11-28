@@ -4,11 +4,10 @@
   background: var(--color-bg);
 }
 
-/* ── BARRA LATERAL ── */
 .barra-lateral {
-  width: 240px;
+  width: 250px;
   min-height: 100vh;
-  background: var(--color-surface);
+  background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -50,8 +49,8 @@
 
 .nombre-barra-lateral {
   font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--color-text);
 }
 
@@ -59,39 +58,61 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 20px 12px;
+  gap: 6px;
+  padding: 20px 16px;
+  overflow-y: auto;
 }
 
 .elemento-navegacion {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
-  font-size: 14px;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  color: var(--color-text-soft);
+  font-size: 15px;
   font-weight: 500;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .elemento-navegacion:hover {
-  background: var(--color-surface-2);
+  background: var(--color-surface);
   color: var(--color-text);
 }
 
 .elemento-navegacion--activo {
   background: var(--color-accent-soft);
+  border-color: var(--color-accent-ring);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.elemento-navegacion--activo::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.elemento-navegacion--activo .icono-navegacion {
   color: var(--color-accent);
 }
 
 .icono-navegacion {
-  font-size: 18px;
-  width: 22px;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  width: 24px;
 }
 
-/* ── SUBMENÚ ANALÍTICA ── */
 .grupo-submenu {
   display: flex;
   flex-direction: column;
@@ -108,7 +129,7 @@
 
 .caret-submenu {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 18px;
   transition: transform 0.2s;
 }
 
@@ -125,7 +146,7 @@
 }
 
 .submenu-item {
-  padding: 8px 12px;
+  padding: 9px 12px;
   font-size: 13px;
 }
 
@@ -143,16 +164,16 @@
 }
 
 .avatar-usuario {
-  width: 34px;
-  height: 34px;
-  background: var(--color-accent);
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: var(--degradado-dorado);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-  color: white;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--color-texto-sobre-acento);
   flex-shrink: 0;
 }
 
@@ -191,10 +212,9 @@
   color: var(--color-danger);
 }
 
-/* ── CONTENIDO PRINCIPAL ── */
 .contenido-principal {
   flex: 1;
-  margin-left: 240px;
+  margin-left: 250px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -205,7 +225,6 @@
   padding: 32px;
 }
 
-/* ── ENCABEZADO MOVIL ── */
 .encabezado-movil {
   display: none;
   align-items: center;
@@ -239,7 +258,6 @@
   z-index: 99;
 }
 
-/* ── DISEÑO ADAPTABLE ── */
 @media (max-width: 768px) {
   .barra-lateral {
     transform: translateX(-100%);
@@ -263,7 +281,6 @@
   }
 }
 
-/* Rol de usuario en el sidebar */
 .rol-usuario {
   font-size: 11px;
   color: var(--color-accent);

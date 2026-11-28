@@ -3,6 +3,7 @@ import CampoContrasena from '../../../shared/components/CampoContrasena';
 import './Auth.css';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PanelMarcaAutenticacion from '../components/PanelMarcaAutenticacion';
 
 const IconoOjo = ({ cerrado = false }) => (
   <svg
@@ -90,19 +91,7 @@ const LoginPage = () => {
 
   return (
     <div className="contenedor-autenticacion">
-      <video
-        id="video-fondo-pantalla"
-        autoPlay
-        muted
-        loop
-      >
-        <source
-          src="/video.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      <div className="capa-oscura-video" />
+      <PanelMarcaAutenticacion />
 
       <div className="tarjeta-autenticacion">
         <div className="marca-autenticacion">

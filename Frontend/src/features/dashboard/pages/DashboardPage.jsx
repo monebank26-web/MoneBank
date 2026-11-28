@@ -8,9 +8,9 @@ import { limitesService } from '../../limites/services/limitesService';
 import { metasService } from '../../metas/services/metasService';
 import { authService } from '../../auth/services/authService';
 import TarjetasSaldoInicio from '../components/TarjetasSaldoInicio';
+import WidgetLimiteCritico from '../components/WidgetLimiteCritico';
 import SeccionChatInicio from '../components/SeccionChatInicio';
 import SeccionMovimientosInicio from '../components/SeccionMovimientosInicio';
-import WidgetLimiteCritico from '../components/WidgetLimiteCritico';
 import SeccionAhorros from '../components/SeccionAhorros';
 import ModalIngresoDashboard from '../components/ModalIngresoDashboard';
 import ModalGastoDashboard from '../components/ModalGastoDashboard';
@@ -21,7 +21,7 @@ const aNumero = (v) => Number(v) || 0;
 const DashboardPage = () => {
   const { user } = useAuth();
   const ingreso = useIngreso();
-  const { transacciones } = useMovimientosRecientes();
+  const { transacciones } = useMovimientosRecientes(4);
 
   const [saldoCuenta, setSaldoCuenta] = useState(0);
   const [limites, setLimites] = useState([]);
@@ -46,7 +46,6 @@ const DashboardPage = () => {
   const limitesCriticos = [...limites].sort(
     (a, b) => aNumero(b.porcentaje_usado) - aNumero(a.porcentaje_usado)
   );
-  const limiteCritico = limitesCriticos[0];
 
   const metasOrdenadas = [...metas].sort(
     (a, b) => aNumero(b.porcentaje_completado) - aNumero(a.porcentaje_completado)
@@ -61,28 +60,26 @@ const DashboardPage = () => {
 
   return (
     <div className="pagina-inicio">
-      <div className="encabezado-inicio">
-        <div>
-          <p className="saludo-inicio">{saludo},</p>
-          <h1 className="nombre-inicio">{user?.nombres}</h1>
-        </div>
+      <div className="encabezado-dashboard">
+        <h1 className="titulo-dashboard">
+          <span className="saludo-dashboard">{saludo},</span>{' '}
+          <strong className="nombre-dashboard">{user?.nombres}</strong>
+        </h1>
       </div>
 
-      <div className="tarjeta-saldos-row">
+      <div className="fila-saldos">
         <TarjetasSaldoInicio
           saldoCuenta={saldoCuenta}
           onIngreso={ingreso.abrirIngreso}
           onGasto={() => setModalGasto(true)}
         />
-        <WidgetLimiteCritico limiteCritico={limiteCritico} />
+        <WidgetLimiteCritico limites={limites} limiteCritico={limitesCriticos[0]} />
       </div>
 
-      <div className="cuerpo-inicio">
-        <div className="columna-contenido-inicio">
-          <SeccionChatInicio />
-          <SeccionMovimientosInicio transacciones={transacciones} />
-        </div>
+      <SeccionChatInicio />
 
+      <div className="cuerpo-inicio">
+        <SeccionMovimientosInicio transacciones={transacciones} />
         <SeccionAhorros
           limites={limites}
           metas={metas}

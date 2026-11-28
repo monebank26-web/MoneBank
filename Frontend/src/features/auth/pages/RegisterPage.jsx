@@ -4,6 +4,7 @@ import { useAuthForm } from '../hooks/useAuthForm';
 import { CORREO_ADMIN, ROLES } from '../../../core/constants';
 import './Auth.css';
 import CampoContrasena from '../../../shared/components/CampoContrasena';
+import PanelMarcaAutenticacion from '../components/PanelMarcaAutenticacion';
 
 const evaluarSeguridadPassword = (password) => {
   if (!password) {
@@ -180,19 +181,7 @@ const RegisterPage = () => {
 
   return (
     <div className="contenedor-autenticacion">
-      <video
-        id="video-fondo-pantalla"
-        autoPlay
-        muted
-        loop
-      >
-        <source
-          src="/video.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      <div className="capa-oscura-video" />
+      <PanelMarcaAutenticacion />
 
       <div className="tarjeta-autenticacion">
         <div className="marca-autenticacion">
