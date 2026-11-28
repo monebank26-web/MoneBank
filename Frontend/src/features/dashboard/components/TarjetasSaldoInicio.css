@@ -1,0 +1,155 @@
+.cuenta-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.cuenta-card::before {
+  content: '';
+  position: absolute;
+  top: -90px;
+  right: -90px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--rgb-dorado), 0.16), transparent 68%);
+  pointer-events: none;
+}
+
+.cuenta-card > * {
+  position: relative;
+}
+
+.cuenta-card__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cuenta-card__titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cuenta-card__etiqueta {
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.cuenta-card__chip {
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent-ring);
+}
+
+.cuenta-card__ojo {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+  font-size: 18px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cuenta-card__ojo:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.cuenta-card__valor {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 46px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.cuenta-card__valor span {
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.cuenta-card__nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--color-text-soft);
+}
+
+.cuenta-card__nota i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.cuenta-card__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cuenta-card__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.15s ease;
+}
+
+.cuenta-card__boton svg {
+  font-size: 20px;
+}
+
+.cuenta-card__boton:hover {
+  transform: translateY(-1px);
+}
+
+.cuenta-card__boton--ingreso {
+  background: var(--degradado-dorado);
+  color: var(--color-texto-sobre-acento);
+  box-shadow: 0 6px 18px rgba(var(--rgb-dorado), 0.28);
+}
+
+.cuenta-card__boton--gasto {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.cuenta-card__boton--gasto:hover {
+  border-color: var(--color-accent);
+}

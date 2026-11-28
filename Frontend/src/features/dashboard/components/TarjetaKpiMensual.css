@@ -1,0 +1,63 @@
+.tarjeta-kpi {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  flex: 1;
+}
+
+.tarjeta-kpi__superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.tarjeta-kpi__icono {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.tarjeta-kpi__icono--ingreso {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.tarjeta-kpi__icono--gasto {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.tarjeta-kpi__variacion {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tarjeta-kpi__variacion--buena {
+  color: var(--color-success);
+}
+
+.tarjeta-kpi__variacion--mala {
+  color: var(--color-danger);
+}
+
+.tarjeta-kpi__etiqueta {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.tarjeta-kpi__valor {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-text);
+}

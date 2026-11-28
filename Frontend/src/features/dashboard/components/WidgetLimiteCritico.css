@@ -1,43 +1,137 @@
-.tarjeta-saldo--limites {
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  color: white;
-  position: relative;
-  overflow: hidden;
+.gastos-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
-.valor-saldo--peligro {
-  color: var(--color-rojo-claro);
+.gastos-card__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.valor-saldo--vacio {
+.gastos-card__etiqueta {
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.gastos-card__icono {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 19px;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent-ring);
+}
+
+.gastos-card__valor {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.gastos-card__valor span {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.gastos-card__valor--superado {
+  color: var(--color-danger, #f87171);
+}
+
+.gastos-card__valor--vacio {
   font-size: 26px;
-  opacity: 0.85;
+  color: var(--color-text-soft);
 }
 
-.barra-limite-tarjeta {
-  width: 100%;
+.gastos-card__texto {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-soft);
+}
+
+.gastos-card__texto strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.gastos-card__barra {
+  margin-top: 16px;
   height: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
+  border-radius: 99px;
+  background: var(--color-surface-2);
   overflow: hidden;
-  margin-top: 14px;
 }
 
-.relleno-limite-tarjeta {
+.gastos-card__relleno {
   height: 100%;
-  border-radius: 999px;
+  border-radius: inherit;
   transition: width 0.4s ease;
 }
 
-.relleno-limite-tarjeta.uso-limite--ok {
-  background: var(--degradado-verde);
+.gastos-card__relleno--ok {
+  background: var(--degradado-dorado);
 }
 
-.relleno-limite-tarjeta.uso-limite--alerta {
-  background: var(--degradado-ambar);
+.gastos-card__relleno--alerta {
+  background: #fb923c;
 }
 
-.relleno-limite-tarjeta.uso-limite--superado {
-  background: var(--degradado-rojo);
+.gastos-card__relleno--superado {
+  background: var(--color-danger, #f87171);
+}
+
+.gastos-card__detalle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.gastos-card__detalle svg {
+  font-size: 15px;
+  color: var(--color-accent);
+}
+
+.gastos-card__enlace {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.gastos-card__enlace:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }

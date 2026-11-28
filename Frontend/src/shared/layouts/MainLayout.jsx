@@ -60,17 +60,16 @@ const MainLayout = ({ children }) => {
     navigate(ROUTES.HOME);
   };
 
-
   const elementosNav = [
-    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: '⊞', visible: !esAdmin },
-    { to: ROUTES.CHAT, label: 'Asesor IA', icono: '◈', visible: !esAdmin },
-    { to: ROUTES.METAS, label: 'Metas', icono: '◆', visible: !esAdmin },
-    { to: ROUTES.LIMITES, label: 'Límites', icono: '▲', visible: !esAdmin },
-    { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: '↕', visible: !esAdmin },
+    { to: ROUTES.DASHBOARD, label: 'Inicio', icono: <Icon icon="mdi:view-grid-outline" />, visible: !esAdmin },
+    { to: ROUTES.CHAT, label: 'Asesor IA', icono: <Icon icon="mdi:creation" />, visible: !esAdmin },
+    { to: ROUTES.METAS, label: 'Metas', icono: <Icon icon="mdi:flag-outline" />, visible: !esAdmin },
+    { to: ROUTES.LIMITES, label: 'Límites', icono: <Icon icon="mdi:tune-variant" />, visible: !esAdmin },
+    { to: ROUTES.TRANSACCIONES, label: 'Movimientos', icono: <Icon icon="mdi:receipt-text-outline" />, visible: !esAdmin },
     {
       to: ROUTES.CONTROL_PARENTAL,
       label: 'Control parental',
-      icono: '𖥤',
+      icono: <Icon icon="mdi:human-male-child" />,
       visible: puedeVerControlParental,
     },
     {
@@ -79,8 +78,13 @@ const MainLayout = ({ children }) => {
       icono: <Icon icon="mdi:shield-account-outline" />,
       visible: esAdmin,
     },
+    {
+      to: ROUTES.PERFIL,
+      label: 'Mi perfil',
+      icono: <Icon icon="mdi:account-cog-outline" />,
+      visible: true,
+    },
   ].filter((elemento) => elemento.visible);
-
   const submenuAnalitica = [
     { to: ROUTES.GRAFICAS, label: 'Gráficas' },
     { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
@@ -96,7 +100,6 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="raiz-estructura">
-      {/* Sidebar */}
       <aside className={`barra-lateral ${menuOpen ? 'barra-lateral--abierta' : ''}`}>
         <button
           className="marca-barra-lateral marca-barra-lateral--clickeable"
@@ -134,14 +137,14 @@ const MainLayout = ({ children }) => {
                 onClick={() => setAnaliticaAbierta(!analiticaAbierta)}
                 aria-expanded={analiticaAbierta}
               >
-                <span className="icono-navegacion">▦</span>
+                <span className="icono-navegacion"><Icon icon="mdi:chart-line" /></span>
                 <span className="etiqueta-navegacion">Analítica</span>
                 <span
                   className={`caret-submenu ${
                     analiticaAbierta ? 'caret-submenu--abierta' : ''
                   }`}
                 >
-                  ▾
+                  <Icon icon="mdi:chevron-down" />
                 </span>
               </button>
 

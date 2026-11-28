@@ -1,118 +1,129 @@
 :root,
 [data-theme="dark"] {
-  /* Colores de fondo */
-  --color-bg: #080808;
-  --color-surface: #111111;
-  --color-surface-2: #1a1a1a;
-  --color-border: #2a2418;
+  --color-bg: #161312;
+  --color-surface: #1f1b19;
+  --color-surface-2: #2a2523;
+  --color-surface-hover: #332d2a;
+  --color-border: #332c28;
 
-  /* Dorado - color de acento principal */
-  --color-accent: #c9a84c;
-  --color-accent-hover: #e0bc6a;
-  --color-accent-claro: #e2b93b;
-  --color-accent-soft: rgba(201, 168, 76, 0.12);
-  --color-accent-glow: rgba(201, 168, 76, 0.08);
-  --color-accent-ring: rgba(201, 168, 76, 0.30);
-  --color-accent-brillo: rgba(201, 168, 76, 0.25);
+  --color-accent: #f59e0b;
+  --color-accent-hover: #fbb024;
+  --color-accent-claro: #fbbf24;
+  --color-accent-soft: rgba(245, 158, 11, 0.12);
+  --color-accent-glow: rgba(245, 158, 11, 0.08);
+  --color-accent-ring: rgba(245, 158, 11, 0.32);
+  --color-accent-brillo: rgba(245, 158, 11, 0.25);
+  --color-texto-sobre-acento: #1a1100;
 
-  /* Verde - exito y valores positivos */
-  --color-success: #4ade80;
-  --color-success-soft: rgba(74, 222, 128, 0.10);
-  --color-success-borde: rgba(74, 222, 128, 0.25);
+  --color-secundario: #38bdf8;
+  --color-secundario-soft: rgba(56, 189, 248, 0.12);
+  --color-terciario: #2dd4bf;
 
-  /* Rojo - peligro y errores */
-  --color-danger: #ef4444;
-  --color-danger-soft: rgba(239, 68, 68, 0.12);
+  --color-success: #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.10);
+  --color-success-borde: rgba(52, 211, 153, 0.28);
 
-  /* Amarillo - advertencia */
-  --color-warning: #c9a84c;
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.12);
 
-  /* Semáforo de barras y alertas (gastos y límites) */
+  --color-warning: #f59e0b;
+
   --color-verde-fuerte: #10b981;
   --color-verde-fuerte-claro: #34d399;
   --color-ambar: #f59e0b;
   --color-ambar-claro: #fbbf24;
-  --color-rojo-claro: #f87171;
+  --color-rojo-claro: #fca5a5;
 
-  /* Violeta - identidad visual del Asesor IA */
-  --color-violeta: #7c3aed;
-  --color-violeta-glow: rgba(124, 58, 237, 0.30);
+  --color-violeta: #38bdf8;
+  --color-violeta-glow: rgba(56, 189, 248, 0.30);
 
-  /* Colores base en números, para usar con transparencia rgba(var(--rgb-...), 0.x) */
   --rgb-verde-fuerte: 16, 185, 129;
   --rgb-ambar: 245, 158, 11;
-  --rgb-rojo: 239, 68, 68;
+  --rgb-rojo: 248, 113, 113;
+  --rgb-dorado: 245, 158, 11;
+  --rgb-secundario: 56, 189, 248;
 
   --degradado-verde: linear-gradient(90deg, var(--color-verde-fuerte), var(--color-verde-fuerte-claro));
   --degradado-ambar: linear-gradient(90deg, var(--color-ambar), var(--color-ambar-claro));
   --degradado-rojo: linear-gradient(90deg, var(--color-danger), var(--color-rojo-claro));
+  --degradado-dorado: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 
-  /* Colores de texto */
-  --color-text: #f5f0e8;
-  --color-text-muted: #6b6045;
-  --color-text-soft: #a89060;
-  --color-text-resaltado: #f7f0e2;
+  --color-text: #f4efea;
+  --color-text-muted: #8b8079;
+  --color-text-soft: #bdb2a9;
+  --color-text-resaltado: #fbf7f2;
 
-  /* Blanco - texto sobre superficies de acento */
   --color-blanco: #ffffff;
 
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
 
-  /* Controles nativos (selects, date pickers) en tema oscuro */
   color-scheme: dark;
 }
 
-/* ── MODO CLARO (nuevo) ──
-   Se activa cuando ThemeContext pone <html data-theme="light">.
-   Mismo dorado de identidad (--color-accent), pero reajustado para
-   verse bien y con buen contraste sobre fondos claros. */
 [data-theme="light"] {
-  --color-bg: #faf6ec;
+  --color-bg: #f4f7fb;
   --color-surface: #ffffff;
-  --color-surface-2: #f2ead9;
-  --color-border: #e2d6b8;
+  --color-surface-2: #eef2f8;
+  --color-surface-hover: #e5ebf4;
+  --color-border: #e0e6ef;
 
-  --color-accent: #a9822f;
-  --color-accent-hover: #8f6d26;
-  --color-accent-claro: #c9a84c;
-  --color-accent-soft: rgba(169, 130, 47, 0.12);
-  --color-accent-glow: rgba(169, 130, 47, 0.08);
+  --color-accent: #d97706;
+  --color-accent-hover: #b45309;
+  --color-accent-claro: #f59e0b;
+  --color-accent-soft: rgba(217, 119, 6, 0.10);
+  --color-accent-glow: rgba(217, 119, 6, 0.06);
+  --color-accent-ring: rgba(217, 119, 6, 0.30);
+  --color-accent-brillo: rgba(217, 119, 6, 0.20);
+  --color-texto-sobre-acento: #1a1100;
 
-  --color-success: #159a56;
-  --color-success-soft: rgba(21, 154, 86, 0.10);
+  --color-secundario: #0284c7;
+  --color-secundario-soft: rgba(2, 132, 199, 0.10);
+  --color-terciario: #0d9488;
 
-  --color-danger: #d92d2d;
-  --color-danger-soft: rgba(217, 45, 45, 0.10);
+  --color-success: #059669;
+  --color-success-soft: rgba(5, 150, 105, 0.10);
+  --color-success-borde: rgba(5, 150, 105, 0.28);
 
-  --color-warning: #a9822f;
+  --color-danger: #dc2626;
+  --color-danger-soft: rgba(220, 38, 38, 0.08);
 
-  --color-verde-fuerte: #0e9f6e;
+  --color-warning: #d97706;
+
+  --color-verde-fuerte: #059669;
   --color-verde-fuerte-claro: #34d399;
-  --color-ambar: #d97e0b;
+  --color-ambar: #d97706;
   --color-ambar-claro: #f59e0b;
-  --color-rojo-claro: #e05252;
+  --color-rojo-claro: #ef4444;
 
-  --rgb-verde-fuerte: 14, 159, 110;
-  --rgb-ambar: 217, 126, 11;
-  --rgb-rojo: 217, 45, 45;
+  --color-violeta: #0284c7;
+  --color-violeta-glow: rgba(2, 132, 199, 0.25);
+
+  --rgb-verde-fuerte: 5, 150, 105;
+  --rgb-ambar: 217, 119, 6;
+  --rgb-rojo: 220, 38, 38;
+  --rgb-dorado: 217, 119, 6;
+  --rgb-secundario: 2, 132, 199;
 
   --degradado-verde: linear-gradient(90deg, var(--color-verde-fuerte), var(--color-verde-fuerte-claro));
   --degradado-ambar: linear-gradient(90deg, var(--color-ambar), var(--color-ambar-claro));
   --degradado-rojo: linear-gradient(90deg, var(--color-danger), var(--color-rojo-claro));
+  --degradado-dorado: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 
-  --color-text: #1d1809;
-  --color-text-muted: #7a6c48;
-  --color-text-soft: #5c4f30;
-  --color-text-hard: #30260f;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+  --color-text-soft: #4b5563;
+  --color-text-hard: #1f2937;
+  --color-text-resaltado: #111827;
 
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 24px rgba(15, 23, 42, 0.08);
 
   color-scheme: light;
 }
 
 :root {
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-label: 'Inter', sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -152,7 +163,6 @@ input {
   outline: none;
 }
 
-/* Estado de carga de páginas */
 .cargando-pagina {
   text-align: center;
   padding: 48px;
@@ -160,7 +170,6 @@ input {
   font-size: 14px;
 }
 
-/* Botón de reintentar errores */
 .boton-reintentar {
   margin-left: 12px;
   background: none;
@@ -173,7 +182,7 @@ input {
 
 .boton-principal-pequeno {
   background: var(--color-accent);
-  color: #080808;
+  color: var(--color-texto-sobre-acento);
   border-radius: var(--radius-sm);
   padding: 8px 16px;
   font-size: 13px;

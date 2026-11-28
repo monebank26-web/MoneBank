@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../core/constants';
 import { MENSAJE_SESION_EXPIRADA } from '../../../core/utils/tokenSesion';
+import PanelMarcaAutenticacion from '../components/PanelMarcaAutenticacion';
 
 const IconoOjo = ({ cerrado = false }) => (
   <svg
@@ -100,19 +101,7 @@ const LoginPage = () => {
 
   return (
     <div className="contenedor-autenticacion">
-      <video
-        id="video-fondo-pantalla"
-        autoPlay
-        muted
-        loop
-      >
-        <source
-          src="/video.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      <div className="capa-oscura-video" />
+      <PanelMarcaAutenticacion />
 
       <div className="tarjeta-autenticacion">
         <div className="marca-autenticacion">
