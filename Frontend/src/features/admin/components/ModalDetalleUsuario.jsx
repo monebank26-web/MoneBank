@@ -12,6 +12,7 @@ import {
   iconoEstadoAdmin,
   puedeBloquearUsuario,
   puedeDesactivarUsuario,
+  puedeRestablecerPassword,
   tieneBloqueoTemporalAdmin,
 } from '../utils/usuariosAdmin';
 
@@ -19,10 +20,12 @@ const ModalDetalleUsuario = ({
   open,
   onClose,
   usuario,
+  usuarioActual,
   onEditar,
   onBloquear,
   onEliminar,
   onDesbloquear,
+  onRestablecer,
 }) => {
   const accion = accionCuentaAdmin(usuario);
   const esReactivar = accion === ACCION_REACTIVAR;
@@ -112,6 +115,17 @@ const ModalDetalleUsuario = ({
                 >
                   <Icon icon="mdi:pencil-outline" />
                   Editar datos
+                </button>
+              )}
+
+              {puedeRestablecerPassword(usuario, usuarioActual) && (
+                <button
+                  type="button"
+                  className="admin-detalle__boton admin-detalle__boton--restablecer"
+                  onClick={() => onRestablecer?.(usuario)}
+                >
+                  <Icon icon="mdi:lock-reset" />
+                  Restablecer contraseña
                 </button>
               )}
 

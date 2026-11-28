@@ -88,7 +88,6 @@ const MainLayout = ({ children }) => {
   const submenuAnalitica = [
     { to: ROUTES.GRAFICAS, label: 'Gráficas' },
     { to: ROUTES.RESUMEN_SEMANAL, label: 'Resumen semanal' },
-    { to: ROUTES.REPORTES, label: 'Descargar reporte' },
   ];
   const analiticaActiva = submenuAnalitica.some((e) => location.pathname === e.to);
 
@@ -171,6 +170,19 @@ const MainLayout = ({ children }) => {
               )}
             </div>
           )}
+
+          <NavLink
+            to={ROUTES.PERFIL}
+            className={({ isActive }) =>
+              `elemento-navegacion ${
+                isActive ? 'elemento-navegacion--activo' : ''
+              }`
+            }
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="icono-navegacion">⚙</span>
+            <span className="etiqueta-navegacion">Mi perfil</span>
+          </NavLink>
         </nav>
 
         <div className="pie-barra-lateral">

@@ -98,7 +98,10 @@ def test_confirmar_vinculacion_commitea(mock_use_case):
 
     resultado = controller.confirmar_vinculacion(data, current_user)
 
-    mock_use_case.return_value.execute.assert_called_once_with(7, "123456")
+    mock_use_case.return_value.execute.assert_called_once_with(
+        id_padre=7,
+        codigo="123456",
+    )
     controller.unit_of_work.commit.assert_called_once()
     assert resultado == {"id_control": 9}
 

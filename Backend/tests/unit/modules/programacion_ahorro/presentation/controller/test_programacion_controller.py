@@ -3,6 +3,10 @@ from unittest.mock import Mock, patch
 from app.modules.programacion_ahorro.presentation.controller.programacion_controller import (
     ProgramacionController,
 )
+from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
+    CambiarEstadoRequest,
+    ModificarProgramacionRequest,
+)
 
 
 @patch(
@@ -44,18 +48,53 @@ def test_actualizar_estado_usa_uow_y_commitea(mock_use_case):
     unit_of_work = Mock()
     controller = ProgramacionController(repository, unit_of_work)
     current_user = Mock(id_usuario=7)
-    programacion = Mock()
-    programacion.id_programacion_ahorro = 5
-    programacion.estado = "PAUSADA"
+    data = CambiarEstadoRequest(estado="PAUSADA")
     mock_use_case.return_value.execute.return_value = {"id_programacion_ahorro": 5}
 
-    resultado = controller.actualizar_estado(programacion, current_user)
+    resultado = controller.actualizar_estado(5, data, current_user)
 
-    mock_use_case.assert_called_once_with(repository, unit_of_work.cuentas)
+    mock_use_case.assert_called_once_with(
+        repository,
+        unit_of_work.cuentas,
+        unit_of_work.ahorros,
+    )
     mock_use_case.return_value.execute.assert_called_once_with(
         7,
         5,
         "PAUSADA",
+    )
+    unit_of_work.commit.assert_called_once()
+    assert resultado == {"id_programacion_ahorro": 5}
+
+
+@patch(
+    "app.modules.programacion_ahorro.presentation."
+    "controller.programacion_controller.ModificarProgramacion"
+)
+def test_modificar_programacion_usa_uow_y_commitea(mock_use_case):
+
+    repository = Mock()
+    unit_of_work = Mock()
+    controller = ProgramacionController(repository, unit_of_work)
+    current_user = Mock(id_usuario=7)
+    data = ModificarProgramacionRequest(
+        monto_periodico="75000",
+        frecuencia="SEMANAL",
+    )
+    mock_use_case.return_value.execute.return_value = {"id_programacion_ahorro": 5}
+
+    resultado = controller.modificar_programacion(5, data, current_user)
+
+    mock_use_case.assert_called_once_with(
+        repository,
+        unit_of_work.cuentas,
+        unit_of_work.ahorros,
+    )
+    mock_use_case.return_value.execute.assert_called_once_with(
+        7,
+        5,
+        data.monto_periodico,
+        "SEMANAL",
     )
     unit_of_work.commit.assert_called_once()
     assert resultado == {"id_programacion_ahorro": 5}

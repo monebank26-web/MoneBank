@@ -27,15 +27,17 @@ class AuthRepository(ABC):
         pass
 
     @abstractmethod
-    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion):
-        """Debe crear y persistir un token de recuperación de contraseña
+    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion,
+                              intentos_fallidos=0):
+        """Debe crear y persistir un código de recuperación de contraseña
         asociado al usuario indicado."""
         pass
 
     @abstractmethod
-    def find_valid_token(self, token_hash):
-        """Debe devolver el token de recuperación que coincida con el hash,
-        que no esté expirado y que no haya sido utilizado, o None."""
+    def find_valid_token(self, usuario_id, token_hash):
+        """Debe devolver el código de recuperación que coincida con el
+        usuario y el hash, que no esté expirado y que no haya sido
+        utilizado, o None."""
         pass
 
     @abstractmethod
@@ -47,4 +49,27 @@ class AuthRepository(ABC):
     def invalidate_user_tokens(self, usuario_id):
         """Debe invalidar todos los tokens de recuperación activos
         de un usuario (marcarlos como utilizados)."""
+        pass
+
+    @abstractmethod
+    def find_latest_recovery_token(self, usuario_id):
+        """Debe devolver el último código de recuperación creado para el
+        usuario, sin importar si ya fue usado o expiró, o None."""
+        pass
+
+    @abstractmethod
+    def find_active_recovery_token(self, usuario_id):
+        """Debe devolver el código activo del usuario, o None."""
+        pass
+
+    @abstractmethod
+    def exists_recovery_token_hash(self, token_hash):
+        """Debe indicar si el hash de un código ya está registrado."""
+        pass
+
+    @abstractmethod
+    def update_recovery_token_attempts(self, token_id, intentos_fallidos,
+                                       usado):
+        """Debe actualizar los intentos fallidos y el estado de uso
+        de un código de recuperación."""
         pass

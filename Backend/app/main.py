@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.shared.startup_checks import ejecutar_chequeo_de_arranque
+from app.core.config.settings import settings
 
 from app.modules.usuario.presentation.router.router import (router as usuario_router)
 from app.modules.ahorro.presentation.router.router import router as ahorro_router
@@ -46,10 +47,11 @@ app = FastAPI(title="MoneBank API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Token-Renovado"],
 )
 
 @app.get("/")

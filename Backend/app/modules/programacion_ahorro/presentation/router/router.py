@@ -8,9 +8,10 @@ from app.modules.programacion_ahorro.presentation.controller.programacion_contro
 )
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
     AhorroAsociadoResponse,
+    CambiarEstadoRequest,
+    ModificarProgramacionRequest,
     ProgramacionCreate,
     ProgramacionResponse,
-    ProgramacionUpdate,
 )
 
 
@@ -30,13 +31,32 @@ def crear_programacion(
     return controller.crear_programacion(programacion, current_user)
 
 
-@router.put("/", response_model=ProgramacionResponse, status_code=200)
+@router.put(
+    "/estado/{id_programacion_ahorro}",
+    response_model=ProgramacionResponse,
+    status_code=200,
+)
 def actualizar_estado(
-    programacion: ProgramacionUpdate,
+    id_programacion_ahorro: int,
+    data: CambiarEstadoRequest,
     current_user: object = Depends(get_current_user),
     controller: ProgramacionController = Depends(get_programacion_controller),
 ):
-    return controller.actualizar_estado(programacion, current_user)
+    return controller.actualizar_estado(id_programacion_ahorro, data, current_user)
+
+
+@router.put(
+    "/{id_programacion_ahorro}",
+    response_model=ProgramacionResponse,
+    status_code=200,
+)
+def modificar_programacion(
+    id_programacion_ahorro: int,
+    data: ModificarProgramacionRequest,
+    current_user: object = Depends(get_current_user),
+    controller: ProgramacionController = Depends(get_programacion_controller),
+):
+    return controller.modificar_programacion(id_programacion_ahorro, data, current_user)
 
 
 @router.get("/", response_model=list[AhorroAsociadoResponse], status_code=200)

@@ -1,0 +1,97 @@
+.cmp {
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+
+.cmp__titulo {
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+}
+
+.cmp__periodo {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin: 0 0 16px;
+}
+
+.cmp__aviso {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  background: rgba(201, 162, 39, 0.12);
+  font-size: 0.875rem;
+}
+
+.cmp__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.cmp__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  background: rgba(128, 128, 128, 0.06);
+}
+
+.cmp__etiqueta {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.cmp__valor {
+  font-size: 1.4rem;
+}
+
+.cmp .cmp__antes {
+  font-size: 0.8rem;
+  color: inherit !important;
+  opacity: 0.65 !important;
+}
+
+.cmp .cmp__variacion {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cmp .cmp__variacion--mejora {
+  color: #16a34a !important;
+}
+
+.cmp .cmp__variacion--empeora {
+  color: #dc2626 !important;
+}
+
+.cmp .cmp__variacion--neutra {
+  color: inherit !important;
+  opacity: 0.65 !important;
+}
+
+.cmp-error {
+  margin: 8px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.an-range input[aria-invalid='true'] {
+  border-color: #dc2626;
+}
+
+@media (max-width: 640px) {
+  .cmp__grid {
+    grid-template-columns: 1fr;
+  }
+}

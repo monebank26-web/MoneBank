@@ -13,6 +13,7 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  RECUPERAR: '/recuperar',
   DASHBOARD: '/dashboard',
   CHAT: '/chat',
   METAS: '/metas',

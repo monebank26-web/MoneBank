@@ -4,6 +4,7 @@ import { useDatosPersonales } from '../hooks/useDatosPersonales';
 import { useCambiarPassword } from '../hooks/useCambiarPassword';
 
 import { controlParentalService } from '../../controlParental/services/controlParentalServices';
+import { authService } from '../../auth/services/authService';
 
 import TarjetaResumenPerfil from '../components/TarjetaResumenPerfil';
 import SeccionDatosPersonales from '../components/SeccionDatosPersonales';
@@ -20,6 +21,8 @@ const PerfilPage = () => {
     relacionesParentales,
     setRelacionesParentales,
   ] = useState([]);
+
+  const [saldoCuenta, setSaldoCuenta] = useState(0);
 
   useEffect(() => {
     const cargarRelacionesParentales = async () => {
@@ -43,6 +46,12 @@ const PerfilPage = () => {
     };
 
     cargarRelacionesParentales();
+  }, []);
+
+  useEffect(() => {
+    authService.obtenerSaldo()
+      .then(({ saldo }) => setSaldoCuenta(saldo))
+      .catch(() => setSaldoCuenta(0));
   }, []);
 
   const usuarioId = Number(
@@ -91,6 +100,7 @@ const PerfilPage = () => {
       <TarjetaResumenPerfil
         user={datosPersonales.user}
         relaciones={relacionesParentales}
+        saldoCuenta={saldoCuenta}
       />
 
 

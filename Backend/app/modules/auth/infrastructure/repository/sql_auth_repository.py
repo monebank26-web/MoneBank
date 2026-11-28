@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from app.core.constants import MINUTOS_BLOQUEO
 from app.modules.auth.domain.entity.intento_autenticacion import IntentoAutenticacion
 from app.modules.auth.domain.entity.reset_token import ResetToken
 from app.modules.auth.domain.interface.auth_repository import AuthRepository
@@ -16,6 +16,20 @@ class SqlAuthRepository(AuthRepository):
         self.db = db
         self.usuario_repository = usuario_repository
 
+    def _to_entity(self, model):
+        if not model:
+            return None
+
+        return ResetToken(
+            id=model.id,
+            usuario_id=model.usuario_id,
+            token_hash=model.token_hash,
+            fecha_creacion=model.fecha_creacion,
+            fecha_expiracion=model.fecha_expiracion,
+            usado=model.usado,
+            intentos_fallidos=model.intentos_fallidos,
+        )
+
     def login(self, correo):
         return self.usuario_repository.get_by_email(correo)
 
@@ -25,20 +39,14 @@ class SqlAuthRepository(AuthRepository):
         if not usuario:
             return None
 
-        nuevos_intentos = (usuario.intentos_fallidos or 0) + 1
-        bloqueado_hasta = usuario.bloqueado_hasta
-
         intento = IntentoAutenticacion(
-            nuevos_intentos,
+            usuario.intentos_fallidos or 0,
             usuario.bloqueado_hasta
         )
-
-        if intento.debe_bloquearse():
-            ahora_local = datetime.now()
-            bloqueado_hasta = ahora_local + timedelta(minutes=MINUTOS_BLOQUEO)
+        intento.registrar_intento_fallido()
 
         return self.usuario_repository.update_auth_fields(
-            usuario_id, nuevos_intentos, bloqueado_hasta
+            usuario_id, intento.intentos_fallidos, intento.bloqueado_hasta
         )
 
     def is_locked(self, usuario_id):
@@ -55,37 +63,32 @@ class SqlAuthRepository(AuthRepository):
     def reset_failed_attempts(self, usuario_id):
         return self.usuario_repository.update_auth_fields(usuario_id, 0, None)
 
-    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion):
+    def create_recovery_token(self, usuario_id, token_hash, fecha_expiracion,
+                              intentos_fallidos=0):
         token = ResetTokenModel(
             usuario_id=usuario_id,
             token_hash=token_hash,
-            fecha_expiracion=fecha_expiracion
+            fecha_expiracion=fecha_expiracion,
+            intentos_fallidos=intentos_fallidos,
         )
         self.db.add(token)
         self.db.flush()
         self.db.refresh(token)
         return token
 
-    def find_valid_token(self, token_hash):
+    def find_valid_token(self, usuario_id, token_hash):
         model = (
             self.db.query(ResetTokenModel)
             .filter(
+                ResetTokenModel.usuario_id == usuario_id,
                 ResetTokenModel.token_hash == token_hash,
                 ResetTokenModel.usado == False,
                 ResetTokenModel.fecha_expiracion > datetime.now(timezone.utc)
             )
             .first()
         )
-        if not model:
-            return None
-        return ResetToken(
-            id=model.id,
-            usuario_id=model.usuario_id,
-            token_hash=model.token_hash,
-            fecha_creacion=model.fecha_creacion,
-            fecha_expiracion=model.fecha_expiracion,
-            usado=model.usado
-        )
+
+        return self._to_entity(model)
 
     def invalidate_token(self, token_id):
         token = (
@@ -103,3 +106,58 @@ class SqlAuthRepository(AuthRepository):
             ResetTokenModel.usado == False
         ).update({"usado": True})
         self.db.flush()
+
+    def find_latest_recovery_token(self, usuario_id):
+        model = (
+            self.db.query(ResetTokenModel)
+            .filter(ResetTokenModel.usuario_id == usuario_id)
+            .order_by(
+                desc(ResetTokenModel.fecha_creacion),
+                desc(ResetTokenModel.id),
+            )
+            .first()
+        )
+
+        return self._to_entity(model)
+
+    def find_active_recovery_token(self, usuario_id):
+        model = (
+            self.db.query(ResetTokenModel)
+            .filter(
+                ResetTokenModel.usuario_id == usuario_id,
+                ResetTokenModel.usado == False,
+                ResetTokenModel.fecha_expiracion > datetime.now(timezone.utc),
+            )
+            .order_by(
+                desc(ResetTokenModel.fecha_creacion),
+                desc(ResetTokenModel.id),
+            )
+            .first()
+        )
+
+        return self._to_entity(model)
+
+    def exists_recovery_token_hash(self, token_hash):
+        return (
+            self.db.query(ResetTokenModel)
+            .filter(ResetTokenModel.token_hash == token_hash)
+            .first()
+            is not None
+        )
+
+    def update_recovery_token_attempts(self, token_id, intentos_fallidos,
+                                       usado):
+        model = (
+            self.db.query(ResetTokenModel)
+            .filter(ResetTokenModel.id == token_id)
+            .first()
+        )
+
+        if not model:
+            return None
+
+        model.intentos_fallidos = intentos_fallidos
+        model.usado = usado
+        self.db.flush()
+        self.db.refresh(model)
+        return self._to_entity(model)

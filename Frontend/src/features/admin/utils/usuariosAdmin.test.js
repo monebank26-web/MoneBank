@@ -1,6 +1,7 @@
 import {
   ACCION_DESBLOQUEAR,
   ACCION_REACTIVAR,
+  MENSAJE_RESTABLECIMIENTO_ENVIADO,
   accionCuentaAdmin,
   calcularTotalPaginas,
   esCorreoDuplicado,
@@ -12,11 +13,13 @@ import {
   mensajeErrorBloqueo,
   mensajeErrorDesactivacion,
   mensajeErrorDesbloqueo,
+  mensajeErrorRestablecerPassword,
   mensajeExitoDesbloqueo,
   mensajeVacio,
   motivoBloqueoValido,
   puedeBloquearUsuario,
   puedeDesactivarUsuario,
+  puedeRestablecerPassword,
   textoConfirmacionDesbloqueo,
   textoTotalUsuarios,
   tieneBloqueoTemporalAdmin,
@@ -249,5 +252,48 @@ describe('mensajes de error de las acciones', () => {
       .toBe('No se pudo bloquear la cuenta. Inténtalo de nuevo.');
     expect(mensajeErrorDesactivacion(new Error('Failed to fetch')))
       .toBe('No se pudo desactivar la cuenta. Inténtalo de nuevo.');
+  });
+});
+
+describe('puedeRestablecerPassword', () => {
+  it('oculta la accion en la cuenta del propio administrador', () => {
+    expect(puedeRestablecerPassword({ id: 7 }, { id: 7 })).toBe(false);
+    expect(puedeRestablecerPassword({ id: '7' }, { id: 7 })).toBe(false);
+  });
+
+  it('permite restablecer la contraseña de otra cuenta', () => {
+    expect(puedeRestablecerPassword({ id: 8 }, { id: 7 })).toBe(true);
+  });
+
+  it('no ofrece la accion si falta alguno de los dos usuarios', () => {
+    expect(puedeRestablecerPassword(null, { id: 7 })).toBe(false);
+    expect(puedeRestablecerPassword({ id: 8 }, null)).toBe(false);
+  });
+});
+
+describe('mensajes de restablecimiento de contraseña', () => {
+  it('confirma el envio del codigo', () => {
+    expect(MENSAJE_RESTABLECIMIENTO_ENVIADO).toBe(
+      'Código de restablecimiento enviado al correo del usuario.'
+    );
+  });
+
+  it('traduce el enfriamiento y el fallo de envio', () => {
+    expect(mensajeErrorRestablecerPassword({ status: 429 }))
+      .toBe('Espera 60 segundos antes de solicitar otro código.');
+    expect(mensajeErrorRestablecerPassword({ status: 502 }))
+      .toBe('No se pudo enviar el código. No se guardó ningún cambio. Inténtalo de nuevo.');
+  });
+
+  it('explica el bloqueo de la cuenta propia y el usuario inexistente', () => {
+    expect(mensajeErrorRestablecerPassword({ status: 400 }))
+      .toBe('No puedes restablecer tu propia contraseña desde este panel.');
+    expect(mensajeErrorRestablecerPassword({ status: 404 }))
+      .toBe('El usuario ya no existe. Actualiza la lista.');
+  });
+
+  it('deja un mensaje claro cuando el error es desconocido', () => {
+    expect(mensajeErrorRestablecerPassword(new Error('Failed to fetch')))
+      .toBe('No se pudo restablecer la contraseña. Inténtalo de nuevo.');
   });
 });

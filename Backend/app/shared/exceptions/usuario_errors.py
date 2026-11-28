@@ -1,10 +1,12 @@
 from app.shared.constants.codigos_error import (
+    CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO,
     CODIGO_CUENTA_INACTIVA_NO_BLOQUEABLE,
     CODIGO_CUENTA_NO_BLOQUEADA,
     CODIGO_CUENTA_YA_BLOQUEADA,
     CODIGO_CUENTA_YA_INACTIVA,
     CODIGO_NO_PUEDE_BLOQUEARSE,
     CODIGO_NO_PUEDE_DESACTIVARSE,
+    CODIGO_NO_PUEDE_RESTABLECER_PASSWORD_PROPIA,
     CODIGO_ULTIMO_ADMINISTRADOR,
 )
 from app.shared.exceptions.base import BusinessError
@@ -47,6 +49,23 @@ class UltimoAdministradorException(BusinessError):
 class NoPuedeDesactivarseException(BusinessError):
     message = "No puedes desactivar tu propia cuenta"
     code = CODIGO_NO_PUEDE_DESACTIVARSE
+
+
+class NoPuedeRestablecerPasswordPropiaException(BusinessError):
+    message = "No puedes restablecer tu propia contraseña desde este endpoint"
+    code = CODIGO_NO_PUEDE_RESTABLECER_PASSWORD_PROPIA
+
+
+class SolicitudCodigoRecienteException(BusinessError):
+    message = "Espera 60 segundos antes de solicitar otro código."
+
+
+class CorreoRestablecimientoNoEnviadoException(BusinessError):
+    message = (
+        "No se pudo enviar el código de restablecimiento. "
+        "No se guardó ningún cambio. Intenta nuevamente."
+    )
+    code = CODIGO_CORREO_RESTABLECIMIENTO_NO_ENVIADO
 
 
 class UltimoAdministradorDesactivacionException(BusinessError):

@@ -12,7 +12,7 @@ import ModalModificarProgramacion from '../components/ModalModificarProgramacion
 import './MetasPage.css';
 
 const MetasPage = () => {
-  const { metas, programaciones, loading, error, crear, abonar, programar, actualizarEstado, recargar } = useMetas();
+  const { metas, programaciones, loading, error, crear, abonar, programar, actualizarEstado, modificarProgramacion, recargar } = useMetas();
   const { resumen, loading: loadingResumen, error: errorResumen, recargar: recargarResumen } = useResumenGlobalMetas();
   const [modalCrear, setModalCrear] = useState(false);
   const [metaAbonar, setMetaAbonar] = useState(null);
@@ -41,6 +41,11 @@ const MetasPage = () => {
 
   const onCambiarEstado = async (datos) => {
     await actualizarEstado(datos);
+    recargarResumen();
+  };
+
+  const onModificarProgramacion = async (datos) => {
+    await modificarProgramacion(datos);
     recargarResumen();
   };
 
@@ -126,6 +131,7 @@ const MetasPage = () => {
         onClose={() => setProgramacionModificar(null)}
         programacion={programacionModificar}
         onChangeEstado={onCambiarEstado}
+        onModificarProgramacion={onModificarProgramacion}
       />
     </div>
   );

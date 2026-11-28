@@ -7,6 +7,7 @@ import { esAdministrador } from '../utils/permisos';
 import HomePage from '../../features/Home/pages/HomePage';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
+import RecuperarPasswordPage from '../../features/auth/pages/RecuperarPasswordPage';
 import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 import ChatPage from '../../features/chat/pages/ChatPage';
 import MetasPage from '../../features/metas/pages/MetasPage';
@@ -20,12 +21,17 @@ import ControlParentalDashboardPage from '../../features/controlParental/pages/C
 import { AnaliticaPage } from '../../features/analytics/pages/AnaliticaPage';
 import { ResumenSemanalPage } from '../../features/analytics/pages/ResumenSemanalPage';
 
+const destinoLogin = (motivo) =>
+  motivo === 'expirada'
+    ? { pathname: ROUTES.LOGIN, search: '?sesion=expirada' }
+    : ROUTES.LOGIN;
+
 const RutaPrivada = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, motivo } = useAuth();
   if (loading) return <p className="cargando-pagina">Cargando...</p>;
   return isAuthenticated
     ? <MainLayout>{children}</MainLayout>
-    : <Navigate to={ROUTES.LOGIN} replace />;
+    : <Navigate to={destinoLogin(motivo)} replace />;
 };
 
 // El administrador no maneja cuentas, metas ni límites: su inicio es el panel
@@ -39,9 +45,9 @@ const RutaInicio = ({ children }) => {
 };
 
 const RutaAdmin = ({ children }) => {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, loading, motivo } = useAuth();
   if (loading) return <p className="cargando-pagina">Cargando...</p>;
-  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
+  if (!isAuthenticated) return <Navigate to={destinoLogin(motivo)} replace />;
   if (!esAdministrador(user)) return <Navigate to={ROUTES.DASHBOARD} replace />;
   return <MainLayout>{children}</MainLayout>;
 };
@@ -64,6 +70,7 @@ const AppRouter = () => (
       {/* Públicas */}
       <Route path="/login" element={<RutaPublica><LoginPage /></RutaPublica>} />
       <Route path="/register" element={<RutaPublica><RegisterPage /></RutaPublica>} />
+      <Route path={ROUTES.RECUPERAR} element={<RecuperarPasswordPage />} />
 
       {/* Privadas generales */}
       <Route path="/dashboard" element={<RutaPrivada><RutaInicio><DashboardPage /></RutaInicio></RutaPrivada>} />

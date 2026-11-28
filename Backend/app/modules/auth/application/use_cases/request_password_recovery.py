@@ -1,8 +1,14 @@
-from datetime import datetime, timedelta, timezone
+import logging
 
-from app.core.constants import MINUTOS_TOKEN_RECUPERACION
-from app.core.security.reset_token import TokenGenerator
-from app.shared.exceptions.auth_errors import EmailNotFoundException
+from app.modules.auth.application.use_cases.codigo_recuperacion import (
+    crear_codigo_recuperacion,
+)
+
+logger = logging.getLogger(__name__)
+
+MENSAJE_SOLICITUD_RECUPERACION = (
+    "Si el correo está registrado, recibirás un código"
+)
 
 
 class RequestPasswordRecoveryUseCase:
@@ -13,33 +19,40 @@ class RequestPasswordRecoveryUseCase:
         self.email_service = email_service
 
     def execute(self, correo):
+        resultado = {
+            "mensaje": MENSAJE_SOLICITUD_RECUPERACION,
+            "_correo_enviado": True,
+        }
 
-        usuario = self.usuario_repository.get_by_email(correo)
+        usuario = self.usuario_repository.get_by_email_recuperacion(correo)
 
         if not usuario:
-            raise EmailNotFoundException()
+            return resultado
 
-        self.auth_repository.invalidate_user_tokens(usuario.id_usuario)
-
-        token_original = TokenGenerator.generate()
-        token_hash = TokenGenerator.hash(token_original)
-
-        fecha_expiracion = (
-            datetime.now(timezone.utc)
-            + timedelta(minutes=MINUTOS_TOKEN_RECUPERACION)
-        )
-
-        self.auth_repository.create_recovery_token(
+        codigo = crear_codigo_recuperacion(
+            self.auth_repository,
             usuario.id_usuario,
-            token_hash,
-            fecha_expiracion
         )
 
-        self.email_service.send_recovery_email(correo, token_original)
+        if codigo is None:
+            return resultado
 
-        return {
-            "mensaje": (
-                "Si el correo está registrado, "
-                "recibirás un enlace de recuperación"
+        try:
+            enviado = self.email_service.send_recovery_email(
+                usuario.correo,
+                codigo,
             )
-        }
+        except Exception:
+            logger.exception(
+                "Error inesperado al enviar el código de recuperación"
+            )
+            enviado = False
+
+        if not enviado:
+            logger.warning(
+                "No se pudo enviar el código de recuperación a %s",
+                usuario.correo,
+            )
+            resultado["_correo_enviado"] = False
+
+        return resultado

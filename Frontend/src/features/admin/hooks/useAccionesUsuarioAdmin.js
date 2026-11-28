@@ -6,9 +6,11 @@ import {
   LONGITUD_MINIMA_MOTIVO_BLOQUEO,
   accionCuentaAdmin,
   esCorreoDuplicado,
+  MENSAJE_RESTABLECIMIENTO_ENVIADO,
   mensajeErrorBloqueo,
   mensajeErrorDesactivacion,
   mensajeErrorDesbloqueo,
+  mensajeErrorRestablecerPassword,
   mensajeExitoDesbloqueo,
   motivoBloqueoValido,
 } from '../utils/usuariosAdmin';
@@ -20,16 +22,19 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false);
   const [modalBloquearAbierto, setModalBloquearAbierto] = useState(false);
   const [modalDesbloquearAbierto, setModalDesbloquearAbierto] = useState(false);
+  const [modalRestablecerAbierto, setModalRestablecerAbierto] = useState(false);
   const [formularioEdicion, setFormularioEdicion] = useState({});
   const [motivoBloqueo, setMotivoBloqueo] = useState('');
   const [errorEdicion, setErrorEdicion] = useState('');
   const [errorBloqueo, setErrorBloqueo] = useState('');
   const [errorEliminar, setErrorEliminar] = useState('');
   const [errorDesbloquear, setErrorDesbloquear] = useState('');
+  const [errorRestablecer, setErrorRestablecer] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [bloqueando, setBloqueando] = useState(false);
   const [desactivando, setDesactivando] = useState(false);
   const [desbloqueando, setDesbloqueando] = useState(false);
+  const [restableciendo, setRestableciendo] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [mensajeEsError, setMensajeEsError] = useState(false);
 
@@ -194,6 +199,45 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     }
   };
 
+  const abrirRestablecer = (usuario) => {
+    setUsuarioSeleccionado(usuario);
+    setErrorRestablecer('');
+    setModalRestablecerAbierto(true);
+  };
+
+  const cerrarRestablecer = () => {
+    if (restableciendo) return;
+
+    setModalRestablecerAbierto(false);
+    setErrorRestablecer('');
+  };
+
+  const confirmarRestablecer = async () => {
+    if (restableciendo || !usuarioSeleccionado) return;
+
+    setRestableciendo(true);
+    setErrorRestablecer('');
+
+    try {
+      await authService.restablecerPasswordUsuario(usuarioSeleccionado.id);
+      setModalRestablecerAbierto(false);
+      setModalDetalleAbierto(false);
+      mostrarMensaje(MENSAJE_RESTABLECIMIENTO_ENVIADO);
+      recargar();
+    } catch (err) {
+      if (err?.status === 404) {
+        setModalRestablecerAbierto(false);
+        setModalDetalleAbierto(false);
+        mostrarMensaje(mensajeErrorRestablecerPassword(err), 'error');
+        recargar();
+      } else {
+        setErrorRestablecer(mensajeErrorRestablecerPassword(err));
+      }
+    } finally {
+      setRestableciendo(false);
+    }
+  };
+
   const eliminarUsuario = async () => {
     if (desactivando || !usuarioSeleccionado) return;
 
@@ -223,6 +267,7 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     modalBloquearAbierto,
     setModalBloquearAbierto,
     modalDesbloquearAbierto,
+    modalRestablecerAbierto,
     formularioEdicion,
     setFormularioEdicion,
     motivoBloqueo,
@@ -231,10 +276,12 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     errorBloqueo,
     errorEliminar,
     errorDesbloquear,
+    errorRestablecer,
     guardando,
     bloqueando,
     desactivando,
     desbloqueando,
+    restableciendo,
     mensaje,
     mensajeEsError,
     abrirDetalle,
@@ -249,5 +296,8 @@ export const useAccionesUsuarioAdmin = ({ recargar }) => {
     abrirDesbloquear,
     cerrarDesbloquear,
     confirmarDesbloqueo,
+    abrirRestablecer,
+    cerrarRestablecer,
+    confirmarRestablecer,
   };
 };

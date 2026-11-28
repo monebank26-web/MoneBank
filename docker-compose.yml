@@ -52,6 +52,31 @@ services:
     volumes:
       - ./backend:/app
 
+  scheduler:
+    build:
+      context: ./backend
+
+    container_name: monebank-scheduler
+
+    restart: always
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      TZ: America/Bogota
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: ["python", "-m", "app.run_scheduler"]
+
+    volumes:
+      - ./backend:/app
+
   frontend:
     build:
       context: ./frontend

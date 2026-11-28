@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
+import { useAuth } from '../../../core/context/AuthContext';
 import Paginacion from '../../transacciones/components/Paginacion';
 import '../../../shared/styles/transacciones-modal.css';
 import { useUsuariosAdmin } from '../hooks/useUsuariosAdmin';
@@ -12,9 +13,11 @@ import ModalEditarUsuario from '../components/ModalEditarUsuario';
 import ModalEliminarUsuario from '../components/ModalEliminarUsuario';
 import ModalBloquearUsuario from '../components/ModalBloquearUsuario';
 import ModalDesbloquearUsuario from '../components/ModalDesbloquearUsuario';
+import ModalRestablecerPassword from '../components/ModalRestablecerPassword';
 import './AdminPage.css';
 
 const AdminPage = () => {
+  const { user } = useAuth();
   const {
     usuarios,
     total,
@@ -118,6 +121,7 @@ const AdminPage = () => {
         open={acciones.modalDetalleAbierto}
         onClose={() => acciones.setModalDetalleAbierto(false)}
         usuario={acciones.usuarioSeleccionado}
+        usuarioActual={user}
         onEditar={(usuario) => {
           acciones.setModalDetalleAbierto(false);
           acciones.abrirEditar(usuario);
@@ -133,6 +137,10 @@ const AdminPage = () => {
         onDesbloquear={(usuario) => {
           acciones.setModalDetalleAbierto(false);
           acciones.abrirDesbloquear(usuario);
+        }}
+        onRestablecer={(usuario) => {
+          acciones.setModalDetalleAbierto(false);
+          acciones.abrirRestablecer(usuario);
         }}
       />
 
@@ -173,6 +181,15 @@ const AdminPage = () => {
         onConfirmar={acciones.confirmarDesbloqueo}
         error={acciones.errorDesbloquear}
         desbloqueando={acciones.desbloqueando}
+      />
+
+      <ModalRestablecerPassword
+        open={acciones.modalRestablecerAbierto}
+        onClose={acciones.cerrarRestablecer}
+        usuario={acciones.usuarioSeleccionado}
+        onConfirmar={acciones.confirmarRestablecer}
+        error={acciones.errorRestablecer}
+        restableciendo={acciones.restableciendo}
       />
     </div>
   );

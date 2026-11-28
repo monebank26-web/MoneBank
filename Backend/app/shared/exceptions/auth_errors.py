@@ -2,6 +2,8 @@ from app.shared.constants.codigos_error import (
     CODIGO_CORREO_DUPLICADO,
     CODIGO_CUENTA_BLOQUEADA,
     CODIGO_CUENTA_INACTIVA,
+    CODIGO_TOKEN_EXPIRADO,
+    CODIGO_TOKEN_INVALIDO,
 )
 from app.shared.exceptions.base import BusinessError
 
@@ -33,5 +35,19 @@ class EmailNotFoundException(BusinessError):
     message = "El correo no está registrado"
 
 
+class ContrasenaInvalidaException(BusinessError):
+    message = "La contraseña no cumple con los requisitos de seguridad"
+
+
 class InvalidOrExpiredTokenException(BusinessError):
-    message = "El token es inválido o ha expirado"
+    message = "El código es inválido o ha expirado"
+
+
+class TokenExpiradoException(BusinessError):
+    message = "Token inválido o expirado"
+    code = CODIGO_TOKEN_EXPIRADO
+
+
+class TokenInvalidoException(BusinessError):
+    message = "Token inválido o expirado"
+    code = CODIGO_TOKEN_INVALIDO

@@ -108,6 +108,22 @@ def test_exists_by_email_ignora_mayusculas_y_espacios():
     assert repositorio.exists_by_email(None) is False
 
 
+def test_get_by_email_recuperacion_ignora_mayusculas_y_espacios():
+    sesion = sesion_sqlite()
+    agregar_usuario(sesion, 1, "David@gmail.com")
+    sesion.commit()
+
+    repositorio = SqlUsuarioRepository(sesion)
+
+    usuario = repositorio.get_by_email_recuperacion("  david@GMAIL.com ")
+
+    assert usuario is not None
+    assert usuario.id_usuario == 1
+    assert repositorio.get_by_email_recuperacion("otro@gmail.com") is None
+    assert repositorio.get_by_email_recuperacion("") is None
+    assert repositorio.get_by_email_recuperacion(None) is None
+
+
 def test_exists_by_email_puede_excluir_al_propio_usuario():
     sesion = sesion_sqlite()
     agregar_usuario(sesion, 1, "david@gmail.com")

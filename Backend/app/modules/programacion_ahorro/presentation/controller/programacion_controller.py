@@ -11,12 +11,16 @@ from app.modules.programacion_ahorro.application.consultar_programaciones import
 from app.modules.programacion_ahorro.application.crear_programacion import (
     CrearProgramacion,
 )
+from app.modules.programacion_ahorro.application.modificar_programacion import (
+    ModificarProgramacion,
+)
 from app.modules.programacion_ahorro.domain.interface.programacion_repository import (
     ProgramacionAhorroRepository,
 )
 from app.modules.programacion_ahorro.presentation.schema.programacion_schema import (
+    CambiarEstadoRequest,
+    ModificarProgramacionRequest,
     ProgramacionCreate,
-    ProgramacionUpdate,
 )
 
 
@@ -47,15 +51,41 @@ class ProgramacionController:
         self.unit_of_work.commit()
         return resultado
 
-    def actualizar_estado(self, programacion: ProgramacionUpdate, current_user):
+    def actualizar_estado(
+        self,
+        id_programacion_ahorro: int,
+        data: CambiarEstadoRequest,
+        current_user,
+    ):
         caso_uso = ActualizarEstadoUseCase(
             self.repository,
             self.unit_of_work.cuentas,
+            self.unit_of_work.ahorros,
         )
         resultado = caso_uso.execute(
             current_user.id_usuario,
-            programacion.id_programacion_ahorro,
-            programacion.estado,
+            id_programacion_ahorro,
+            data.estado,
+        )
+        self.unit_of_work.commit()
+        return resultado
+
+    def modificar_programacion(
+        self,
+        id_programacion_ahorro: int,
+        data: ModificarProgramacionRequest,
+        current_user,
+    ):
+        caso_uso = ModificarProgramacion(
+            self.repository,
+            self.unit_of_work.cuentas,
+            self.unit_of_work.ahorros,
+        )
+        resultado = caso_uso.execute(
+            current_user.id_usuario,
+            id_programacion_ahorro,
+            data.monto_periodico,
+            data.frecuencia,
         )
         self.unit_of_work.commit()
         return resultado
