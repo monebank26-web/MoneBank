@@ -54,11 +54,6 @@ const BarraFiltrosUsuarios = ({
           onChange={(e) => setBusqueda(e.target.value)}
         />
       </div>
-
-      <button type="button" className="admin-filtros__limpiar" onClick={onLimpiar}>
-        <Icon icon="mdi:filter-off-outline" />
-        Limpiar
-      </button>
     </div>
 
     <div className="admin-filtros__grid">

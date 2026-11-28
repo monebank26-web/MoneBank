@@ -1,7 +1,6 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import { useAuth } from '../../../core/context/AuthContext';
-import Paginacion from '../../transacciones/components/Paginacion';
 import '../../../shared/styles/transacciones-modal.css';
 import { useUsuariosAdmin } from '../hooks/useUsuariosAdmin';
 import { useAccionesUsuarioAdmin } from '../hooks/useAccionesUsuarioAdmin';
@@ -54,7 +53,11 @@ const PiePaginacion = ({ pagina, totalPaginas, total, cantidad, onChange }) => {
           Anterior
         </button>
 
-        {inicio > 1 && <span className="admin-pie__elipsis">…</span>}
+        {inicio > 1 && (
+          <span className="admin-pie__elipsis">
+            <Icon icon="mdi:dots-horizontal" aria-hidden="true" />
+          </span>
+        )}
 
         {paginas.map((numero) => (
           <button
@@ -70,7 +73,11 @@ const PiePaginacion = ({ pagina, totalPaginas, total, cantidad, onChange }) => {
           </button>
         ))}
 
-        {fin < totalPaginas && <span className="admin-pie__elipsis">…</span>}
+        {fin < totalPaginas && (
+          <span className="admin-pie__elipsis">
+            <Icon icon="mdi:dots-horizontal" aria-hidden="true" />
+          </span>
+        )}
 
         <button
           type="button"
@@ -107,6 +114,15 @@ const AdminPage = () => {
   } = useUsuariosAdmin();
 
   const acciones = useAccionesUsuarioAdmin({ recargar });
+
+  const ejecutarAccion = (clave, usuario) => {
+    if (clave === 'editar') acciones.abrirEditar(usuario);
+    if (clave === 'bloquear') acciones.abrirBloquear(usuario);
+    if (clave === 'desbloquear') acciones.abrirDesbloquear(usuario);
+    if (clave === 'restablecer') acciones.abrirRestablecer(usuario);
+    if (clave === 'desactivar') acciones.abrirEliminar(usuario);
+  };
+
   const porcentajeActivos = metricas.total
     ? `${((metricas.activos / metricas.total) * 100).toFixed(1)}%`
     : '0.0%';
@@ -206,17 +222,33 @@ const AdminPage = () => {
         </div>
       ) : (
         <>
+          <div className="admin-tabla-cabecera" aria-hidden="true">
+            <span>Usuario</span>
+            <span>ID MoneBank</span>
+            <span>Rol</span>
+            <span>Estado</span>
+            <span>Acciones</span>
+          </div>
+
           <div className="admin-lista">
             {usuarios.map((usuario) => (
               <FilaUsuarioAdmin
                 key={usuario.id}
                 usuario={usuario}
+                usuarioActual={user}
                 onVerDetalle={acciones.abrirDetalle}
+                onAccion={ejecutarAccion}
               />
             ))}
           </div>
 
-          <Paginacion pagina={pagina} totalPaginas={totalPaginas} onChange={setPagina} />
+          <PiePaginacion
+            pagina={pagina}
+            totalPaginas={totalPaginas}
+            total={total}
+            cantidad={usuarios.length}
+            onChange={setPagina}
+          />
         </>
       )}
 

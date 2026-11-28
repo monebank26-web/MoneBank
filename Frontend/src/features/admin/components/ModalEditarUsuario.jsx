@@ -66,7 +66,7 @@ const ModalEditarUsuario = ({ open, onClose, formulario, setFormulario, onGuarda
 
       <p className="admin-editar__aviso">
         <Icon icon="mdi:shield-alert-outline" aria-hidden="true" />
-        Los cambios se sincronizarán inmediatamente con las credenciales bancarias.
+        Los cambios se sincronizarán inmediatamente.
       </p>
 
       {error && <div className="error-formulario">{error}</div>}

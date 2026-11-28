@@ -112,6 +112,7 @@ export const useUsuariosAdmin = () => {
   return {
     usuarios,
     total,
+    metricas,
     pagina,
     porPagina: POR_PAGINA,
     totalPaginas: calcularTotalPaginas(total, POR_PAGINA),
