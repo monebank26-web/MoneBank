@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from fastapi.responses import StreamingResponse
 
 from app.core.security.auth import get_current_user
@@ -109,14 +109,19 @@ def descargar_reporte_pdf(
     fecha_fin: Optional[date] = None,
     current_user: object = Depends(get_current_user),
     controller: AnalyticsController = Depends(get_analytics_controller),
+    response: Response = None,
 ):
     reporte = controller.generar_reporte(current_user, periodo, fecha_inicio, fecha_fin)
 
     pdf_buffer = generar_pdf_reporte(reporte)
     nombre_archivo = f"reporte_{reporte['periodo_inicio']}_{reporte['periodo_fin']}.pdf"
+    cabeceras = dict(response.headers) if response is not None else {}
 
     return StreamingResponse(
         pdf_buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename={nombre_archivo}"}
+        headers={
+            **cabeceras,
+            "Content-Disposition": f"attachment; filename={nombre_archivo}",
+        }
     )
