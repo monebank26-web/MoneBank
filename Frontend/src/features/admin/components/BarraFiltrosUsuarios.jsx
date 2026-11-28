@@ -74,6 +74,11 @@ const BarraFiltrosUsuarios = ({
         valor={estado}
         onChange={setEstado}
       />
+
+      <button type="button" className="admin-filtros__limpiar" onClick={onLimpiar}>
+        <Icon icon="mdi:broom" aria-hidden="true" />
+        Limpiar filtros
+      </button>
     </div>
   </div>
 );

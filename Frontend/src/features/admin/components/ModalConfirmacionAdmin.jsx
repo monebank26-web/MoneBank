@@ -15,6 +15,7 @@ const ModalConfirmacionAdmin = ({
   error,
   enviando = false,
   children,
+  className,
 }) => {
   const claseBoton =
     variante === 'primario' ? 'admin-boton-primario' : 'admin-boton-peligro';
@@ -26,7 +27,7 @@ const ModalConfirmacionAdmin = ({
   };
 
   return (
-    <Modal open={open} onClose={cerrar} title={title}>
+    <Modal open={open} onClose={cerrar} title={title} className={className}>
       <form className="formulario-modal admin-confirmacion" onSubmit={confirmar}>
         <div
           className={`admin-modal-icono admin-modal-icono--${variante}`}

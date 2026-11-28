@@ -16,11 +16,81 @@ import ModalDesbloquearUsuario from '../components/ModalDesbloquearUsuario';
 import ModalRestablecerPassword from '../components/ModalRestablecerPassword';
 import './AdminPage.css';
 
+const TarjetaMetrica = ({ etiqueta, valor, extra, icono, variante }) => (
+  <div className={`admin-metrica admin-metrica--${variante}`}>
+    <span className="admin-metrica__info">
+      <span className="admin-metrica__etiqueta">{etiqueta}</span>
+      <span className="admin-metrica__valor">
+        {valor}
+        {extra && <span className="admin-metrica__extra">{extra}</span>}
+      </span>
+    </span>
+    <span className="admin-metrica__icono" aria-hidden="true">
+      {icono === 'punto' ? <span className="admin-metrica__punto" /> : <Icon icon={icono} />}
+    </span>
+  </div>
+);
+
+const PiePaginacion = ({ pagina, totalPaginas, total, cantidad, onChange }) => {
+  const maximoVisible = 5;
+  let inicio = Math.max(1, pagina - 2);
+  let fin = Math.min(totalPaginas, inicio + maximoVisible - 1);
+  inicio = Math.max(1, fin - maximoVisible + 1);
+  const paginas = Array.from({ length: fin - inicio + 1 }, (_, indice) => inicio + indice);
+
+  return (
+    <div className="admin-pie">
+      <p className="admin-pie__info">
+        Mostrando <strong>{cantidad}</strong> de <strong>{total}</strong> cuentas institucionales
+      </p>
+
+      <div className="admin-pie__controles">
+        <button
+          type="button"
+          className="admin-pie__btn admin-pie__btn--borde"
+          disabled={pagina <= 1}
+          onClick={() => onChange(pagina - 1)}
+        >
+          Anterior
+        </button>
+
+        {inicio > 1 && <span className="admin-pie__elipsis">…</span>}
+
+        {paginas.map((numero) => (
+          <button
+            key={numero}
+            type="button"
+            className={`admin-pie__btn admin-pie__btn--numero${
+              numero === pagina ? ' admin-pie__btn--activo' : ''
+            }`}
+            aria-current={numero === pagina ? 'page' : undefined}
+            onClick={() => onChange(numero)}
+          >
+            {numero}
+          </button>
+        ))}
+
+        {fin < totalPaginas && <span className="admin-pie__elipsis">…</span>}
+
+        <button
+          type="button"
+          className="admin-pie__btn admin-pie__btn--borde admin-pie__btn--siguiente"
+          disabled={pagina >= totalPaginas}
+          onClick={() => onChange(pagina + 1)}
+        >
+          Siguiente
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const AdminPage = () => {
   const { user } = useAuth();
   const {
     usuarios,
     total,
+    metricas,
     pagina,
     totalPaginas,
     busqueda,
@@ -37,6 +107,9 @@ const AdminPage = () => {
   } = useUsuariosAdmin();
 
   const acciones = useAccionesUsuarioAdmin({ recargar });
+  const porcentajeActivos = metricas.total
+    ? `${((metricas.activos / metricas.total) * 100).toFixed(1)}%`
+    : '0.0%';
 
   return (
     <div className="admin-pagina">
@@ -75,6 +148,36 @@ const AdminPage = () => {
           )}
           <span className="admin-total">{textoTotalUsuarios(total)}</span>
         </div>
+      </div>
+
+      <div className="admin-metricas">
+        <TarjetaMetrica
+          etiqueta="TOTAL USUARIOS"
+          valor={metricas.total}
+          icono="mdi:account-group-outline"
+          variante="total"
+        />
+        <TarjetaMetrica
+          etiqueta="ACTIVOS"
+          valor={metricas.activos}
+          extra={porcentajeActivos}
+          icono="punto"
+          variante="activos"
+        />
+        <TarjetaMetrica
+          etiqueta="BLOQUEADOS"
+          valor={metricas.bloqueados}
+          extra="Restringidos"
+          icono="mdi:lock"
+          variante="bloqueados"
+        />
+        <TarjetaMetrica
+          etiqueta="INACTIVOS"
+          valor={metricas.inactivos}
+          extra="Sin sesión"
+          icono="mdi:prohibited"
+          variante="inactivos"
+        />
       </div>
 
       <BarraFiltrosUsuarios

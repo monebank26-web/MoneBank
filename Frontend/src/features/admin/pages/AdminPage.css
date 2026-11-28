@@ -454,38 +454,114 @@
 }
 
 /* ── MODAL DE DETALLE ── */
+/* Paleta y ajustes scoped al modal de detalle. El Modal compartido ya acepta
+   `className`, así que estos selectores no afectan a los otros modales. */
+.caja-modal.caja-modal--admin-detalle {
+  --mb-dorado: #e5b24c;
+  --mb-dorado-borde: rgba(229, 178, 76, 0.4);
+  --mb-texto: #f5f0e8;
+  --mb-texto-apagado: #8e8276;
+  --mb-ficha: #14110e;
+  --mb-linea: #231c16;
+  --mb-alerta: #221215;
+  --mb-motivo: #1e1014;
+  --mb-rojo: #f43f5e;
+  --mb-rojo-claro: #fda4af;
+  --mb-coral: #fb7185;
+  --mb-boton-secundario: #1c1713;
+
+  background: #100d0a;
+  border-color: #2b2318;
+}
+
+.caja-modal--admin-detalle .encabezado-modal {
+  border-bottom-color: var(--mb-linea);
+}
+
+.caja-modal--admin-detalle .titulo-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--mb-texto);
+}
+
+.caja-modal--admin-detalle .titulo-modal::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mb-dorado);
+  box-shadow: 0 0 8px rgba(229, 178, 76, 0.45);
+  flex-shrink: 0;
+}
+
+.caja-modal--admin-detalle .boton-cerrar-modal {
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  background: none;
+  border-radius: 0;
+  color: rgba(142, 130, 118, 0.65);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.caja-modal--admin-detalle .boton-cerrar-modal:hover {
+  background: none;
+  color: var(--mb-dorado);
+}
+
 .admin-detalle {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .admin-detalle__avatar {
+  position: relative;
   width: 64px;
   height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  background: rgba(229, 178, 76, 0.1);
+  border: 1px solid var(--mb-dorado-borde);
+  color: var(--mb-dorado);
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
+.admin-detalle__avatar-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mb-motivo);
+  border: 1px solid var(--mb-rojo);
+  color: var(--mb-rojo);
+  font-size: 11px;
+  box-shadow: 0 0 0 2px #100d0a;
+}
+
 .admin-detalle__nombre {
   margin: 0;
-  color: var(--color-text);
+  color: var(--mb-texto);
   font-size: 18px;
   font-weight: 600;
 }
 
 .admin-detalle__correo {
   margin: 0;
-  color: var(--color-text-muted);
+  color: var(--mb-texto-apagado);
   font-size: 13px;
 }
 
@@ -497,12 +573,85 @@
   margin-top: 4px;
 }
 
+.admin-detalle__punto-estado {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.admin-detalle .admin-etiqueta-rol--administrador {
+  background: rgba(20, 17, 14, 0.9);
+  border: 1px solid var(--mb-dorado-borde);
+  color: var(--mb-dorado);
+}
+
+.admin-detalle .admin-etiqueta-rol--normal {
+  background: rgba(28, 23, 19, 0.9);
+  border: 1px solid var(--mb-linea);
+  color: #a89a86;
+}
+
+.admin-detalle .admin-estado--activo {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: #7ee2a8;
+}
+
+.admin-detalle .admin-estado--inactivo {
+  background: rgba(28, 23, 19, 0.9);
+  border: 1px solid var(--mb-linea);
+  color: var(--mb-texto-apagado);
+}
+
+.admin-detalle .admin-estado--bloqueado {
+  background: rgba(68, 17, 28, 0.75);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  color: var(--mb-coral);
+}
+
+.admin-detalle .admin-etiqueta-temporal {
+  background: rgba(229, 178, 76, 0.1);
+  border: 1px solid var(--mb-dorado-borde);
+  color: var(--mb-dorado);
+}
+
 .admin-detalle__campos {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  background: var(--mb-ficha);
+  border: 1px solid var(--mb-linea);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-detalle__ficha-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--mb-linea);
+}
+
+.admin-detalle__ficha-titulo {
+  color: var(--mb-texto-apagado);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-detalle__ficha-id {
+  color: var(--mb-dorado);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .admin-detalle__campo {
@@ -510,80 +659,142 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: var(--color-surface-2);
-  border-radius: var(--radius-sm);
   padding: 10px 14px;
+  border-bottom: 1px solid var(--mb-linea);
+}
+
+.admin-detalle__campo:last-child {
+  border-bottom: none;
 }
 
 .admin-detalle__etiqueta {
-  color: var(--color-text-muted);
-  font-size: 13px;
+  color: var(--mb-texto-apagado);
+  font-size: 12px;
 }
 
 .admin-detalle__valor {
-  color: var(--color-text);
+  color: #ffffff;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.admin-detalle__valor--correo {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.admin-detalle__valor--bloqueado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mb-coral);
 }
 
 .admin-detalle__bloqueo {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 14px 16px;
-  background: var(--color-danger-soft);
-  border: 1px solid var(--color-danger-soft);
-  border-radius: var(--radius-sm);
-  box-shadow: inset 3px 0 0 var(--color-danger);
+  background: var(--mb-alerta);
+  border: 1px solid rgba(244, 63, 94, 0.18);
+  border-left: 3px solid var(--mb-rojo);
+  border-radius: 10px;
 }
 
 .admin-detalle__bloqueo-cabecera {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: var(--color-danger);
+  gap: 9px;
+  color: var(--mb-rojo-claro);
   font-size: 13px;
   font-weight: 700;
 }
 
+.admin-detalle__bloqueo-icono {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 63, 94, 0.12);
+  color: #e37b8b;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
 .admin-detalle__bloqueo-motivo {
-  margin: 6px 0 0;
-  color: var(--color-text-soft);
-  font-size: 13px;
-  line-height: 1.5;
+  margin: 10px 0 0;
+}
+
+.admin-detalle__bloqueo-motivo-texto {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 5px 8px;
+  background: var(--mb-motivo);
+  border-radius: 4px;
+  color: #e7d7d9;
+  font-size: 12px;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
 .admin-detalle__bloqueo-fecha {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 8px;
-  color: var(--color-danger);
+  gap: 6px;
+  margin-top: 10px;
+  color: #b38a93;
   font-size: 12px;
+}
+
+.admin-detalle__bloqueo-fecha svg {
+  color: #b38a93;
+  flex-shrink: 0;
 }
 
 .admin-detalle__acciones {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   margin-top: 14px;
   padding-top: 16px;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--mb-linea);
+}
+
+.admin-detalle__acciones-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .admin-detalle__acciones-titulo {
-  color: var(--color-text-muted);
+  color: var(--mb-texto-apagado);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.admin-detalle__privilegios {
+  color: var(--mb-dorado);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .admin-detalle__acciones-botones {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.admin-detalle__acciones-secundarias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -593,9 +804,10 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  border: 1px solid;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -603,53 +815,58 @@
 
 .admin-detalle__boton svg {
   font-size: 16px;
+  flex-shrink: 0;
 }
 
-.admin-detalle__boton--editar {
+.admin-detalle__boton--principal {
+  min-height: 42px;
+  background: var(--mb-dorado);
+  border-color: var(--mb-dorado);
+  color: #120f0c;
+  font-weight: 700;
+}
+
+.admin-detalle__boton--principal:hover {
+  background: #f0c25b;
+  border-color: #f0c25b;
+}
+
+.admin-detalle__boton--secundario {
+  background: var(--mb-boton-secundario);
+  border-color: #33291d;
+  color: #e8ded0;
+}
+
+.admin-detalle__boton--secundario:hover {
+  border-color: var(--mb-dorado-borde);
+  color: var(--mb-dorado);
+}
+
+.admin-detalle__boton--texto {
+  min-height: 0;
+  padding: 8px 6px;
   background: none;
-  border-color: var(--color-border);
-  color: var(--color-text-soft);
+  border-color: transparent;
+  color: var(--mb-rojo);
+  font-size: 12px;
+  font-weight: 500;
 }
 
-.admin-detalle__boton--editar:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+.admin-detalle__boton--texto:hover {
+  color: var(--mb-coral);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.admin-detalle__boton--restablecer {
-  background: none;
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+.admin-detalle__boton--texto svg {
+  font-size: 14px;
 }
 
-.admin-detalle__boton--restablecer:hover {
-  background: var(--color-accent-soft);
-}
-
-.admin-detalle__boton--restablecer:focus-visible {
-  outline: 2px solid var(--color-accent);
+.admin-detalle__boton:focus-visible,
+.admin-detalle__boton--texto:focus-visible,
+.caja-modal--admin-detalle .boton-cerrar-modal:focus-visible {
+  outline: 2px solid var(--mb-dorado);
   outline-offset: 2px;
-}
-
-.admin-detalle__boton--bloquear {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #080808;
-}
-
-.admin-detalle__boton--bloquear:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
-}
-
-.admin-detalle__boton--desactivar {
-  background: none;
-  border-color: var(--color-danger);
-  color: var(--color-danger);
-}
-
-.admin-detalle__boton--desactivar:hover {
-  background: var(--color-danger-soft);
 }
 
 .admin-detalle__inactiva {
@@ -932,19 +1149,71 @@
   flex-shrink: 0;
 }
 
-.admin-detalle__boton--desbloquear {
-  background: none;
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+/* Modo claro: misma jerarquía y tipografía, con colores legibles sobre fondos
+   claros. No cambia ninguna clase ni comportamiento, solo la paleta. */
+[data-theme="light"] .caja-modal.caja-modal--admin-detalle {
+  --mb-dorado: #a9822f;
+  --mb-dorado-borde: rgba(169, 130, 47, 0.4);
+  --mb-texto: #1d1809;
+  --mb-texto-apagado: #7a6c48;
+  --mb-ficha: #f7f1e6;
+  --mb-linea: #e6dcc8;
+  --mb-alerta: #fdf0f1;
+  --mb-motivo: #f6e2e5;
+  --mb-rojo: #d92d2d;
+  --mb-rojo-claro: #b91c3c;
+  --mb-coral: #be123c;
+  --mb-boton-secundario: #f2ead9;
+
+  background: #fffdf8;
+  border-color: #e2d6b8;
 }
 
-.admin-detalle__boton--desbloquear:hover {
-  background: var(--color-accent-soft);
+[data-theme="light"] .caja-modal--admin-detalle .encabezado-modal {
+  border-bottom-color: var(--mb-linea);
 }
 
-.admin-detalle__boton--desbloquear:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+[data-theme="light"] .admin-detalle .admin-etiqueta-rol--administrador {
+  background: #f2ead9;
+}
+
+[data-theme="light"] .admin-detalle .admin-estado--bloqueado {
+  background: rgba(217, 45, 45, 0.12);
+}
+
+[data-theme="light"] .admin-detalle__avatar {
+  background: rgba(169, 130, 47, 0.12);
+}
+
+[data-theme="light"] .admin-detalle__avatar-badge {
+  background: #ffffff;
+  box-shadow: 0 0 0 2px #fffdf8;
+}
+
+[data-theme="light"] .admin-detalle__valor {
+  color: #1d1809;
+}
+
+[data-theme="light"] .admin-detalle__bloqueo-icono {
+  color: #be123c;
+}
+
+[data-theme="light"] .admin-detalle__bloqueo-motivo-texto {
+  color: #5c2730;
+}
+
+[data-theme="light"] .admin-detalle__bloqueo-fecha,
+[data-theme="light"] .admin-detalle__bloqueo-fecha svg {
+  color: #9a6470;
+}
+
+[data-theme="light"] .admin-detalle__boton--principal {
+  color: #1d1809;
+}
+
+[data-theme="light"] .admin-detalle__boton--secundario {
+  border-color: #d9cdb5;
+  color: #5c4f30;
 }
 
 /* ── RESPONSIVE ── */
@@ -1006,4 +1275,825 @@
   .admin-detalle__valor {
     text-align: left;
   }
+}
+
+@media (max-width: 400px) {
+  .admin-detalle__acciones-secundarias {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── MODALES DE ACCIÓN: DESBLOQUEAR / RESTABLECER / EDITAR / DESACTIVAR ──
+   Mismo patrón que el detalle: paleta scoped por clase de modal para no
+   pisar estilos compartidos ni los otros modales del panel. */
+.caja-modal--admin-desbloquear,
+.caja-modal--admin-restablecer,
+.caja-modal--admin-editar,
+.caja-modal--admin-desactivar {
+  --mb-dorado: #e5b24c;
+  --mb-dorado-borde: rgba(229, 178, 76, 0.4);
+  --mb-texto-claro: #e5e0d8;
+  --mb-gris: #9e958c;
+  --mb-gris-apagado: #8e8276;
+  --mb-linea: #26211b;
+  --mb-boton: #1a1714;
+  --mb-boton-borde: #2b2620;
+  --mb-rojo: #ef4444;
+  color: #ffffff;
+}
+
+.caja-modal--admin-desbloquear .boton-cerrar-modal:focus-visible,
+.caja-modal--admin-restablecer .boton-cerrar-modal:focus-visible,
+.caja-modal--admin-editar .boton-cerrar-modal:focus-visible,
+.caja-modal--admin-desactivar .boton-cerrar-modal:focus-visible,
+.admin-editar__cancelar:focus-visible {
+  outline: 2px solid var(--mb-dorado);
+  outline-offset: 2px;
+}
+
+/* ── DESBLOQUEAR CUENTA ── */
+.caja-modal.caja-modal--admin-desbloquear {
+  position: relative;
+  background: #100d0a;
+  border: 1px solid rgba(229, 178, 76, 0.25);
+  border-radius: 16px;
+}
+
+.caja-modal--admin-desbloquear .encabezado-modal {
+  padding: 0;
+  min-height: 0;
+  border-bottom: none;
+}
+
+.caja-modal--admin-desbloquear .titulo-modal {
+  display: none;
+}
+
+.caja-modal--admin-desbloquear .boton-cerrar-modal {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  background: none;
+  border-radius: 0;
+  color: #9e958c;
+  font-size: 16px;
+}
+
+.caja-modal--admin-desbloquear .boton-cerrar-modal:hover {
+  background: none;
+  color: #ffffff;
+}
+
+.caja-modal--admin-desbloquear .cuerpo-modal {
+  padding-top: 30px;
+}
+
+.caja-modal--admin-desbloquear .admin-modal-icono--primario {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 2px;
+  background: rgba(229, 178, 76, 0.08);
+  border: 1px solid var(--mb-dorado-borde);
+  color: var(--mb-dorado);
+  box-shadow:
+    0 0 0 6px rgba(229, 178, 76, 0.15),
+    0 0 24px rgba(229, 178, 76, 0.15);
+  font-size: 28px;
+}
+
+.admin-modal-titulo {
+  margin: 0;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.admin-modal-texto--desbloqueo {
+  max-width: 330px;
+  margin: 0 auto;
+  color: var(--mb-texto-claro);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.admin-auditoria {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: #211b11;
+  border: 1px solid rgba(229, 178, 76, 0.3);
+  color: var(--mb-dorado);
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.admin-auditoria svg {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.caja-modal--admin-desbloquear .admin-boton-primario {
+  background: var(--mb-dorado);
+  border-color: var(--mb-dorado);
+  color: #120f0c;
+  box-shadow: 0 4px 20px rgba(229, 178, 76, 0.25);
+}
+
+.caja-modal--admin-desbloquear .admin-boton-primario:hover:not(:disabled) {
+  background: #f0c25b;
+  border-color: #f0c25b;
+}
+
+.caja-modal--admin-desbloquear .admin-boton-secundario {
+  background: none;
+  border: none;
+  color: #a89f96;
+  font-weight: 500;
+  padding: 6px;
+}
+
+.caja-modal--admin-desbloquear .admin-boton-secundario:hover:not(:disabled) {
+  background: none;
+  color: #ffffff;
+}
+
+/* ── RESTABLECER CONTRASEÑA ── */
+.caja-modal.caja-modal--admin-restablecer {
+  background: #100d0a;
+  border-color: rgba(229, 178, 76, 0.2);
+  border-radius: 16px;
+}
+
+.caja-modal--admin-restablecer .encabezado-modal {
+  border-bottom: 1px solid #26211b;
+}
+
+.caja-modal--admin-restablecer .titulo-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #ffffff;
+}
+
+.caja-modal--admin-restablecer .titulo-modal::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mb-dorado);
+  box-shadow: 0 0 8px rgba(229, 178, 76, 0.45);
+  flex-shrink: 0;
+}
+
+.caja-modal--admin-restablecer .boton-cerrar-modal {
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  background: none;
+  border-radius: 0;
+  color: var(--mb-gris);
+  font-size: 16px;
+}
+
+.caja-modal--admin-restablecer .boton-cerrar-modal:hover {
+  background: none;
+  color: #ffffff;
+}
+
+.caja-modal--admin-restablecer .admin-modal-icono--primario {
+  width: 64px;
+  height: 64px;
+  background: rgba(229, 178, 76, 0.08);
+  border: 1px solid var(--mb-dorado-borde);
+  color: var(--mb-dorado);
+  box-shadow:
+    0 0 0 6px rgba(229, 178, 76, 0.15),
+    0 0 25px rgba(229, 178, 76, 0.18);
+  font-size: 28px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario {
+  gap: 12px;
+  padding: 12px 14px;
+  background: #1c1814;
+  border: 1px solid #2c261f;
+  border-radius: 12px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #261e11;
+  border: 1px solid rgba(229, 178, 76, 0.35);
+  color: var(--mb-dorado);
+  font-size: 16px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario__identidad {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario__datos strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario__datos .admin-modal-usuario__rol {
+  display: inline-flex;
+  overflow: visible;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #261e11;
+  border: 1px solid rgba(229, 178, 76, 0.25);
+  color: var(--mb-dorado);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.caja-modal--admin-restablecer .admin-modal-usuario__datos > span {
+  color: #9e958c;
+}
+
+.caja-modal--admin-restablecer .admin-modal-texto {
+  color: var(--mb-texto-claro);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.admin-modal-subtexto {
+  margin: -6px 0 0;
+  color: #8e8276;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.caja-modal--admin-restablecer .admin-modal-aviso {
+  background: #211a0e;
+  border: 1px solid rgba(229, 178, 76, 0.3);
+  color: var(--mb-dorado);
+  font-size: 12px;
+}
+
+.caja-modal--admin-restablecer .admin-modal-aviso svg {
+  color: var(--mb-dorado);
+}
+
+.caja-modal--admin-restablecer .admin-boton-primario {
+  background: var(--mb-dorado);
+  border-color: var(--mb-dorado);
+  color: #120f0c;
+  box-shadow: 0 4px 20px rgba(229, 178, 76, 0.2);
+}
+
+.caja-modal--admin-restablecer .admin-boton-primario:hover:not(:disabled) {
+  background: #f0c25b;
+  border-color: #f0c25b;
+}
+
+.caja-modal--admin-restablecer .admin-boton-secundario {
+  background: #1a1714;
+  border: 1px solid #2b2620;
+  color: #ffffff;
+}
+
+.caja-modal--admin-restablecer .admin-boton-secundario:hover:not(:disabled) {
+  border-color: rgba(229, 178, 76, 0.4);
+  color: #ffffff;
+}
+
+/* ── EDITAR USUARIO ── */
+.caja-modal.caja-modal--admin-editar {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(229, 178, 76, 0.12), transparent 45%),
+    #100d0a;
+  border-color: rgba(229, 178, 76, 0.2);
+  border-radius: 16px;
+}
+
+.caja-modal--admin-editar .encabezado-modal {
+  align-items: center;
+  border-bottom: 1px solid #26211b;
+}
+
+.caja-modal--admin-editar .titulo-modal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.admin-editar__icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #261e11;
+  border: 1px solid rgba(229, 178, 76, 0.35);
+  color: var(--mb-dorado);
+  font-size: 18px;
+}
+
+.admin-editar__cabecera-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-editar__titulo {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-editar__subtitulo {
+  color: #8e8276;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.caja-modal--admin-editar .boton-cerrar-modal {
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  background: none;
+  border-radius: 0;
+  color: var(--mb-gris);
+  font-size: 16px;
+}
+
+.caja-modal--admin-editar .boton-cerrar-modal:hover {
+  background: none;
+  color: #ffffff;
+}
+
+.caja-modal--admin-editar .etiqueta-campo {
+  color: #9e958c;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admin-editar__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-editar__prefijo {
+  position: absolute;
+  left: 13px;
+  color: var(--mb-dorado);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.caja-modal--admin-editar .campo-entrada {
+  width: 100%;
+  height: 42px;
+  padding: 10px 12px 10px 40px;
+  background: #1a1714;
+  border: 1px solid #2b2620;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.caja-modal--admin-editar .campo-entrada:focus {
+  background: #1a1714;
+  border-color: rgba(229, 178, 76, 0.5);
+}
+
+.admin-editar__aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  background: #211a0e;
+  border: 1px solid rgba(229, 178, 76, 0.25);
+  border-radius: 8px;
+  color: #d6cfc7;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.admin-editar__aviso svg {
+  margin-top: 1px;
+  color: var(--mb-dorado);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.caja-modal--admin-editar .boton-principal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--mb-dorado);
+  color: #120f0c;
+  box-shadow: 0 4px 20px rgba(229, 178, 76, 0.2);
+  font-weight: 700;
+}
+
+.caja-modal--admin-editar .boton-principal:hover:not(:disabled) {
+  background: #f0c25b;
+}
+
+.admin-editar__cancelar {
+  width: 100%;
+  padding: 6px;
+  background: none;
+  border: none;
+  color: #9e958c;
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin-editar__cancelar:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+/* ── DESACTIVAR USUARIO ── */
+.caja-modal.caja-modal--admin-desactivar {
+  background: #100d0a;
+  border-color: #2b2620;
+  border-radius: 16px;
+}
+
+.caja-modal--admin-desactivar .encabezado-modal {
+  border-bottom: 1px solid #2b2620;
+}
+
+.caja-modal--admin-desactivar .titulo-modal {
+  color: #ffffff;
+}
+
+.caja-modal--admin-desactivar .boton-cerrar-modal {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #1f1b18;
+  border: 1px solid #2e2924;
+  color: var(--mb-gris);
+}
+
+.caja-modal--admin-desactivar .boton-cerrar-modal:hover {
+  background: #2a2420;
+  color: #ffffff;
+}
+
+.caja-modal--admin-desactivar .admin-modal-icono--peligro {
+  width: 64px;
+  height: 64px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--mb-rojo);
+  box-shadow:
+    0 0 0 6px rgba(239, 68, 68, 0.12),
+    0 0 25px rgba(239, 68, 68, 0.2);
+  font-size: 28px;
+}
+
+.caja-modal--admin-desactivar .admin-texto-confirmacion {
+  color: #b8b0a8;
+  line-height: 1.6;
+}
+
+.caja-modal--admin-desactivar .admin-texto-confirmacion strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.caja-modal--admin-desactivar .admin-modal-nota {
+  background: #241414;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  color: #e2d4d4;
+}
+
+.caja-modal--admin-desactivar .admin-modal-nota svg {
+  color: var(--mb-rojo);
+}
+
+.caja-modal--admin-desactivar .admin-boton-peligro {
+  background: #dc3e3e;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(220, 62, 62, 0.25);
+}
+
+.caja-modal--admin-desactivar .admin-boton-peligro:hover:not(:disabled) {
+  background: #e04343;
+}
+
+.caja-modal--admin-desactivar .admin-boton-secundario {
+  background: #211d1a;
+  border: 1px solid #332d28;
+  color: #ffffff;
+}
+
+.caja-modal--admin-desactivar .admin-boton-secundario:hover:not(:disabled) {
+  border-color: #4a423a;
+  color: #ffffff;
+}
+
+/* Modo claro: misma estructura, colores legibles sobre fondos claros. */
+[data-theme="light"] .caja-modal.caja-modal--admin-desbloquear,
+[data-theme="light"] .caja-modal.caja-modal--admin-restablecer,
+[data-theme="light"] .caja-modal.caja-modal--admin-editar,
+[data-theme="light"] .caja-modal.caja-modal--admin-desactivar {
+  --mb-dorado: #a9822f;
+  --mb-dorado-borde: rgba(169, 130, 47, 0.4);
+  --mb-texto-claro: #5c4f30;
+  --mb-gris: #7a6c48;
+  --mb-gris-apagado: #7a6c48;
+  --mb-linea: #e6dcc8;
+  --mb-rojo: #c62828;
+  background: #fffdf8;
+  border-color: #e2d6b8;
+  color: #1d1809;
+}
+
+[data-theme="light"] .admin-modal-titulo,
+[data-theme="light"] .caja-modal--admin-restablecer .titulo-modal,
+[data-theme="light"] .caja-modal--admin-editar .titulo-modal,
+[data-theme="light"] .caja-modal--admin-editar .admin-editar__titulo,
+[data-theme="light"] .caja-modal--admin-desactivar .titulo-modal,
+[data-theme="light"] .caja-modal--admin-restablecer .admin-modal-usuario__datos strong,
+[data-theme="light"] .caja-modal--admin-desactivar .admin-texto-confirmacion strong {
+  color: #1d1809;
+}
+
+[data-theme="light"] .caja-modal--admin-editar .campo-entrada {
+  background: #f7f1e6;
+  border-color: #e2d6b8;
+  color: #1d1809;
+}
+
+[data-theme="light"] .caja-modal--admin-editar .campo-entrada:focus {
+  background: #f7f1e6;
+  border-color: rgba(169, 130, 47, 0.5);
+}
+
+[data-theme="light"] .caja-modal--admin-desactivar .admin-texto-confirmacion {
+  color: #5c4f30;
+}
+
+[data-theme="light"] .caja-modal--admin-desactivar .admin-modal-nota {
+  background: #fbeaea;
+  color: #5c2730;
+}
+
+[data-theme="light"] .caja-modal--admin-desactivar .admin-boton-peligro {
+  background: #c62828;
+}
+
+[data-theme="light"] .caja-modal--admin-desactivar .boton-cerrar-modal,
+[data-theme="light"] .caja-modal--admin-restablecer .admin-modal-usuario,
+[data-theme="light"] .caja-modal--admin-restablecer .admin-boton-secundario,
+[data-theme="light"] .caja-modal--admin-desactivar .admin-boton-secundario {
+  background: #f2ead9;
+  border-color: #e2d6b8;
+}
+
+/* ── BLOQUEAR CUENTA ──
+   Alineado con la estética del modal de desactivación: borde neutro, doble
+   anillo rojo, textos de alto contraste y sin tintes ámbar apagados. */
+.caja-modal--admin-bloquear {
+  --mb-dorado: #e5b24c;
+}
+
+.caja-modal.caja-modal--admin-bloquear {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(239, 68, 68, 0.1), transparent 45%),
+    #100d0a;
+  border: 1px solid #2b2620;
+  border-radius: 16px;
+}
+
+.caja-modal--admin-bloquear .encabezado-modal {
+  border-bottom: 1px solid #26211b;
+}
+
+.caja-modal--admin-bloquear .titulo-modal {
+  color: #ffffff;
+}
+
+.caja-modal--admin-bloquear .boton-cerrar-modal {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #1f1b18;
+  border: 1px solid #2e2924;
+  color: #a89f96;
+}
+
+.caja-modal--admin-bloquear .boton-cerrar-modal:hover {
+  background: #2a2420;
+  color: #ffffff;
+}
+
+.caja-modal--admin-bloquear .boton-cerrar-modal:focus-visible,
+.caja-modal--admin-bloquear .admin-boton-peligro:focus-visible,
+.caja-modal--admin-bloquear .admin-boton-secundario:focus-visible {
+  outline: 2px solid var(--mb-dorado);
+  outline-offset: 2px;
+}
+
+.caja-modal--admin-bloquear .admin-modal-icono--bloqueo {
+  width: 64px;
+  height: 64px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  box-shadow:
+    0 0 0 6px rgba(239, 68, 68, 0.12),
+    0 0 0 7px rgba(239, 68, 68, 0.3),
+    0 0 25px rgba(239, 68, 68, 0.22);
+  font-size: 28px;
+}
+
+.caja-modal--admin-bloquear .admin-modal-usuario {
+  background: #1b1714;
+  border: 1px solid #2b2620;
+  border-radius: 10px;
+}
+
+.caja-modal--admin-bloquear .admin-modal-usuario__avatar {
+  background: #241d12;
+  border: 1px solid rgba(229, 178, 76, 0.35);
+  color: var(--mb-dorado);
+}
+
+.caja-modal--admin-bloquear .admin-modal-usuario__datos strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.caja-modal--admin-bloquear .admin-modal-usuario__datos span {
+  color: #b8b0a8;
+}
+
+.caja-modal--admin-bloquear .admin-modal-texto {
+  color: #e5e0d8;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.caja-modal--admin-bloquear .etiqueta-campo {
+  color: #e5e0d8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.caja-modal--admin-bloquear .campo-entrada {
+  background: #171411;
+  border: 1px solid #2e2924;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.caja-modal--admin-bloquear .campo-entrada:focus {
+  background: #171411;
+  border-color: #2e2924;
+}
+
+.caja-modal--admin-bloquear .campo-entrada:focus-visible {
+  border-color: rgba(229, 178, 76, 0.5);
+}
+
+.caja-modal--admin-bloquear .campo-entrada::placeholder {
+  color: #7a726a;
+}
+
+.caja-modal--admin-bloquear .admin-contador {
+  color: #e5e0d8;
+  font-size: 12px;
+}
+
+.caja-modal--admin-bloquear .admin-contador__minimo--error {
+  color: #f87171;
+}
+
+.caja-modal--admin-bloquear .admin-modal-aviso {
+  background: #1b1714;
+  border: 1px solid #2b2620;
+  border-radius: 10px;
+  color: #a89f96;
+  font-size: 12px;
+}
+
+.caja-modal--admin-bloquear .admin-modal-aviso svg {
+  color: var(--mb-dorado);
+  font-size: 15px;
+}
+
+.caja-modal--admin-bloquear .admin-boton-peligro {
+  background: #dc3e3e;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(220, 62, 62, 0.28);
+}
+
+.caja-modal--admin-bloquear .admin-boton-peligro:hover:not(:disabled) {
+  background: #e04343;
+}
+
+.caja-modal--admin-bloquear .admin-boton-secundario {
+  background: #211d1a;
+  border: 1px solid #332d28;
+  color: #ffffff;
+}
+
+.caja-modal--admin-bloquear .admin-boton-secundario:hover:not(:disabled) {
+  border-color: #4a423a;
+  color: #ffffff;
+}
+
+/* Modo claro: mismos componentes, colores legibles sobre fondos claros. */
+[data-theme="light"] .caja-modal.caja-modal--admin-bloquear {
+  --mb-dorado: #a9822f;
+  background: #fffdf8;
+  border-color: #e2d6b8;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .titulo-modal {
+  color: #1d1809;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-modal-texto,
+[data-theme="light"] .caja-modal--admin-bloquear .etiqueta-campo,
+[data-theme="light"] .caja-modal--admin-bloquear .admin-contador {
+  color: #5c4f30;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .campo-entrada {
+  background: #f7f1e6;
+  border-color: #e2d6b8;
+  color: #1d1809;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .campo-entrada:focus {
+  background: #f7f1e6;
+  border-color: #e2d6b8;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .campo-entrada:focus-visible {
+  border-color: rgba(169, 130, 47, 0.5);
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-modal-usuario {
+  background: #f7f1e6;
+  border-color: #e2d6b8;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-modal-usuario__datos strong {
+  color: #1d1809;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-modal-usuario__datos span {
+  color: #7a6c48;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-modal-aviso {
+  background: #f7f1e6;
+  border-color: #e2d6b8;
+  color: #7a6c48;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-boton-peligro {
+  background: #c62828;
+}
+
+[data-theme="light"] .caja-modal--admin-bloquear .admin-boton-secundario {
+  background: #f2ead9;
+  border-color: #e2d6b8;
+  color: #1d1809;
 }

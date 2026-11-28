@@ -22,10 +22,15 @@ const ModalBloquearUsuario = ({
   const nombre = usuario?.nombre || usuario?.email || 'este usuario';
 
   return (
-    <Modal open={open} onClose={onClose} title="Bloquear cuenta">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Bloquear cuenta"
+      className="caja-modal--admin-bloquear"
+    >
       <div className="formulario-modal">
         <div className="admin-modal-icono admin-modal-icono--bloqueo">
-          <Icon icon="mdi:shield-lock-outline" />
+          <Icon icon="mdi:shield-lock" />
         </div>
 
         <div className="admin-modal-usuario">
@@ -69,7 +74,7 @@ const ModalBloquearUsuario = ({
         </div>
 
         <p className="admin-modal-aviso">
-          <Icon icon="mdi:information-outline" />
+          <Icon icon="mdi:information" aria-hidden="true" />
           El motivo quedará registrado para auditoría. No incluyas datos sensibles.
         </p>
 

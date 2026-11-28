@@ -14,6 +14,12 @@ export const useUsuariosAdmin = () => {
   const [estado, setEstado] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [metricas, setMetricas] = useState({
+    total: 0,
+    activos: 0,
+    bloqueados: 0,
+    inactivos: 0,
+  });
 
   // Contador de peticiones: si una respuesta llega cuando ya se lanzó otra,
   // se descarta para no pintar resultados viejos.
@@ -29,9 +35,38 @@ export const useUsuariosAdmin = () => {
     setPagina(1);
   }, [buscar, idRol, estado]);
 
+  // Conteos globales para las tarjetas KPI. Se pide una sola fila por estado
+  // para no cargar el listado completo; no interviene en los filtros ni en la
+  // paginación del listado.
+  const cargarMetricas = useCallback(async () => {
+    const estados = ['ACTIVO', 'BLOQUEADO', 'INACTIVO'];
+    const respuestas = await Promise.allSettled([
+      authService.obtenerTodosLosUsuarios({ por_pagina: 1 }),
+      ...estados.map((estado) =>
+        authService.obtenerTodosLosUsuarios({ estado, por_pagina: 1 })
+      ),
+    ]);
+
+    const total = respuestas[0].status === 'fulfilled' ? respuestas[0].value.total : 0;
+    const conteos = estados.reduce((acumulado, estado, indice) => {
+      const respuesta = respuestas[indice + 1];
+      acumulado[estado.toLowerCase()] = respuesta.status === 'fulfilled' ? respuesta.value.total : 0;
+      return acumulado;
+    }, {});
+
+    setMetricas({
+      total,
+      activos: conteos.activo || 0,
+      bloqueados: conteos.bloqueado || 0,
+      inactivos: conteos.inactivo || 0,
+    });
+  }, []);
+
   const cargar = useCallback(async () => {
     const peticion = ultimaPeticion.current + 1;
     ultimaPeticion.current = peticion;
+
+    cargarMetricas();
 
     setCargando(true);
     setError('');
@@ -61,7 +96,7 @@ export const useUsuariosAdmin = () => {
     } finally {
       if (ultimaPeticion.current === peticion) setCargando(false);
     }
-  }, [buscar, idRol, estado, pagina]);
+  }, [buscar, idRol, estado, pagina, cargarMetricas]);
 
   useEffect(() => {
     cargar();

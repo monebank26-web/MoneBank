@@ -15,7 +15,12 @@ const ModalEliminarUsuario = ({
   const nombre = usuario?.nombre || usuario?.email || 'este usuario';
 
   return (
-    <Modal open={open} onClose={onClose} title="Desactivar usuario">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Desactivar usuario"
+      className="caja-modal--admin-desactivar"
+    >
       <div className="formulario-modal">
         <div className="admin-modal-icono admin-modal-icono--peligro">
           <Icon icon="mdi:account-off-outline" />
@@ -28,7 +33,7 @@ const ModalEliminarUsuario = ({
 
         {usuario?.estado === 'BLOQUEADO' && (
           <p className="admin-modal-nota">
-            <Icon icon="mdi:information-outline" />
+            <Icon icon="mdi:alert-circle-outline" aria-hidden="true" />
             La cuenta está bloqueada; al desactivarla quedará inactiva.
           </p>
         )}

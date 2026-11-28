@@ -29,13 +29,28 @@ const ModalDetalleUsuario = ({
 }) => {
   const accion = accionCuentaAdmin(usuario);
   const esReactivar = accion === ACCION_REACTIVAR;
+  const esBloqueado = usuario?.estado === 'BLOQUEADO';
+  const idUsuario = usuario?.id ?? usuario?.id_usuario;
+  const identificador = idUsuario
+    ? `#MB-${String(idUsuario).padStart(5, '0')}`
+    : '';
 
   return (
-    <Modal open={open} onClose={onClose} title="Detalle del usuario">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Detalle del usuario"
+      className="caja-modal--admin-detalle"
+    >
       {usuario && (
         <div className="admin-detalle">
           <div className="admin-detalle__avatar">
             {(usuario.nombres || usuario.email || '?').charAt(0).toUpperCase()}
+            {esBloqueado && (
+              <span className="admin-detalle__avatar-badge" aria-hidden="true">
+                <Icon icon="mdi:lock" />
+              </span>
+            )}
           </div>
           <h2 className="admin-detalle__nombre">{usuario.nombre || usuario.email}</h2>
           <p className="admin-detalle__correo">{usuario.email}</p>
@@ -45,7 +60,11 @@ const ModalDetalleUsuario = ({
               {etiquetaRolAdmin(usuario.rol)}
             </span>
             <span className={claseEstadoAdmin(usuario.estado)}>
-              <Icon icon={iconoEstadoAdmin(usuario.estado)} />
+              {esBloqueado ? (
+                <span className="admin-detalle__punto-estado" aria-hidden="true" />
+              ) : (
+                <Icon icon={iconoEstadoAdmin(usuario.estado)} />
+              )}
               {etiquetaEstadoAdmin(usuario.estado)}
             </span>
             {tieneBloqueoTemporalAdmin(usuario) && (
@@ -56,36 +75,58 @@ const ModalDetalleUsuario = ({
             )}
           </div>
 
-          {usuario.estado === 'BLOQUEADO' && (
+          {esBloqueado && (
             <div className="admin-detalle__bloqueo">
               <div className="admin-detalle__bloqueo-cabecera">
-                <Icon icon="mdi:shield-lock-outline" />
-                <span>Cuenta bloqueada</span>
+                <span className="admin-detalle__bloqueo-icono" aria-hidden="true">
+                  <Icon icon="mdi:alert-outline" />
+                </span>
+                <span>Acceso de cuenta bloqueado</span>
               </div>
               <p className="admin-detalle__bloqueo-motivo">
-                {usuario.motivo_bloqueo || 'Sin motivo registrado.'}
+                <span className="admin-detalle__bloqueo-motivo-texto">
+                  Motivo: {usuario.motivo_bloqueo || 'Sin motivo registrado.'}
+                </span>
               </p>
               {usuario.fecha_bloqueo && (
                 <span className="admin-detalle__bloqueo-fecha">
-                  <Icon icon="mdi:calendar-clock-outline" />
-                  Desde el {fechaBloqueoLegible(usuario.fecha_bloqueo)}
+                  <Icon icon="mdi:calendar-outline" aria-hidden="true" />
+                  Bloqueado el {fechaBloqueoLegible(usuario.fecha_bloqueo)}
                 </span>
               )}
             </div>
           )}
 
           <div className="admin-detalle__campos">
+            <div className="admin-detalle__ficha-cabecera">
+              <span className="admin-detalle__ficha-titulo">Ficha de usuario</span>
+              {identificador && (
+                <span className="admin-detalle__ficha-id">ID: {identificador}</span>
+              )}
+            </div>
+
             <div className="admin-detalle__campo">
               <span className="admin-detalle__etiqueta">Correo electrónico</span>
-              <span className="admin-detalle__valor">{usuario.email}</span>
+              <span className="admin-detalle__valor admin-detalle__valor--correo">
+                {usuario.email}
+              </span>
             </div>
             <div className="admin-detalle__campo">
               <span className="admin-detalle__etiqueta">Rol</span>
               <span className="admin-detalle__valor">{etiquetaRolAdmin(usuario.rol)}</span>
             </div>
             <div className="admin-detalle__campo">
-              <span className="admin-detalle__etiqueta">Estado</span>
-              <span className="admin-detalle__valor">{etiquetaEstadoAdmin(usuario.estado)}</span>
+              <span className="admin-detalle__etiqueta">Estado del sistema</span>
+              <span
+                className={`admin-detalle__valor${
+                  esBloqueado ? ' admin-detalle__valor--bloqueado' : ''
+                }`}
+              >
+                {esBloqueado && (
+                  <span className="admin-detalle__punto-estado" aria-hidden="true" />
+                )}
+                {etiquetaEstadoAdmin(usuario.estado)}
+              </span>
             </div>
             <div className="admin-detalle__campo">
               <span className="admin-detalle__etiqueta">Miembro desde</span>
@@ -104,35 +145,18 @@ const ModalDetalleUsuario = ({
           </div>
 
           <div className="admin-detalle__acciones">
-            <span className="admin-detalle__acciones-titulo">Acciones de la cuenta</span>
+            <div className="admin-detalle__acciones-cabecera">
+              <span className="admin-detalle__acciones-titulo">Acciones de la cuenta</span>
+              {usuario.rol === 'administrador' && (
+                <span className="admin-detalle__privilegios">Privilegios Admin</span>
+              )}
+            </div>
 
             <div className="admin-detalle__acciones-botones">
-              {usuario.estado !== 'INACTIVO' && (
-                <button
-                  type="button"
-                  className="admin-detalle__boton admin-detalle__boton--editar"
-                  onClick={() => onEditar?.(usuario)}
-                >
-                  <Icon icon="mdi:pencil-outline" />
-                  Editar datos
-                </button>
-              )}
-
-              {puedeRestablecerPassword(usuario, usuarioActual) && (
-                <button
-                  type="button"
-                  className="admin-detalle__boton admin-detalle__boton--restablecer"
-                  onClick={() => onRestablecer?.(usuario)}
-                >
-                  <Icon icon="mdi:lock-reset" />
-                  Restablecer contraseña
-                </button>
-              )}
-
               {accion && (
                 <button
                   type="button"
-                  className="admin-detalle__boton admin-detalle__boton--desbloquear"
+                  className="admin-detalle__boton admin-detalle__boton--desbloquear admin-detalle__boton--principal"
                   onClick={() => onDesbloquear?.(usuario)}
                 >
                   <Icon
@@ -147,13 +171,50 @@ const ModalDetalleUsuario = ({
                 </button>
               )}
 
-              {puedeBloquearUsuario(usuario.estado) && (
+              {!accion && puedeBloquearUsuario(usuario.estado) && (
                 <button
                   type="button"
-                  className="admin-detalle__boton admin-detalle__boton--bloquear"
+                  className="admin-detalle__boton admin-detalle__boton--bloquear admin-detalle__boton--principal"
                   onClick={() => onBloquear?.(usuario)}
                 >
-                  <Icon icon="mdi:lock-outline" />
+                  <Icon icon="mdi:lock-outline" aria-hidden="true" />
+                  Bloquear cuenta
+                </button>
+              )}
+
+              <div className="admin-detalle__acciones-secundarias">
+                {usuario.estado !== 'INACTIVO' && (
+                  <button
+                    type="button"
+                    className="admin-detalle__boton admin-detalle__boton--editar admin-detalle__boton--secundario"
+                    onClick={() => onEditar?.(usuario)}
+                  >
+                    <Icon icon="mdi:pencil-outline" aria-hidden="true" />
+                    Editar datos
+                  </button>
+                )}
+
+                {puedeRestablecerPassword(usuario, usuarioActual) && (
+                  <button
+                    type="button"
+                    className="admin-detalle__boton admin-detalle__boton--restablecer admin-detalle__boton--secundario"
+                    title="Restablecer contraseña"
+                    aria-label="Restablecer contraseña"
+                    onClick={() => onRestablecer?.(usuario)}
+                  >
+                    <Icon icon="mdi:restore" aria-hidden="true" />
+                    Restablecer Contraseña
+                  </button>
+                )}
+              </div>
+
+              {accion && puedeBloquearUsuario(usuario.estado) && (
+                <button
+                  type="button"
+                  className="admin-detalle__boton admin-detalle__boton--bloquear admin-detalle__boton--texto"
+                  onClick={() => onBloquear?.(usuario)}
+                >
+                  <Icon icon="mdi:lock-outline" aria-hidden="true" />
                   Bloquear cuenta
                 </button>
               )}
@@ -161,11 +222,11 @@ const ModalDetalleUsuario = ({
               {puedeDesactivarUsuario(usuario.estado) && (
                 <button
                   type="button"
-                  className="admin-detalle__boton admin-detalle__boton--desactivar"
+                  className="admin-detalle__boton admin-detalle__boton--desactivar admin-detalle__boton--texto"
                   onClick={() => onEliminar?.(usuario)}
                 >
-                  <Icon icon="mdi:account-off-outline" />
-                  Desactivar cuenta
+                  <Icon icon="mdi:prohibited" aria-hidden="true" />
+                  Desactivar cuenta permanentemente
                 </button>
               )}
             </div>
